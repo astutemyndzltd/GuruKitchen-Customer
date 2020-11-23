@@ -1,0 +1,119 @@
+{
+  "project_info": {
+    "project_number": "877326407146",
+    "firebase_url": "https://gurukitchen-3036d.firebaseio.com",
+    "project_id": "gurukitchen-3036d",
+    "storage_bucket": "gurukitchen-3036d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:877326407146:android:ce4739f41d27edb6b4ce93",
+        "android_client_info": {
+          "package_name": "com.gurukitchenam.customer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "877326407146-t248ca0oprnlqrn8fndrdbpnlkv7705g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYy2h348W2B9SnIwCyvL5C8rJWAkWUDTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "877326407146-t248ca0oprnlqrn8fndrdbpnlkv7705g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "877326407146-fgdn60bpkpvmdr0r34dv0gndvii7spj6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.gurukitchenam.owner"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:877326407146:android:c4565972956920f9b4ce93",
+        "android_client_info": {
+          "package_name": "com.gurukitchenam.driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "877326407146-t248ca0oprnlqrn8fndrdbpnlkv7705g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYy2h348W2B9SnIwCyvL5C8rJWAkWUDTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "877326407146-t248ca0oprnlqrn8fndrdbpnlkv7705g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "877326407146-fgdn60bpkpvmdr0r34dv0gndvii7spj6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.gurukitchenam.owner"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:877326407146:android:875c54b8efb8dc0db4ce93",
+        "android_client_info": {
+          "package_name": "com.gurukitchenam.owner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "877326407146-t248ca0oprnlqrn8fndrdbpnlkv7705g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYy2h348W2B9SnIwCyvL5C8rJWAkWUDTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "877326407146-t248ca0oprnlqrn8fndrdbpnlkv7705g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "877326407146-fgdn60bpkpvmdr0r34dv0gndvii7spj6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.gurukitchenam.owner"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
