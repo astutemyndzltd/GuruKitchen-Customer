@@ -1,4 +1,6 @@
+import 'package:GuruKitchen/src/models/route_argument.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../generated/l10n.dart';
 import '../models/address.dart' as model;
@@ -8,6 +10,7 @@ import '../repository/user_repository.dart' as userRepo;
 import 'cart_controller.dart';
 
 class DeliveryPickupController extends CartController {
+  String method = null;
   GlobalKey<ScaffoldState> scaffoldKey;
   model.Address deliveryAddress;
   PaymentMethodList list;
@@ -66,6 +69,7 @@ class DeliveryPickupController extends CartController {
     });
     setState(() {
       getDeliveryMethod().selected = !getDeliveryMethod().selected;
+      method = getDeliveryMethod().selected ? 'Delivery' : null;
     });
   }
 
@@ -77,6 +81,7 @@ class DeliveryPickupController extends CartController {
     });
     setState(() {
       getPickUpMethod().selected = !getPickUpMethod().selected;
+      method = getPickUpMethod().selected ? 'Pickup' : null;
     });
   }
 
@@ -85,7 +90,9 @@ class DeliveryPickupController extends CartController {
   }
 
   @override
-  void goCheckout(BuildContext context) {
+  void goCheckout(BuildContext context) async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setString('order_type', method);
     Navigator.of(context).pushNamed(getSelectedMethod().route);
   }
 }

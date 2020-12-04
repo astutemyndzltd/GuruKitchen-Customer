@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../generated/l10n.dart';
 import '../models/cart.dart';
@@ -36,9 +37,12 @@ class CheckoutController extends CartController {
 
   void addOrder(List<Cart> carts) async {
     Order _order = new Order();
+    _order.orderType =
+        (await SharedPreferences.getInstance()).getString('order_type');
     _order.foodOrders = new List<FoodOrder>();
     _order.tax = carts[0].food.restaurant.defaultTax;
-    _order.deliveryFee = payment.method == 'Pay on Pickup' ? 0 : carts[0].food.restaurant.deliveryFee;
+    _order.deliveryFee =
+        _order.orderType == 'Pickup' ? 0 : carts[0].food.restaurant.deliveryFee;
     OrderStatus _orderStatus = new OrderStatus();
     _orderStatus.id = '1'; // TODO default order status Id
     _order.orderStatus = _orderStatus;
@@ -51,6 +55,7 @@ class CheckoutController extends CartController {
       _foodOrder.extras = _cart.extras;
       _order.foodOrders.add(_foodOrder);
     });
+
     orderRepo.addOrder(_order, this.payment).then((value) async {
       settingRepo.coupon = new Coupon.fromJSON({});
       return value;

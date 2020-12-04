@@ -97,7 +97,8 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                           children: [
                             Expanded(
                               child: Text(
-                                S.of(context).top_restaurants,
+                                'Restaurants',
+                                //S.of(context).top_restaurants,
                                 style: Theme.of(context).textTheme.headline4,
                                 maxLines: 1,
                                 softWrap: false,
