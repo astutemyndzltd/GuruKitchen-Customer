@@ -35,10 +35,9 @@ class CheckoutController extends CartController {
     super.onLoadingCartDone();
   }
 
-  void addOrder(List<Cart> carts) async {
+  void addOrder(List<Cart> carts) {
     Order _order = new Order();
-    _order.orderType =
-        (await SharedPreferences.getInstance()).getString('order_type');
+    _order.orderType = settingRepo.orderType;
     _order.foodOrders = new List<FoodOrder>();
     _order.tax = carts[0].food.restaurant.defaultTax;
     _order.deliveryFee =

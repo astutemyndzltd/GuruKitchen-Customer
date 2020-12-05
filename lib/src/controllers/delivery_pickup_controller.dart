@@ -90,9 +90,8 @@ class DeliveryPickupController extends CartController {
   }
 
   @override
-  void goCheckout(BuildContext context) async {
-    var prefs = await SharedPreferences.getInstance();
-    prefs.setString('order_type', method);
+  void goCheckout(BuildContext context) {
+    settingRepo.orderType = method;
     Navigator.of(context).pushNamed(getSelectedMethod().route);
   }
 }
