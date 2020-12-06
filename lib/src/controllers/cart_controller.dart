@@ -1,3 +1,4 @@
+import '../models/restaurant.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -18,6 +19,7 @@ class CartController extends ControllerMVC {
   double subTotal = 0.0;
   double total = 0.0;
   GlobalKey<ScaffoldState> scaffoldKey;
+  Restaurant restaurant;
 
   CartController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -39,6 +41,10 @@ class CartController extends ControllerMVC {
         content: Text(S.of(context).verify_your_internet_connection),
       ));
     }, onDone: () {
+      if (carts.isNotEmpty) {
+        restaurant = carts[0].food.restaurant;
+      }
+
       if (carts.isNotEmpty) {
         calculateSubtotal();
       }
@@ -81,7 +87,8 @@ class CartController extends ControllerMVC {
     removeCart(_cart).then((value) {
       calculateSubtotal();
       scaffoldKey?.currentState?.showSnackBar(SnackBar(
-        content: Text(S.of(context).the_food_was_removed_from_your_cart(_cart.food.name)),
+        content: Text(
+            S.of(context).the_food_was_removed_from_your_cart(_cart.food.name)),
       ));
     });
   }
@@ -100,7 +107,8 @@ class CartController extends ControllerMVC {
     if (Helper.canDelivery(carts[0].food.restaurant, carts: carts)) {
       deliveryFee = carts[0].food.restaurant.deliveryFee;
     }
-    taxAmount = (subTotal + deliveryFee) * carts[0].food.restaurant.defaultTax / 100;
+    taxAmount =
+        (subTotal + deliveryFee) * carts[0].food.restaurant.defaultTax / 100;
     total = subTotal + taxAmount + deliveryFee;
     setState(() {});
   }

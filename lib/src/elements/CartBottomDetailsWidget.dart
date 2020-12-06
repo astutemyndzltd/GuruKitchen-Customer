@@ -1,3 +1,4 @@
+import '../repository/settings_repository.dart';
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
@@ -92,7 +93,15 @@ class CartBottomDetailsWidget extends StatelessWidget {
                         width: MediaQuery.of(context).size.width - 40,
                         child: FlatButton(
                           onPressed: () {
-                            _con.goCheckout(context);
+                            if (_con.subTotal <
+                                _con.restaurant.minOrderAmount) {
+                              Scaffold.of(context).showSnackBar(SnackBar(
+                                content: Text(
+                                    "Minimum amount to place order with this restaurant is ${setting.value?.defaultCurrency}${_con.restaurant.minOrderAmount}. Your current order total is ${setting.value?.defaultCurrency}${_con.subTotal}"),
+                              ));
+                            } else {
+                              _con.goCheckout(context);
+                            }
                           },
                           disabledColor:
                               Theme.of(context).focusColor.withOpacity(0.5),
