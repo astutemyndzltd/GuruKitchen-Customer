@@ -1,3 +1,5 @@
+import 'package:flushbar/flushbar.dart';
+
 import '../repository/settings_repository.dart';
 import 'package:flutter/material.dart';
 
@@ -6,10 +8,8 @@ import '../controllers/cart_controller.dart';
 import '../helpers/helper.dart';
 
 class CartBottomDetailsWidget extends StatelessWidget {
-  const CartBottomDetailsWidget({
-    Key key,
-    @required CartController con,
-  })  : _con = con,
+  CartBottomDetailsWidget({Key key, @required CartController con})
+      : _con = con,
         super(key: key);
 
   final CartController _con;
@@ -95,10 +95,18 @@ class CartBottomDetailsWidget extends StatelessWidget {
                           onPressed: () {
                             if (_con.subTotal <
                                 _con.restaurant.minOrderAmount) {
-                              Scaffold.of(context).showSnackBar(SnackBar(
-                                content: Text(
-                                    "Minimum amount to place order with this restaurant is ${setting.value?.defaultCurrency}${_con.restaurant.minOrderAmount}. Your current order total is ${setting.value?.defaultCurrency}${_con.subTotal}"),
-                              ));
+                              Flushbar(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 28, vertical: 13),
+                                      messageText: Text(
+                                        'Minimum amount to place order with this restaurant is ${setting.value?.defaultCurrency}${_con.restaurant.minOrderAmount}. Your current order total is ${setting.value?.defaultCurrency}${_con.subTotal}',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'Roboto',
+                                            fontSize: 15),
+                                      ),
+                                      duration: Duration(seconds: 3))
+                                  .show(context);
                             } else {
                               _con.goCheckout(context);
                             }

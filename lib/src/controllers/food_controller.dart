@@ -100,7 +100,8 @@ class FoodController extends ControllerMVC {
   }
 
   Cart isExistInCart(Cart _cart) {
-    return carts.firstWhere((Cart oldCart) => _cart.isSame(oldCart), orElse: () => null);
+    return carts.firstWhere((Cart oldCart) => _cart.isSame(oldCart),
+        orElse: () => null);
   }
 
   void addToFavorite(Food food) async {

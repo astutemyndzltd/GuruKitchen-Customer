@@ -561,7 +561,25 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                           } else {
                                             if (_con
                                                 .isSameRestaurants(_con.food)) {
-                                              _con.addToCart(_con.food);
+                                              int count = 0;
+
+                                              for (int i = 0;
+                                                  i < _con.food?.extras?.length;
+                                                  i++) {
+                                                if (_con.food?.extras[i]
+                                                        ?.checked ==
+                                                    true) count++;
+                                              }
+
+                                              if (count > 0) {
+                                                _con.addToCart(_con.food);
+                                              } else {
+                                                _con.scaffoldKey.currentState
+                                                    .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      "You need to select at least one extra to add this food to cart"),
+                                                ));
+                                              }
                                             } else {
                                               showDialog(
                                                 context: context,
