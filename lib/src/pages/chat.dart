@@ -13,6 +13,7 @@ import '../models/conversation.dart';
 import '../models/route_argument.dart';
 
 class ChatWidget extends StatefulWidget {
+
   final RouteArgument routeArgument;
   final GlobalKey<ScaffoldState> parentScaffoldKey;
 
@@ -20,6 +21,7 @@ class ChatWidget extends StatefulWidget {
 
   @override
   _ChatWidgetState createState() => _ChatWidgetState();
+
 }
 
 class _ChatWidgetState extends StateMVC<ChatWidget> {
