@@ -207,7 +207,7 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                                     extra: _con.food.extras.where((extra) => extra.extraGroupId == extraGroup.id).elementAt(extraIndex),
                                                     onChanged: (extra) {
                                                       _con.food.extras.forEach((otherExtra) {
-                                                        if(extra.checked && extra.id != otherExtra.id){
+                                                        if(extra.checked && (extra.id != otherExtra.id) && (extra.extraGroupId == otherExtra.extraGroupId)){
                                                           otherExtra.checked = false;
                                                         }
                                                       });
