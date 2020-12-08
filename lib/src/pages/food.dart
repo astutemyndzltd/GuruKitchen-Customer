@@ -129,14 +129,16 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                   children: <Widget>[
                                     Container(
                                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                                      decoration: BoxDecoration(color: Helper.canDelivery(_con.food.restaurant) && _con.food.deliverable ? Colors.green : Colors.orange, borderRadius: BorderRadius.circular(24)),
-                                      child: Helper.canDelivery(_con.food.restaurant) && _con.food.deliverable
+                                      decoration: BoxDecoration(color: _con.food.outOfStock ? Colors.red : Colors.green, borderRadius: BorderRadius.circular(24)),
+                                      child: _con.food.outOfStock
                                           ? Text(
-                                              S.of(context).deliverable,
+                                              'Sold Out',
+                                              //S.of(context).deliverable
                                               style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
                                             )
                                           : Text(
-                                              S.of(context).not_deliverable,
+                                              'Available',
+                                              //S.of(context).not_deliverable,
                                               style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
                                             ),
                                     ),
@@ -206,11 +208,11 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                                   return ExtraItemWidget(
                                                     extra: _con.food.extras.where((extra) => extra.extraGroupId == extraGroup.id).elementAt(extraIndex),
                                                     onChanged: (extra) {
-                                                      _con.food.extras.forEach((otherExtra) {
+                                                      /*_con.food.extras.forEach((otherExtra) {
                                                         if(extra.checked && (extra.id != otherExtra.id) && (extra.extraGroupId == otherExtra.extraGroupId)){
                                                           otherExtra.checked = false;
                                                         }
-                                                      });
+                                                      });*/
                                                       _con.calculateTotal();
                                                     },
                                                   );
@@ -401,7 +403,13 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                         onPressed: () {
                                           if (currentUser.value.apiToken == null) {
                                             Navigator.of(context).pushNamed("/Login");
-                                          } else {
+                                          }
+                                          else {
+                                            if (_con.food.outOfStock) {
+                                              _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("This food can't be added to the cart as it is sold out currently")));
+                                              return;
+                                            }
+
                                             if (_con.isSameRestaurants(_con.food)) {
                                               if (_con.food.extras.length > 0) {
                                                 int noOfSelectedExtras = 0;
@@ -415,6 +423,7 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                                   _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("You need to select at least one extra to add this food to cart")));
                                                   return;
                                                 }
+
                                               }
 
                                               _con.addToCart(_con.food);
