@@ -38,6 +38,7 @@ class CheckoutController extends CartController {
   void addOrder(List<Cart> carts) {
     Order _order = new Order();
     _order.orderType = settingRepo.orderType;
+    _order.note = settingRepo.orderNote;
     _order.foodOrders = new List<FoodOrder>();
     _order.tax = carts[0].food.restaurant.defaultTax;
     _order.deliveryFee =

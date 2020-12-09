@@ -18,6 +18,7 @@ class Order {
   Payment payment;
   Address deliveryAddress;
   String orderType;
+  String note;
 
   Order();
 
@@ -25,6 +26,7 @@ class Order {
     try {
       id = jsonMap['id'].toString();
       orderType = jsonMap['order_type'].toString();
+      note = jsonMap['note']?.toString() ?? '';
       tax = jsonMap['tax'] != null ? jsonMap['tax'].toDouble() : 0.0;
       deliveryFee = jsonMap['delivery_fee'] != null
           ? jsonMap['delivery_fee'].toDouble()
@@ -62,6 +64,7 @@ class Order {
       deliveryAddress = Address.fromJSON({});
       foodOrders = [];
       orderType = null;
+      note = '';
       print(CustomTrace(StackTrace.current, message: e));
     }
   }
@@ -74,6 +77,7 @@ class Order {
     map["order_type"] = orderType;
     map["tax"] = tax;
     map['hint'] = hint;
+    map['note'] = note;
     map["delivery_fee"] = deliveryFee;
     map["foods"] = foodOrders?.map((element) => element.toMap())?.toList();
     map["payment"] = payment?.toMap();

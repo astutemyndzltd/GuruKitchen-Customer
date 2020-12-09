@@ -39,7 +39,7 @@ class CartBottomDetailsWidget extends StatelessWidget {
                       Helper.getPrice(_con.subTotal, context, style: Theme.of(context).textTheme.subtitle1, zeroPlaceholder: '0')
                     ],
                   ),
-                  SizedBox(height: 5),
+                  SizedBox(height: 1),
                   Row(
                     children: <Widget>[
                       Expanded(
@@ -55,7 +55,7 @@ class CartBottomDetailsWidget extends StatelessWidget {
                     children: <Widget>[
                       Expanded(
                         child: Text(
-                          '${S.of(context).tax} (${_con.carts[0].food.restaurant.defaultTax}%)',
+                          'Tax (${_con.carts[0].food.restaurant.defaultTax}%)',
                           style: Theme.of(context).textTheme.bodyText1,
                         ),
                       ),

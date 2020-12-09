@@ -146,7 +146,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                               cursorColor: Theme.of(context).accentColor,
                               controller: TextEditingController()..text = coupon?.code ?? '',
                               decoration: InputDecoration(
-                                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
                                 hintStyle: Theme.of(context).textTheme.bodyText1,
                                 suffixText: coupon?.valid == null ? '' : (coupon.valid ? S.of(context).validCouponCode : S.of(context).invalidCouponCode),
@@ -168,22 +168,20 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                             SizedBox(height: 10),
                             TextField(
                               keyboardType: TextInputType.text,
-                              onSubmitted: (String value) {
-                                _con.doApplyCoupon(value);
+                              onChanged: (String value) {
+                                orderNote = value;
                               },
                               cursorColor: Theme.of(context).accentColor,
-                              controller: TextEditingController()..text = coupon?.code ?? '',
+                              controller: TextEditingController()..text = orderNote,
+                              //maxLines: null,
                               decoration: InputDecoration(
-                                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                                hintStyle: Theme.of(context).textTheme.bodyText1,
-                                suffixText: coupon?.valid == null ? '' : (coupon.valid ? S.of(context).validCouponCode : S.of(context).invalidCouponCode),
-                                suffixStyle: Theme.of(context).textTheme.caption.merge(TextStyle(color: _con.getCouponIconColor())),
                                 suffixIcon: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 15),
                                   child: Icon(
-                                    Icons.confirmation_number,
-                                    color: _con.getCouponIconColor(),
+                                    Icons.note,
+                                    color: Theme.of(context).focusColor.withOpacity(0.7),
                                     size: 28,
                                   ),
                                 ),
