@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/pages/location_choice.dart';
 import 'package:flutter/material.dart';
 import 'src/models/route_argument.dart';
 import 'src/pages/cart.dart';
@@ -53,6 +54,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => PagesWidget(currentTab: args));
       case '/Favorites':
         return MaterialPageRoute(builder: (_) => FavoritesWidget());
+      case '/LocationChoice':
+        return MaterialPageRoute(builder: (_) => LocationChoiceWidget());
       case '/Chat':
         return MaterialPageRoute(
             builder: (_) => ChatWidget(routeArgument: args as RouteArgument));

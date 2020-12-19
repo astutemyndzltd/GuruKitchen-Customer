@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/repository/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -23,15 +24,21 @@ class SplashScreenState extends StateMVC<SplashScreen> {
     loadData();
   }
 
-  void loadData() {
-    _con.progress.addListener(() {
+  void loadData()  {
+    _con.progress.addListener(() async {
       double progress = 0;
       _con.progress.value.values.forEach((_progress) {
         progress += _progress;
       });
       if (progress == 100) {
+
         try {
-          Navigator.of(context).pushReplacementNamed('/Pages', arguments: 2);
+          if (deliveryAddress.value != null && deliveryAddress.value.isValid()) {
+            Navigator.of(context).pushReplacementNamed('/Pages', arguments: 2);
+          } else {
+            Navigator.of(context).pushReplacementNamed('/LocationChoice');
+          }
+          //
         } catch (e) {}
       }
     });
@@ -58,8 +65,7 @@ class SplashScreenState extends StateMVC<SplashScreen> {
               ),
               SizedBox(height: 50),
               CircularProgressIndicator(
-                valueColor:
-                    AlwaysStoppedAnimation<Color>(Theme.of(context).hintColor),
+                valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).hintColor),
               ),
             ],
           ),

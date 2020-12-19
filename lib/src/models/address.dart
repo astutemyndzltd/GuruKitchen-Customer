@@ -30,6 +30,10 @@ class Address {
     return latitude == null || longitude == null || id == null || id == 'null';
   }
 
+  bool isValid() {
+    return latitude != null && longitude != null ;//&& latitude > 0.0 && longitude > 0.0;
+  }
+
   Map toMap() {
     var map = new Map<String, dynamic>();
     map["id"] = id;

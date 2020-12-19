@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/repository/settings_repository.dart';
 import 'package:flutter/material.dart';
 
 import '../elements/DrawerWidget.dart';
@@ -12,15 +13,14 @@ import 'messages.dart';
 
 // ignore: must_be_immutable
 class PagesWidget extends StatefulWidget {
+
   dynamic currentTab;
   RouteArgument routeArgument;
   Widget currentPage = HomeWidget();
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  PagesWidget({
-    Key key,
-    this.currentTab,
-  }) {
+  PagesWidget({Key key, this.currentTab}) {
+
     if (currentTab != null) {
       if (currentTab is RouteArgument) {
         routeArgument = currentTab;
@@ -38,6 +38,7 @@ class PagesWidget extends StatefulWidget {
 }
 
 class _PagesWidgetState extends State<PagesWidget> {
+
   initState() {
     super.initState();
     _selectTab(widget.currentTab);
@@ -74,6 +75,11 @@ class _PagesWidgetState extends State<PagesWidget> {
 
   @override
   Widget build(BuildContext context) {
+
+    if(deliveryAddress.value == null || !deliveryAddress.value.isValid()) {
+      Navigator.of(context).pushReplacementNamed('/LocationChoice');
+    }
+
     return WillPopScope(
       onWillPop: Helper.of(context).onWillPop,
       child: Scaffold(
@@ -117,10 +123,7 @@ class _PagesWidgetState extends State<PagesWidget> {
                     borderRadius: BorderRadius.all(
                       Radius.circular(50),
                     ),
-                    boxShadow: [
-                      BoxShadow(color: Theme.of(context).accentColor.withOpacity(0.4), blurRadius: 40, offset: Offset(0, 15)),
-                      BoxShadow(color: Theme.of(context).accentColor.withOpacity(0.4), blurRadius: 13, offset: Offset(0, 3))
-                    ],
+                    boxShadow: [BoxShadow(color: Theme.of(context).accentColor.withOpacity(0.4), blurRadius: 40, offset: Offset(0, 15)), BoxShadow(color: Theme.of(context).accentColor.withOpacity(0.4), blurRadius: 13, offset: Offset(0, 3))],
                   ),
                   child: new Icon(Icons.home, color: Theme.of(context).primaryColor),
                 )),

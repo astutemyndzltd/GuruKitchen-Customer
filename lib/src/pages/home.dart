@@ -4,6 +4,7 @@ import 'package:mvc_pattern/mvc_pattern.dart';
 import '../../generated/l10n.dart';
 import '../controllers/home_controller.dart';
 import '../elements/CardsCarouselWidget.dart';
+
 //import '../elements/CategoriesCarouselWidget.dart';
 import '../elements/DeliveryAddressBottomSheetWidget.dart';
 import '../elements/FoodsCarouselWidget.dart';
@@ -48,17 +49,12 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
           builder: (context, value, child) {
             return Text(
               value.appName ?? S.of(context).home,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6
-                  .merge(TextStyle(letterSpacing: 1.3)),
+              style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
             );
           },
         ),
         actions: <Widget>[
-          new ShoppingCartButtonWidget(
-              iconColor: Theme.of(context).hintColor,
-              labelColor: Theme.of(context).accentColor),
+          new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
         ],
       ),
       body: RefreshIndicator(
@@ -69,10 +65,8 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
-            children: List.generate(
-                settingsRepo.setting.value.homeSections.length, (index) {
-              String _homeSection =
-                  settingsRepo.setting.value.homeSections.elementAt(index);
+            children: List.generate(settingsRepo.setting.value.homeSections.length, (index) {
+              String _homeSection = settingsRepo.setting.value.homeSections.elementAt(index);
               switch (_homeSection) {
                 case 'slider':
                   return HomeSliderWidget(slides: _con.slides);
@@ -87,8 +81,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                   );
                 case 'top_restaurants_heading':
                   return Padding(
-                    padding: const EdgeInsets.only(
-                        top: 15, left: 20, right: 20, bottom: 10),
+                    padding: const EdgeInsets.only(top: 15, left: 20, right: 20, bottom: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -110,17 +103,10 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                 if (currentUser.value.apiToken == null) {
                                   _con.requestForCurrentLocation(context);
                                 } else {
-                                  var bottomSheetController = widget
-                                      .parentScaffoldKey.currentState
-                                      .showBottomSheet(
-                                    (context) =>
-                                        DeliveryAddressBottomSheetWidget(
-                                            scaffoldKey:
-                                                widget.parentScaffoldKey),
+                                  var bottomSheetController = widget.parentScaffoldKey.currentState.showBottomSheet(
+                                    (context) => DeliveryAddressBottomSheetWidget(scaffoldKey: widget.parentScaffoldKey),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: new BorderRadius.only(
-                                          topLeft: Radius.circular(10),
-                                          topRight: Radius.circular(10)),
+                                      borderRadius: new BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
                                     ),
                                   );
                                   bottomSheetController.closed.then((value) {
@@ -129,27 +115,14 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                 }
                               },
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 6, horizontal: 10),
+                                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5)),
-                                  color: settingsRepo
-                                              .deliveryAddress.value?.address ==
-                                          null
-                                      ? Theme.of(context)
-                                          .focusColor
-                                          .withOpacity(0.1)
-                                      : Theme.of(context).accentColor,
+                                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                                  color: settingsRepo.deliveryAddress.value?.address == null ? Theme.of(context).focusColor.withOpacity(0.1) : Theme.of(context).accentColor,
                                 ),
                                 child: Text(
                                   S.of(context).delivery,
-                                  style: TextStyle(
-                                      color: settingsRepo.deliveryAddress.value
-                                                  ?.address ==
-                                              null
-                                          ? Theme.of(context).hintColor
-                                          : Theme.of(context).primaryColor),
+                                  style: TextStyle(color: settingsRepo.deliveryAddress.value?.address == null ? Theme.of(context).hintColor : Theme.of(context).primaryColor),
                                 ),
                               ),
                             ),
@@ -157,32 +130,18 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                             InkWell(
                               onTap: () {
                                 setState(() {
-                                  settingsRepo.deliveryAddress.value?.address =
-                                      null;
+                                  settingsRepo.deliveryAddress.value?.address = null;
                                 });
                               },
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 6, horizontal: 10),
+                                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5)),
-                                  color: settingsRepo
-                                              .deliveryAddress.value?.address !=
-                                          null
-                                      ? Theme.of(context)
-                                          .focusColor
-                                          .withOpacity(0.1)
-                                      : Theme.of(context).accentColor,
+                                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                                  color: settingsRepo.deliveryAddress.value?.address != null ? Theme.of(context).focusColor.withOpacity(0.1) : Theme.of(context).accentColor,
                                 ),
                                 child: Text(
                                   S.of(context).pickup,
-                                  style: TextStyle(
-                                      color: settingsRepo.deliveryAddress.value
-                                                  ?.address !=
-                                              null
-                                          ? Theme.of(context).hintColor
-                                          : Theme.of(context).primaryColor),
+                                  style: TextStyle(color: settingsRepo.deliveryAddress.value?.address != null ? Theme.of(context).hintColor : Theme.of(context).primaryColor),
                                 ),
                               ),
                             ),
@@ -192,9 +151,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                           Padding(
                             padding: const EdgeInsets.only(top: 12),
                             child: Text(
-                              S.of(context).near_to +
-                                  " " +
-                                  (settingsRepo.deliveryAddress.value?.address),
+                              S.of(context).near_to + " " + (settingsRepo.deliveryAddress.value?.address),
                               style: Theme.of(context).textTheme.caption,
                             ),
                           ),
@@ -202,9 +159,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                     ),
                   );
                 case 'top_restaurants':
-                  return CardsCarouselWidget(
-                      restaurantsList: _con.topRestaurants,
-                      heroTag: 'home_top_restaurants');
+                  return CardsCarouselWidget(restaurantsList: _con.topRestaurants, heroTag: 'home_top_restaurants');
                 case 'trending_week_heading':
                   return ListTile(
                     dense: true,
@@ -224,9 +179,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                     ),
                   );
                 case 'trending_week':
-                  return FoodsCarouselWidget(
-                      foodsList: _con.trendingFoods,
-                      heroTag: 'home_food_carousel');
+                  return FoodsCarouselWidget(foodsList: _con.trendingFoods, heroTag: 'home_food_carousel');
 
                 case 'categories_heading':
                   return Padding(
@@ -253,8 +206,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
 
                 case 'popular_heading':
                   return Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                    padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                     child: ListTile(
                       dense: true,
                       contentPadding: EdgeInsets.symmetric(vertical: 0),
