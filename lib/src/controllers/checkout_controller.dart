@@ -38,11 +38,10 @@ class CheckoutController extends CartController {
   void addOrder(List<Cart> carts) {
     Order _order = new Order();
     _order.orderType = settingRepo.orderType;
-    _order.note = settingRepo.orderNote;
+    _order.note = settingRepo.orderNote ?? '';
     _order.foodOrders = new List<FoodOrder>();
     _order.tax = carts[0].food.restaurant.defaultTax;
-    _order.deliveryFee =
-        _order.orderType == 'Pickup' ? 0 : carts[0].food.restaurant.deliveryFee;
+    _order.deliveryFee = _order.orderType == 'Pickup' ? 0 : carts[0].food.restaurant.deliveryFee;
     OrderStatus _orderStatus = new OrderStatus();
     _orderStatus.id = '1'; // TODO default order status Id
     _order.orderStatus = _orderStatus;

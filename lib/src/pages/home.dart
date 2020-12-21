@@ -80,83 +80,167 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                     ),
                   );
                 case 'top_restaurants_heading':
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 15, left: 20, right: 20, bottom: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  return Column(
+                    children: [
+                      // delivery address
+                      Padding(
+                        padding: EdgeInsets.only(top: 15, left: 20, right: 20, bottom: 10),
+                        child: Column(
                           children: [
-                            Expanded(
-                              child: Text(
-                                'Restaurants',
-                                //S.of(context).top_restaurants,
-                                style: Theme.of(context).textTheme.headline4,
-                                maxLines: 1,
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                if (currentUser.value.apiToken == null) {
-                                  _con.requestForCurrentLocation(context);
-                                } else {
-                                  var bottomSheetController = widget.parentScaffoldKey.currentState.showBottomSheet(
-                                    (context) => DeliveryAddressBottomSheetWidget(scaffoldKey: widget.parentScaffoldKey),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: new BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Delivery Address',
+                                    style: Theme.of(context).textTheme.headline4,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    overflow: TextOverflow.fade,
+                                  ),
+                                ),
+                                InkWell(
+                                  child: Container(
+                                    child: Text('Change', style: TextStyle(color: Theme.of(context).primaryColor)),
+                                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                                      color: Theme.of(context).accentColor,
                                     ),
-                                  );
-                                  bottomSheetController.closed.then((value) {
-                                    _con.refreshHome();
-                                  });
-                                }
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                                  color: settingsRepo.deliveryAddress.value?.address == null ? Theme.of(context).focusColor.withOpacity(0.1) : Theme.of(context).accentColor,
-                                ),
-                                child: Text(
-                                  S.of(context).delivery,
-                                  style: TextStyle(color: settingsRepo.deliveryAddress.value?.address == null ? Theme.of(context).hintColor : Theme.of(context).primaryColor),
-                                ),
-                              ),
+                                  ),
+                                  onTap: () {
+                                    var parentScaffoldState = widget.parentScaffoldKey.currentState;
+
+                                    var bottomSheetController = parentScaffoldState.showBottomSheet(
+                                      (context) => DeliveryAddressBottomSheetWidget(
+                                        scaffoldKey: widget.parentScaffoldKey,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(10),
+                                          topRight: Radius.circular(10),
+                                        ),
+                                      ),
+                                    );
+
+                                    bottomSheetController.closed.then((v) => _con.refreshHome());
+                                  },
+                                )
+                              ],
                             ),
-                            SizedBox(width: 7),
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  settingsRepo.deliveryAddress.value?.address = null;
-                                });
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                                  color: settingsRepo.deliveryAddress.value?.address != null ? Theme.of(context).focusColor.withOpacity(0.1) : Theme.of(context).accentColor,
-                                ),
-                                child: Text(
-                                  S.of(context).pickup,
-                                  style: TextStyle(color: settingsRepo.deliveryAddress.value?.address != null ? Theme.of(context).hintColor : Theme.of(context).primaryColor),
-                                ),
-                              ),
-                            ),
+                            Padding(
+                                padding: EdgeInsets.only(top: 12),
+                                child: Container(
+                                  width: double.infinity,
+                                  child: Text(
+                                    settingsRepo.deliveryAddress.value?.address ?? '',
+                                    style: Theme.of(context).textTheme.caption,
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ))
                           ],
                         ),
-                        if (settingsRepo.deliveryAddress.value?.address != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 12),
-                            child: Text(
-                              S.of(context).near_to + " " + (settingsRepo.deliveryAddress.value?.address),
-                              style: Theme.of(context).textTheme.caption,
+                      ),
+                      // restaurants + dispatch method
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15, left: 20, right: 20, bottom: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // restaurants near you heading
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Restaurants near you',
+                                    //S.of(context).top_restaurants,
+                                    style: Theme.of(context).textTheme.headline4,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    overflow: TextOverflow.fade,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                      ],
-                    ),
+                            // select dispatch method - delivery/pickup/preorder
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15, bottom: 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      'Select method',
+                                      style: Theme.of(context).textTheme.bodyText1,
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      overflow: TextOverflow.fade,
+                                    ),
+                                  ),
+                                  // delivery button
+                                  InkWell(
+                                    onTap: () {},
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                                        color: settingsRepo.deliveryAddress.value?.address == null ? Theme.of(context).focusColor.withOpacity(0.1) : Theme.of(context).accentColor,
+                                      ),
+                                      child: Text(
+                                        S.of(context).delivery,
+                                        style: TextStyle(color: settingsRepo.deliveryAddress.value?.address == null ? Theme.of(context).hintColor : Theme.of(context).primaryColor),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 7),
+                                  // pickup button
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        settingsRepo.deliveryAddress.value?.address = null;
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                                        color: settingsRepo.deliveryAddress.value?.address != null ? Theme.of(context).focusColor.withOpacity(0.1) : Theme.of(context).accentColor,
+                                      ),
+                                      child: Text(
+                                        S.of(context).pickup,
+                                        style: TextStyle(color: settingsRepo.deliveryAddress.value?.address != null ? Theme.of(context).hintColor : Theme.of(context).primaryColor),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 7),
+                                  // preorder button
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        settingsRepo.deliveryAddress.value?.address = null;
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                                        color: settingsRepo.deliveryAddress.value?.address != null ? Theme.of(context).focusColor.withOpacity(0.1) : Theme.of(context).accentColor,
+                                      ),
+                                      child: Text(
+                                        'Pre-Order',
+                                        //S.of(context).pickup,
+                                        style: TextStyle(color: settingsRepo.deliveryAddress.value?.address != null ? Theme.of(context).hintColor : Theme.of(context).primaryColor),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   );
                 case 'top_restaurants':
                   return CardsCarouselWidget(restaurantsList: _con.topRestaurants, heroTag: 'home_top_restaurants');

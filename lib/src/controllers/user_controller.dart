@@ -1,3 +1,5 @@
+import 'package:GuruKitchen/src/models/address.dart';
+import 'package:GuruKitchen/src/repository/settings_repository.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
@@ -28,13 +30,26 @@ class UserController extends ControllerMVC {
     });
   }
 
+  Future<Address> addAddress(Address address) async {
+    return await repository.addAddress(address);
+  }
+
+
   void login() async {
     FocusScope.of(context).unfocus();
     if (loginFormKey.currentState.validate()) {
       loginFormKey.currentState.save();
       Overlay.of(context).insert(loader);
-      repository.login(user).then((value) {
+      repository.login(user).then((value) async {
+
         if (value != null && value.apiToken != null) {
+
+          if(deliveryAddress.value != null) {
+            var address = await this.addAddress(deliveryAddress.value);
+            await changeLocation(address);
+            deliveryAddress.value = address;
+          }
+
           Navigator.of(scaffoldKey.currentContext).pushReplacementNamed('/Pages', arguments: 2);
         } else {
           scaffoldKey?.currentState?.showSnackBar(SnackBar(

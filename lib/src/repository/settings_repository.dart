@@ -82,13 +82,13 @@ Future<Address> setLocationManually(LocationResult locationResult) async {
     'address': locationResult.address,
     'latitude': locationResult.latLng.latitude,
     'longitude': locationResult.latLng.longitude,
+    'place_id': locationResult.placeId
   });
 
   await changeLocation(address);
 
   return address;
 }
-
 
 
 Future<dynamic> pickAndSetLocationAutomatically() async {
@@ -98,8 +98,10 @@ Future<dynamic> pickAndSetLocationAutomatically() async {
   Address _address = new Address();
   location.requestService().then((value) async {
     location.getLocation().then((_locationData) async {
-      String _addressName = await mapsUtil.getAddressName(new LatLng(_locationData?.latitude, _locationData?.longitude), setting.value.googleMapsKey);
-      _address = Address.fromJSON({'address': _addressName, 'latitude': _locationData?.latitude, 'longitude': _locationData?.longitude});
+      var addressComponents = await mapsUtil.getAddress(new LatLng(_locationData?.latitude, _locationData?.longitude), setting.value.googleMapsKey);
+      var _addressName = addressComponents[0].toString();
+      var _placeId = addressComponents[1].toString();
+      _address = Address.fromJSON({'address': _addressName, 'latitude': _locationData?.latitude, 'longitude': _locationData?.longitude, 'place_id' : _placeId});
       await changeLocation(_address); //setting in shared preference
       whenDone.complete(_address);
     }).timeout(Duration(seconds: 10), onTimeout: () async {

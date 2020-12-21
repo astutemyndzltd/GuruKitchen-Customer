@@ -15,8 +15,8 @@ class CuisinesCarouselWidget extends StatelessWidget {
     return this.cuisines.isEmpty
         ? CircularLoadingWidget(height: 150)
         : Container(
-            height: 150,
-            padding: EdgeInsets.symmetric(vertical: 10),
+            height: 140,
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             child: ListView.builder(
               itemCount: this.cuisines.length,
               scrollDirection: Axis.horizontal,
@@ -24,7 +24,6 @@ class CuisinesCarouselWidget extends StatelessWidget {
                 double _marginLeft = 0;
                 (index == 0) ? _marginLeft = 20 : _marginLeft = 0;
                 return new CuisinesCarouselItemWidget(
-                  marginLeft: _marginLeft,
                   cuisine: this.cuisines.elementAt(index),
                 );
               },

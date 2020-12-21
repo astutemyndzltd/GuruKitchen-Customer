@@ -60,28 +60,27 @@ class DeliveryAddressesController extends ControllerMVC with ChangeNotifier {
   }
 
   Future<void> changeDeliveryAddressToCurrentLocation() async {
-    model.Address _address = await settingRepo.setCurrentLocation();
-    setState(() {
-      settingRepo.deliveryAddress.value = _address;
-    });
+
+    var address = await settingRepo.pickAndSetLocationAutomatically();
+
+    if (userRepo.currentUser.value.apiToken != null) {
+      address = await this.addAddress(address);
+      await settingRepo.changeLocation(address);
+    }
+
+    setState(() { settingRepo.deliveryAddress.value = address; });
+
     settingRepo.deliveryAddress.notifyListeners();
   }
 
-  void addAddress(model.Address address) {
-    userRepo.addAddress(address).then((value) {
-      setState(() {
-        this.addresses.insert(0, value);
-      });
-      scaffoldKey?.currentState?.showSnackBar(SnackBar(
-        content: Text(S.of(context).new_address_added_successfully),
-      ));
-    });
+  Future<model.Address> addAddress(model.Address address) async {
+    var storedAddress = await userRepo.addAddress(address);
+    setState(() { this.addresses.insert(0, storedAddress); });
+    return storedAddress;
   }
 
   void chooseDeliveryAddress(model.Address address) {
-    setState(() {
-      settingRepo.deliveryAddress.value = address;
-    });
+    setState(() { settingRepo.deliveryAddress.value = address; });
     settingRepo.deliveryAddress.notifyListeners();
   }
 

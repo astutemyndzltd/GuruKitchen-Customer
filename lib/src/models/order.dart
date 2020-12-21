@@ -77,7 +77,7 @@ class Order {
     map["order_type"] = orderType;
     map["tax"] = tax;
     map['hint'] = hint;
-    map['note'] = note;
+    map['note'] = note ?? '';
     map["delivery_fee"] = deliveryFee;
     map["foods"] = foodOrders?.map((element) => element.toMap())?.toList();
     map["payment"] = payment?.toMap();

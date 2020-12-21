@@ -41,6 +41,11 @@ class _PagesWidgetState extends State<PagesWidget> {
 
   initState() {
     super.initState();
+
+    if(deliveryAddress.value == null || !deliveryAddress.value.isValid()) {
+      Navigator.of(context).pushReplacementNamed('/LocationChoice');
+    }
+
     _selectTab(widget.currentTab);
   }
 
@@ -75,10 +80,6 @@ class _PagesWidgetState extends State<PagesWidget> {
 
   @override
   Widget build(BuildContext context) {
-
-    if(deliveryAddress.value == null || !deliveryAddress.value.isValid()) {
-      Navigator.of(context).pushReplacementNamed('/LocationChoice');
-    }
 
     return WillPopScope(
       onWillPop: Helper.of(context).onWillPop,
