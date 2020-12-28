@@ -21,6 +21,7 @@ class Restaurant {
   bool availableForDelivery;
   double deliveryRange;
   double distance;
+  double distanceInKm;
   List<User> users;
   double minOrderAmount;
 
@@ -61,11 +62,9 @@ class Restaurant {
       distance = jsonMap['distance'] != null
           ? double.parse(jsonMap['distance'].toString())
           : 0.0;
+      distanceInKm = jsonMap['distance_km'] != null ? double.parse(jsonMap['distance_km'].toString()) : 0.0;
       users = jsonMap['users'] != null && (jsonMap['users'] as List).length > 0
-          ? List.from(jsonMap['users'])
-              .map((element) => User.fromJSON(element))
-              .toSet()
-              .toList()
+          ? List.from(jsonMap['users']).map((element) => User.fromJSON(element)).toSet().toList()
           : [];
     } catch (e) {
       id = '';

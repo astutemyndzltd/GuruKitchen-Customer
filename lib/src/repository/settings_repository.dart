@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:GuruKitchen/src/models/dispatchmethod.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,7 +24,11 @@ ValueNotifier<Address> deliveryAddress = new ValueNotifier(new Address());
 Coupon coupon = new Coupon.fromJSON({});
 String orderType = null;
 String orderNote = '';
+DispatchMethod dispatchMethod = DispatchMethod.delivery;
+bool isPreOrderEnabled = false;
 final navigatorKey = GlobalKey<NavigatorState>();
+
+/************************************************************/
 
 Future<Setting> initSettings() async {
   Setting _setting;
@@ -75,7 +80,6 @@ Future<dynamic> setCurrentLocation() async {
   return whenDone.future;
 }
 
-
 Future<Address> setLocationManually(LocationResult locationResult) async {
 
   var address = Address.fromJSON({
@@ -89,7 +93,6 @@ Future<Address> setLocationManually(LocationResult locationResult) async {
 
   return address;
 }
-
 
 Future<dynamic> pickAndSetLocationAutomatically() async {
   var location = new Location();

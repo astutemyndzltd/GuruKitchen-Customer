@@ -132,9 +132,10 @@ class CardWidget extends StatelessWidget {
                         color: Theme.of(context).accentColor,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                       ),
-                      restaurant.distance > 0
+                      restaurant.distanceInKm > 0
                           ? Text(
-                              Helper.getDistance(restaurant.distance, Helper.of(context).trans(setting.value.distanceUnit)),
+                              restaurant.distanceInKm.toStringAsFixed(2) + ' Km',
+                              //Helper.getDistance(restaurant.distance, Helper.of(context).trans(setting.value.distanceUnit)),
                               overflow: TextOverflow.fade,
                               maxLines: 1,
                               softWrap: false,

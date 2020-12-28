@@ -1,3 +1,5 @@
+import 'package:GuruKitchen/src/models/DispatchMethod.dart';
+
 import '../models/cuisine.dart';
 import '../repository/cuisine_repository.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,22 +18,46 @@ import '../repository/settings_repository.dart';
 import '../repository/slider_repository.dart';
 
 class HomeController extends ControllerMVC {
+
   List<Category> categories = <Category>[];
   List<Slide> slides = <Slide>[];
-  List<Restaurant> topRestaurants = <Restaurant>[];
+  List<Restaurant> showableRestaurants = <Restaurant>[];
   List<Restaurant> popularRestaurants = <Restaurant>[];
   List<Review> recentReviews = <Review>[];
   List<Food> trendingFoods = <Food>[];
   List<Cuisine> cuisines = <Cuisine>[];
+  List<Restaurant> nearbyRestaurants = <Restaurant>[];
+  List<Restaurant> popularRestaurantsNearby = <Restaurant>[];
+
+  bool listeningForNearbyRestaurants = false;
+  bool listeningForPopularRestaurants = false;
 
   HomeController() {
-    listenForTopRestaurants();
-    listenForSlides();
-    listenForTrendingFoods();
-    //listenForCategories();
+    listenForNearbyRestaurants();
     listenForCuisines();
     listenForPopularRestaurants();
     listenForRecentReviews();
+  }
+
+  Future<void> listenForNearbyRestaurants() async {
+    listeningForNearbyRestaurants = true;
+    nearbyRestaurants = await getNearbyRestaurants();
+    showableRestaurants.clear();
+
+    for (var restaurant in nearbyRestaurants) {
+      if (!restaurant.closed) {
+        if (dispatchMethod == DispatchMethod.delivery && !restaurant.availableForDelivery) continue;
+        //if (isPreOrderEnabled) continue;
+        showableRestaurants.add(restaurant);
+      }
+    }
+
+    listeningForNearbyRestaurants = false;
+
+    if (!listeningForNearbyRestaurants && !listeningForPopularRestaurants) loadPopularRestaurants();
+
+    setState((){});
+
   }
 
   Future<void> listenForCuisines() async {
@@ -63,19 +89,23 @@ class HomeController extends ControllerMVC {
   }
 
   Future<void> listenForTopRestaurants() async {
-    final Stream<Restaurant> stream =
-        await getNearRestaurants(deliveryAddress.value, deliveryAddress.value);
+    final Stream<Restaurant> stream = await getNearRestaurants(deliveryAddress.value, deliveryAddress.value);
     stream.listen((Restaurant _restaurant) {
-      setState(() => topRestaurants.add(_restaurant));
+      setState(() => showableRestaurants.add(_restaurant));
     }, onError: (a) {}, onDone: () {});
   }
 
   Future<void> listenForPopularRestaurants() async {
-    final Stream<Restaurant> stream =
-        await getPopularRestaurants(deliveryAddress.value);
+    listeningForPopularRestaurants = true;
+    final Stream<Restaurant> stream = await getPopularRestaurants(deliveryAddress.value);
     stream.listen((Restaurant _restaurant) {
       setState(() => popularRestaurants.add(_restaurant));
-    }, onError: (a) {}, onDone: () {});
+    }, onError: (a) {
+      listeningForPopularRestaurants = false;
+    }, onDone: () {
+      listeningForPopularRestaurants = false;
+      if (!listeningForNearbyRestaurants && !listeningForPopularRestaurants) loadPopularRestaurants();
+    });
   }
 
   Future<void> listenForRecentReviews() async {
@@ -107,22 +137,35 @@ class HomeController extends ControllerMVC {
   }
 
   Future<void> refreshHome() async {
+
     setState(() {
-      slides = <Slide>[];
-      //categories = <Category>[];
-      cuisines = <Cuisine>[];
-      topRestaurants = <Restaurant>[];
+      nearbyRestaurants = <Restaurant>[];
       popularRestaurants = <Restaurant>[];
+      cuisines = <Cuisine>[];
       recentReviews = <Review>[];
-      trendingFoods = <Food>[];
     });
 
-    await listenForSlides();
-    await listenForTopRestaurants();
-    await listenForTrendingFoods();
-    //await listenForCategories();
-    await listenForCuisines();
-    await listenForPopularRestaurants();
-    await listenForRecentReviews();
+    listenForNearbyRestaurants();
+    listenForCuisines();
+    listenForPopularRestaurants();
+    listenForRecentReviews();
+
+  }
+
+  loadPopularRestaurants() {
+
+    popularRestaurantsNearby.clear();
+
+    var map = Map<String, Restaurant>();
+    nearbyRestaurants.forEach((r) => map[r.id] = r);
+
+    for (var p in popularRestaurants) {
+      if (map[p.id] != null) {
+        popularRestaurantsNearby.add(p);
+      }
+    }
+
+    setState(() {});
+
   }
 }

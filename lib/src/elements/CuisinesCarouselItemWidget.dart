@@ -16,16 +16,15 @@ class CuisinesCarouselItemWidget extends StatelessWidget {
     return Tooltip(
       message: cuisine.name,
       child: Card(
-        margin: EdgeInsets.only(right: 15),
         clipBehavior: Clip.hardEdge,
         child: InkWell(
           splashColor: Theme.of(context).accentColor.withOpacity(0.08),
           highlightColor: Colors.transparent,
-          child: Column(
+          child: Stack(
             children: [
               CachedNetworkImage(
-                width: 80,
-                height: 80,
+                width: 140,
+                height: 140,
                 fit: BoxFit.cover,
                 imageUrl: cuisine.image.icon,
                 placeholder: (context, url) => Image.asset(
@@ -34,14 +33,18 @@ class CuisinesCarouselItemWidget extends StatelessWidget {
                 ),
                 errorWidget: (context, url, error) => Icon(Icons.error),
               ),
-              Container(
-                width: 80,
-                padding: EdgeInsets.symmetric(horizontal: 3, vertical: 5),
-                child: Text(
-                  cuisine.name,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1
+              Positioned(
+                bottom: 3,
+                left: 3,
+                child: Container(
+                  width: 140,
+                  padding: EdgeInsets.symmetric(horizontal: 3, vertical: 5),
+                  child: Text(
+                    cuisine.name,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.left,
+                    style: Theme.of(context).textTheme.headline4.copyWith(color: Colors.white, fontSize: 15),
+                  ),
                 ),
               ),
             ],
