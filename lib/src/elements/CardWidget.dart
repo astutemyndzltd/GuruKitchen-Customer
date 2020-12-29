@@ -13,6 +13,7 @@ class CardWidget extends StatelessWidget {
   String heroTag;
 
   CardWidget({Key key, this.restaurant, this.heroTag}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -56,34 +57,38 @@ class CardWidget extends StatelessWidget {
               ),
               Row(
                 children: <Widget>[
+                  //delivery button
+                  SizedBox(width:10),
+                  if (restaurant.availableForDelivery)
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 3, vertical: 8),
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.circular(24)),
+                      child: Text(
+                        'Delivery',
+                        style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
+                      ),
+                    ),
+                  // pickup button
                   Container(
-                    margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                    decoration: BoxDecoration(color: restaurant.closed ? Colors.grey : Colors.green, borderRadius: BorderRadius.circular(24)),
-                    child: restaurant.closed
-                        ? Text(
-                            S.of(context).closed,
-                            style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
-                          )
-                        : Text(
-                            S.of(context).open,
-                            style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
-                          ),
+                    margin: EdgeInsets.symmetric(horizontal: 3, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(24)),
+                    child: Text(
+                      'Pickup',
+                      style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
+                    ),
                   ),
+                  // preorder button
                   Container(
-                    margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                    decoration: BoxDecoration(color: Helper.canDelivery(restaurant) ? Colors.green : Colors.orange, borderRadius: BorderRadius.circular(24)),
-                    child: Helper.canDelivery(restaurant)
-                        ? Text(
-                            S.of(context).delivery,
-                            style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
-                          )
-                        : Text(
-                            S.of(context).pickup,
-                            style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
-                          ),
-                  ),
+                    margin: EdgeInsets.symmetric(horizontal: 3, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.circular(24)),
+                    child: Text(
+                      'Pre-Order',
+                      style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
+                    ),
+                  )
                 ],
               ),
             ],

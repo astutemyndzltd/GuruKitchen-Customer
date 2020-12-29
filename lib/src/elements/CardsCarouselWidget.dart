@@ -41,7 +41,11 @@ class _CardsCarouselWidgetState extends State<CardsCarouselWidget> {
                           heroTag: widget.heroTag,
                         ));
                   },
-                  child: CardWidget(restaurant: widget.restaurantsList.elementAt(index), heroTag: widget.heroTag),
+                  child: CardWidget(
+                    restaurant: widget.restaurantsList.elementAt(index),
+                    heroTag: widget.heroTag,
+                    key: UniqueKey(),
+                  ),
                 );
               },
             ),

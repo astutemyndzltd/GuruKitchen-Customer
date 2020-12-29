@@ -106,7 +106,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                         Opacity(
                           opacity: 0.4,
                           child: Text(
-                            'No Restaurants to show.\nPlease change delivery address',
+                            'No restaurants to show\nPlease change your location',
                             //S.of(context).dont_have_any_item_in_the_notification_list,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headline3.merge(TextStyle(fontWeight: FontWeight.w300)),

@@ -25,6 +25,7 @@ class CuisinesCarouselWidget extends StatelessWidget {
               separatorBuilder: (c, i) => SizedBox(width: 10),
               itemBuilder: (context, index) {
                 return CuisinesCarouselItemWidget(
+                  key: UniqueKey(),
                   cuisine: this.cuisines.elementAt(index),
                 );
               },

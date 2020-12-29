@@ -42,6 +42,42 @@ Future<List<Restaurant>> getNearbyRestaurants() async {
   }
 }
 
+Future<List<Restaurant>> getNearbyPopularRestaurants() async {
+  Uri uri = Helper.getUri('api/restaurants');
+  Map<String, dynamic> queryParams = {};
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  Filter filter = Filter.fromJSON(json.decode(prefs.getString('filter') ?? '{}'));
+
+  queryParams['limit'] = '6';
+  queryParams['popular'] = 'all';
+
+  var address = deliveryAddress.value;
+
+  if (address != null && address.isValid()) {
+    queryParams['myLat'] = address.latitude.toString();
+    queryParams['myLon'] = address.longitude.toString();
+
+    uri = uri.replace(queryParameters: queryParams);
+
+    try {
+      final response = await http.get(uri.toString());
+
+      if (response.statusCode == 200) {
+        var json = jsonDecode(response.body);
+        List data = json['data'];
+        return data.map((rd) => Restaurant.fromJSON(rd)).toList();
+      }
+
+    } catch (e) {
+      print(CustomTrace(StackTrace.current, message: uri.toString()).toString());
+      return new List<Restaurant>();
+    }
+  }
+
+}
+
+
+
 Future<Stream<Restaurant>> getNearRestaurants(Address myLocation, Address areaLocation) async {
   Uri uri = Helper.getUri('api/restaurants');
   Map<String, dynamic> _queryParams = {};

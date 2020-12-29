@@ -15,8 +15,7 @@ import '../repository/settings_repository.dart';
 class DeliveryAddressBottomSheetWidget extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
 
-
-  DeliveryAddressBottomSheetWidget({Key key, this.scaffoldKey }) : super(key: key);
+  DeliveryAddressBottomSheetWidget({Key key, this.scaffoldKey}) : super(key: key);
 
   @override
   _DeliveryAddressBottomSheetWidgetState createState() => _DeliveryAddressBottomSheetWidgetState();
@@ -53,8 +52,9 @@ class _DeliveryAddressBottomSheetWidgetState extends StateMVC<DeliveryAddressBot
                 // pick location manually
                 InkWell(
                   onTap: () async {
-
-                    setState(() { pickLocationManuallyText = 'Setting your location, please wait.....'; });
+                    setState(() {
+                      pickLocationManuallyText = 'Setting your location, please wait.....';
+                    });
 
                     var locationResult = await showLocationPicker(
                       context,
@@ -63,24 +63,22 @@ class _DeliveryAddressBottomSheetWidgetState extends StateMVC<DeliveryAddressBot
                       myLocationButtonEnabled: true,
                     );
 
-                    var address = new Address.fromJSON({
-                      'address': locationResult.address,
-                      'latitude': locationResult.latLng.latitude,
-                      'longitude': locationResult.latLng.longitude,
-                      'place_id': locationResult.placeId
-                    });
+                    if (locationResult != null) {
+                      var address = new Address.fromJSON({'address': locationResult.address, 'latitude': locationResult.latLng.latitude, 'longitude': locationResult.latLng.longitude, 'place_id': locationResult.placeId});
 
-                    if (currentUser.value.apiToken != null) {
-                      address = await _con.addAddress(address);
+                      if (currentUser.value.apiToken != null) {
+                        address = await _con.addAddress(address);
+                      }
+
+                      deliveryAddress.value = await changeLocation(address);
+                      deliveryAddress.notifyListeners();
                     }
 
-                    deliveryAddress.value = await changeLocation(address);
-                    deliveryAddress.notifyListeners();
-
-                    setState(() { pickLocationManuallyText = 'Set your location manually'; });
+                    setState(() {
+                      pickLocationManuallyText = 'Set your location manually';
+                    });
 
                     Navigator.of(widget.scaffoldKey.currentContext).pop();
-
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -128,9 +126,13 @@ class _DeliveryAddressBottomSheetWidgetState extends StateMVC<DeliveryAddressBot
                 // pick location using GPS
                 InkWell(
                   onTap: () {
-                    setState(() { pickCurrentLocationText = 'Setting your location, please wait.....'; });
+                    setState(() {
+                      pickCurrentLocationText = 'Setting your location, please wait.....';
+                    });
                     _con.changeDeliveryAddressToCurrentLocation().then((value) {
-                      setState(() { pickCurrentLocationText = 'Use current location'; });
+                      setState(() {
+                        pickCurrentLocationText = 'Use current location';
+                      });
                       Navigator.of(widget.scaffoldKey.currentContext).pop();
                     });
                   },
