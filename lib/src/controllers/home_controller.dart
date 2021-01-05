@@ -87,7 +87,7 @@ class HomeController extends ControllerMVC {
     for (var restaurant in nearbyRestaurants) {
       if (!restaurant.closed) {
         if (settingsRepo.dispatchMethod == DispatchMethod.delivery && !restaurant.availableForDelivery) continue;
-        //if (isPreOrderEnabled) continue;
+        if (settingsRepo.isPreOrderEnabled && !restaurant.availableForPreorder) continue;
         showableRestaurants.add(restaurant);
       }
     }
@@ -109,7 +109,7 @@ class HomeController extends ControllerMVC {
     if (!listeningForNearbyRestaurants && !listeningForPopularRestaurants) loadPopularRestaurants();
   }
 
-  loadPopularRestaurants() {
+  void loadPopularRestaurants() {
     popularRestaurantsNearby.clear();
     var map = Map<String, Restaurant>();
     nearbyRestaurants.forEach((r) => map[r.id] = r);

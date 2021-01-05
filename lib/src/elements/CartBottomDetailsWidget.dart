@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/controllers/delivery_pickup_controller.dart';
 import 'package:flushbar/flushbar.dart';
 
 import '../repository/settings_repository.dart';
@@ -71,6 +72,21 @@ class CartBottomDetailsWidget extends StatelessWidget {
                         width: MediaQuery.of(context).size.width - 40,
                         child: FlatButton(
                           onPressed: () {
+
+                            if(_con is DeliveryPickupController) {
+                              var con= _con as DeliveryPickupController;
+
+                              if(con.getSelectedMethod() == null) {
+                                Helper.showSnackbar(context, "Please select delivery or pickup");
+                                return;
+                              }
+
+                              if(con.radioState == 'later' && preorderInfo == '') {
+                                Helper.showSnackbar(context, "Please select arrival time");
+                                return;
+                              }
+                            }
+
                             for (int i = 0; i < _con.carts.length; i++) {
                               var food = _con.carts[i].food;
 

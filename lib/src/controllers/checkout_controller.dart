@@ -36,26 +36,27 @@ class CheckoutController extends CartController {
   }
 
   void addOrder(List<Cart> carts) {
-    Order _order = new Order();
-    _order.orderType = settingRepo.orderType;
-    _order.note = settingRepo.orderNote ?? '';
-    _order.foodOrders = new List<FoodOrder>();
-    _order.tax = carts[0].food.restaurant.defaultTax;
-    _order.deliveryFee = _order.orderType == 'Pickup' ? 0 : carts[0].food.restaurant.deliveryFee;
-    OrderStatus _orderStatus = new OrderStatus();
-    _orderStatus.id = '1'; // TODO default order status Id
-    _order.orderStatus = _orderStatus;
-    _order.deliveryAddress = settingRepo.deliveryAddress.value;
+    Order order = new Order();
+    order.orderType = settingRepo.orderType;
+    order.note = settingRepo.orderNote ?? '';
+    order.preorderInfo = settingRepo.preorderInfo;
+    order.foodOrders = new List<FoodOrder>();
+    order.tax = carts[0].food.restaurant.defaultTax;
+    order.deliveryFee = order.orderType == 'Pickup' ? 0 : carts[0].food.restaurant.deliveryFee;
+    OrderStatus orderStatus = new OrderStatus();
+    orderStatus.id = '1'; // TODO default order status Id
+    order.orderStatus = orderStatus;
+    order.deliveryAddress = settingRepo.deliveryAddress.value;
     carts.forEach((_cart) {
-      FoodOrder _foodOrder = new FoodOrder();
-      _foodOrder.quantity = _cart.quantity;
-      _foodOrder.price = _cart.food.price;
-      _foodOrder.food = _cart.food;
-      _foodOrder.extras = _cart.extras;
-      _order.foodOrders.add(_foodOrder);
+      FoodOrder foodOrder = new FoodOrder();
+      foodOrder.quantity = _cart.quantity;
+      foodOrder.price = _cart.food.price;
+      foodOrder.food = _cart.food;
+      foodOrder.extras = _cart.extras;
+      order.foodOrders.add(foodOrder);
     });
 
-    orderRepo.addOrder(_order, this.payment).then((value) async {
+    orderRepo.addOrder(order, this.payment).then((value) async {
       settingRepo.coupon = new Coupon.fromJSON({});
       return value;
     }).then((value) {

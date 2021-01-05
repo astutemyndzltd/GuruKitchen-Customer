@@ -77,6 +77,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
             mainAxisSize: MainAxisSize.max,
             children: List.generate(homeSections.length, (index) {
               String _homeSection = homeSections.elementAt(index);
+
               switch (_homeSection) {
 
                 case 'no_restaurants_to_show':
@@ -276,6 +277,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                       onTap: () {
                                         setState(() {
                                           settingsRepo.isPreOrderEnabled = !settingsRepo.isPreOrderEnabled;
+                                          _con.refreshHome();
                                         });
                                       },
                                       child: Container(

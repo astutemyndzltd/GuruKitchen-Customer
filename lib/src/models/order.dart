@@ -19,6 +19,7 @@ class Order {
   Address deliveryAddress;
   String orderType;
   String note;
+  String preorderInfo;
 
   Order();
 
@@ -51,6 +52,7 @@ class Order {
               .map((element) => FoodOrder.fromJSON(element))
               .toList()
           : [];
+      preorderInfo = jsonMap['preorder_info'];
     } catch (e) {
       id = '';
       tax = 0.0;
@@ -76,6 +78,7 @@ class Order {
     map["order_status_id"] = orderStatus?.id;
     map["order_type"] = orderType;
     map["tax"] = tax;
+    map["preorder_info"] = preorderInfo;
     map['hint'] = hint;
     map['note'] = note ?? '';
     map["delivery_fee"] = deliveryFee;
@@ -99,4 +102,7 @@ class Order {
     return this.active == true &&
         this.orderStatus.id == '1'; // 1 for order received status
   }
+
+
+
 }

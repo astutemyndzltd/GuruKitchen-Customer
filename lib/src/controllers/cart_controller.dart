@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
+
 import '../models/restaurant.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
@@ -11,6 +14,11 @@ import '../repository/coupon_repository.dart';
 import '../repository/settings_repository.dart';
 import '../repository/user_repository.dart';
 
+class Slots {
+  List<String> today;
+  List<String> tomorrow;
+}
+
 class CartController extends ControllerMVC {
   List<Cart> carts = <Cart>[];
   double taxAmount = 0.0;
@@ -20,6 +28,7 @@ class CartController extends ControllerMVC {
   double total = 0.0;
   GlobalKey<ScaffoldState> scaffoldKey;
   Restaurant restaurant;
+  Slots timeSlots;
 
   CartController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -48,12 +57,16 @@ class CartController extends ControllerMVC {
       if (carts.isNotEmpty) {
         calculateSubtotal();
       }
+
       if (message != null) {
         scaffoldKey?.currentState?.showSnackBar(SnackBar(
           content: Text(message),
         ));
       }
+
       onLoadingCartDone();
+
+      setState((){});
     });
   }
 
@@ -87,8 +100,7 @@ class CartController extends ControllerMVC {
     removeCart(_cart).then((value) {
       calculateSubtotal();
       scaffoldKey?.currentState?.showSnackBar(SnackBar(
-        content: Text(
-            S.of(context).the_food_was_removed_from_your_cart(_cart.food.name)),
+        content: Text(S.of(context).the_food_was_removed_from_your_cart(_cart.food.name)),
       ));
     });
   }
@@ -107,8 +119,7 @@ class CartController extends ControllerMVC {
     if (Helper.canDelivery(carts[0].food.restaurant, carts: carts)) {
       deliveryFee = carts[0].food.restaurant.deliveryFee;
     }
-    taxAmount =
-        (subTotal + deliveryFee) * carts[0].food.restaurant.defaultTax / 100;
+    taxAmount = (subTotal + deliveryFee) * carts[0].food.restaurant.defaultTax / 100;
     total = subTotal + taxAmount + deliveryFee;
     setState(() {});
   }
@@ -178,4 +189,62 @@ class CartController extends ControllerMVC {
     }
     return Theme.of(context).focusColor.withOpacity(0.7);
   }
+
+  Slots generateTimeSlots(int durationInMin, Duration offsetDuration) {
+
+    var timeSlots = new Slots();
+
+    if (restaurant != null && restaurant.openingTimes != null) {
+
+      var dateTime = DateTime.now().add(offsetDuration);
+      var today = DateFormat('EEEE').format(dateTime).toLowerCase();
+      var tomorrow = DateFormat('EEEE').format(dateTime.add(Duration(days: 1))).toLowerCase();
+      var formatter = DateFormat("jm");
+      var slotsMap = restaurant.openingTimes.toMap();
+      var todaySlots = slotsMap[today];
+      var tomorrowSlots = slotsMap[tomorrow];
+      var currentTime = formatter.parse(DateFormat('jm').format(dateTime));
+
+      if (todaySlots != null) {
+        timeSlots.today = List<String>();
+
+        for (var slot in todaySlots) {
+          var opensAt = formatter.parse(slot.opensAt);
+          var closesAt = formatter.parse(slot.closesAt);
+          var minutesToAdd = (((opensAt.minute ~/ durationInMin) + 1) * durationInMin) - opensAt.minute;
+          minutesToAdd = minutesToAdd * (opensAt.minute % durationInMin == 0 ? 0 : 1);
+          var time = opensAt.add(Duration(minutes: minutesToAdd));
+
+          while (time.compareTo(closesAt) <= 0) {
+            if (time.compareTo(currentTime) > 0) {
+              timeSlots.today.add(formatter.format(time));
+            }
+            time = time.add(Duration(minutes: durationInMin));
+          }
+        }
+      }
+
+      if (tomorrowSlots != null) {
+        timeSlots.tomorrow = List<String>();
+
+        for(var slot in tomorrowSlots) {
+          var opensAt = formatter.parse(slot.opensAt);
+          var closesAt = formatter.parse(slot.closesAt);
+          var minutesToAdd = (((opensAt.minute ~/ durationInMin) + 1) * durationInMin) - opensAt.minute;
+          var time = opensAt.add(Duration(minutes: minutesToAdd));
+
+          while (time.compareTo(closesAt) <= 0) {
+            timeSlots.tomorrow.add(formatter.format(time));
+            time = time.add(Duration(minutes: durationInMin));
+          }
+        }
+      }
+
+      return timeSlots;
+
+    }
+
+    return timeSlots;
+  }
+
 }

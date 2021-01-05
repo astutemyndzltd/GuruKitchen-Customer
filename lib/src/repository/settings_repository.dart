@@ -24,6 +24,7 @@ ValueNotifier<Address> deliveryAddress = new ValueNotifier(new Address());
 Coupon coupon = new Coupon.fromJSON({});
 String orderType = null;
 String orderNote = '';
+String preorderInfo = '';
 DispatchMethod dispatchMethod = DispatchMethod.delivery;
 bool isPreOrderEnabled = false;
 final navigatorKey = GlobalKey<NavigatorState>();

@@ -14,12 +14,13 @@ class DeliveryPickupController extends CartController {
   GlobalKey<ScaffoldState> scaffoldKey;
   model.Address deliveryAddress;
   PaymentMethodList list;
+  String radioState = 'now';
 
   DeliveryPickupController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
     super.listenForCarts();
     listenForDeliveryAddress();
-    print(settingRepo.deliveryAddress.value.toMap());
+    //print(settingRepo.deliveryAddress.value.toMap());
   }
 
   void listenForDeliveryAddress() async {
@@ -86,7 +87,7 @@ class DeliveryPickupController extends CartController {
   }
 
   PaymentMethod getSelectedMethod() {
-    return list.pickupList.firstWhere((element) => element.selected);
+    return list.pickupList.firstWhere((element) => element.selected, orElse: () => null);
   }
 
   @override
@@ -94,4 +95,5 @@ class DeliveryPickupController extends CartController {
     settingRepo.orderType = method;
     Navigator.of(context).pushNamed(getSelectedMethod().route);
   }
+
 }

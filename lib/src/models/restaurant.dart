@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:intl/intl.dart';
+
 import '../helpers/custom_trace.dart';
 import '../models/media.dart';
 import 'user.dart';
@@ -24,6 +28,8 @@ class Restaurant {
   double distanceInKm;
   List<User> users;
   double minOrderAmount;
+  bool availableForPreorder;
+  OpeningTimesForWeek openingTimes;
 
   Restaurant();
 
@@ -31,41 +37,27 @@ class Restaurant {
     try {
       id = jsonMap['id'].toString();
       name = jsonMap['name'];
-      image = jsonMap['media'] != null && (jsonMap['media'] as List).length > 0
-          ? Media.fromJSON(jsonMap['media'][0])
-          : new Media();
+      image = jsonMap['media'] != null && (jsonMap['media'] as List).length > 0 ? Media.fromJSON(jsonMap['media'][0]) : new Media();
       rate = jsonMap['rate'] ?? '0';
-      deliveryFee = jsonMap['delivery_fee'] != null
-          ? jsonMap['delivery_fee'].toDouble()
-          : 0.0;
-      adminCommission = jsonMap['admin_commission'] != null
-          ? jsonMap['admin_commission'].toDouble()
-          : 0.0;
-      deliveryRange = jsonMap['delivery_range'] != null
-          ? jsonMap['delivery_range'].toDouble()
-          : 0.0;
-      minOrderAmount = jsonMap['min_order_amount'] != null
-          ? jsonMap['min_order_amount'].toDouble()
-          : 0.0;
+      deliveryFee = jsonMap['delivery_fee'] != null ? jsonMap['delivery_fee'].toDouble() : 0.0;
+      adminCommission = jsonMap['admin_commission'] != null ? jsonMap['admin_commission'].toDouble() : 0.0;
+      deliveryRange = jsonMap['delivery_range'] != null ? jsonMap['delivery_range'].toDouble() : 0.0;
+      minOrderAmount = jsonMap['min_order_amount'] != null ? jsonMap['min_order_amount'].toDouble() : 0.0;
       address = jsonMap['address'];
       description = jsonMap['description'];
       phone = jsonMap['phone'];
       mobile = jsonMap['mobile'];
-      defaultTax = jsonMap['default_tax'] != null
-          ? jsonMap['default_tax'].toDouble()
-          : 0.0;
+      defaultTax = jsonMap['default_tax'] != null ? jsonMap['default_tax'].toDouble() : 0.0;
       information = jsonMap['information'];
       latitude = jsonMap['latitude'];
       longitude = jsonMap['longitude'];
       closed = jsonMap['closed'] ?? false;
       availableForDelivery = jsonMap['available_for_delivery'] ?? false;
-      distance = jsonMap['distance'] != null
-          ? double.parse(jsonMap['distance'].toString())
-          : 0.0;
+      distance = jsonMap['distance'] != null ? double.parse(jsonMap['distance'].toString()) : 0.0;
       distanceInKm = jsonMap['distance_km'] != null ? double.parse(jsonMap['distance_km'].toString()) : 0.0;
-      users = jsonMap['users'] != null && (jsonMap['users'] as List).length > 0
-          ? List.from(jsonMap['users']).map((element) => User.fromJSON(element)).toSet().toList()
-          : [];
+      users = jsonMap['users'] != null && (jsonMap['users'] as List).length > 0 ? List.from(jsonMap['users']).map((element) => User.fromJSON(element)).toSet().toList() : [];
+      availableForPreorder = jsonMap['available_for_preorder'] ?? false;
+      openingTimes = (jsonMap['opening_times'] != null) ? OpeningTimesForWeek.fromJSON(jsonMap['opening_times']) : null;
     } catch (e) {
       id = '';
       name = '';
@@ -92,14 +84,66 @@ class Restaurant {
   }
 
   Map<String, dynamic> toMap() {
+    return {'id': id, 'name': name, 'latitude': latitude, 'longitude': longitude, 'delivery_fee': deliveryFee, 'distance': distance, 'min_order_amount': minOrderAmount};
+  }
+
+  bool isAvailableForPreOrderTodayOrTomorrow() {
+    if (this.availableForPreorder && this.openingTimes != null) {
+      var dateTime = DateTime.now();
+      var formatter = DateFormat('EEEE');
+      var today = formatter.format(dateTime).toLowerCase();
+      var tomorrow = formatter.format(dateTime.add(Duration(days: 1))).toLowerCase();
+      var slotsMap = this.openingTimes.toMap();
+      var todaySlots = slotsMap[today];
+      var tomorrowSlots = slotsMap[tomorrow];
+
+      return (todaySlots != null && todaySlots.length > 0 && tomorrowSlots != null && tomorrowSlots.length > 0);
+    }
+    return false;
+  }
+
+}
+
+class OpeningTimesForWeek {
+
+  List<TimeSlot> monday;
+  List<TimeSlot> tuesday;
+  List<TimeSlot> wednesday;
+  List<TimeSlot> thursday;
+  List<TimeSlot> friday;
+  List<TimeSlot> saturday;
+  List<TimeSlot> sunday;
+
+  OpeningTimesForWeek.fromJSON(Map<String, dynamic> jsonMap) {
+    monday = jsonMap['monday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
+    tuesday = jsonMap['tuesday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
+    wednesday = jsonMap['wednesday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
+    thursday = jsonMap['thursday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
+    friday = jsonMap['friday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
+    saturday = jsonMap['saturday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
+    sunday = jsonMap['sunday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
+  }
+
+  Map<String, List<TimeSlot>> toMap() {
     return {
-      'id': id,
-      'name': name,
-      'latitude': latitude,
-      'longitude': longitude,
-      'delivery_fee': deliveryFee,
-      'distance': distance,
-      'min_order_amount': minOrderAmount
+      "monday": monday,
+      "tuesday": tuesday,
+      "wednesday": wednesday,
+      "thursday": thursday,
+      "friday": friday,
+      "saturday": saturday,
+      "sunday": sunday,
     };
+  }
+
+}
+
+class TimeSlot {
+  String opensAt;
+  String closesAt;
+
+  TimeSlot.fromJSON(Map<String, dynamic> jsonMap) {
+    opensAt = jsonMap['opens_at'];
+    closesAt = jsonMap['closes_at'];
   }
 }

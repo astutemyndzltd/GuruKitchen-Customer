@@ -49,6 +49,8 @@ dependencies:
   firebase_auth: 0.18.1+2
   firebase_core: 0.5.0+1
   flushbar: ^1.10.4
+  collapsible: ^0.1.0
+  intl: ^0.16.0
 
 dev_dependencies:
   flutter_test:
