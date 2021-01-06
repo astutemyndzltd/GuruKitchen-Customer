@@ -1,4 +1,5 @@
 import 'package:GuruKitchen/src/elements/EmptyNotificationsWidget.dart';
+import 'package:GuruKitchen/src/helpers/helper.dart';
 import 'package:GuruKitchen/src/models/dispatchmethod.dart';
 
 import '../elements/CuisinesCarouselWidget.dart';
@@ -36,9 +37,24 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((ts) {
+      _con.overlayLoader = Helper.overlayLoader(context);
+      Overlay.of(context).insert(_con.overlayLoader);
+    });
+
+  }
+
+  @override
   Widget build(BuildContext context) {
 
-    if (_con.showableRestaurants.isEmpty) {
+    if(_con.showableRestaurants == null) {
+      homeSections = [];
+    }
+    else if (_con.showableRestaurants.isEmpty) {
       homeSections = ['search', 'top_restaurants_heading', 'no_restaurants_to_show'];
     } else {
       homeSections = settingsRepo.setting.value.homeSections;

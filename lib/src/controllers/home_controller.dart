@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:GuruKitchen/src/models/dispatchmethod.dart';
 
 import '../models/cuisine.dart';
@@ -19,9 +21,11 @@ import '../repository/slider_repository.dart';
 
 class HomeController extends ControllerMVC {
 
+  OverlayEntry overlayLoader;
+
   List<Category> categories = <Category>[];
   List<Slide> slides = <Slide>[];
-  List<Restaurant> showableRestaurants = <Restaurant>[];
+  List<Restaurant> showableRestaurants = null;
   List<Restaurant> popularRestaurants = <Restaurant>[];
   List<Review> recentReviews = <Review>[];
   List<Food> trendingFoods = <Food>[];
@@ -33,11 +37,22 @@ class HomeController extends ControllerMVC {
   bool listeningForPopularRestaurants = false;
 
   HomeController() {
+    loadData();
+  }
+
+  loadData() {
+
     bool f1Done = false, f2Done = false, f3Done = false, f4Done = false;
 
     VoidCallback refreshState = () {
+
       bool allDone = f1Done && f2Done && f3Done && f4Done;
-      if(allDone) setState(() {});
+
+      if(allDone) {
+        overlayLoader.remove();
+        setState(() {});
+      };
+
     };
 
     var future1 = listenForNearbyRestaurants();
@@ -56,15 +71,17 @@ class HomeController extends ControllerMVC {
 
     bool f1Done = false, f2Done = false, f3Done = false, f4Done = false;
 
-    var loader = Helper.overlayLoader(context);
-    Overlay.of(context).insert(loader);
+    overlayLoader = Helper.overlayLoader(context);
+    Overlay.of(context).insert(overlayLoader);
 
     VoidCallback removeLoader = () {
       bool allDone = f1Done && f2Done && f3Done && f4Done;
+
       if(allDone) {
-        loader.remove();
+        overlayLoader.remove();
         setState(() {});
       }
+
     };
 
     var future1 = listenForNearbyRestaurants();
@@ -82,7 +99,7 @@ class HomeController extends ControllerMVC {
   Future<void> listenForNearbyRestaurants() async {
     listeningForNearbyRestaurants = true;
     nearbyRestaurants = await getNearbyRestaurants();
-    showableRestaurants.clear();
+    showableRestaurants = [];
 
     for (var restaurant in nearbyRestaurants) {
       if (!restaurant.closed) {
