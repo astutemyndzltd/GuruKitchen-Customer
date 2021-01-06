@@ -59,14 +59,13 @@ class LocationChoiceWidget extends StatelessWidget {
                           primary: Theme.of(context).primaryColor,
                           textStyle: Theme.of(context).textTheme.headline4,
                         ),
-                        onPressed: () {
-                          controller.pickLocationAutomatically(context).then((value) {
-                            if (deliveryAddress.value != null && deliveryAddress.value.isValid()) {
-                              Navigator.of(context).pushReplacementNamed('/Pages', arguments: 2);
-                            } else {
-                              scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Address could not be set')));
-                            }
-                          });
+                        onPressed: () async {
+                          await controller.pickLocationAutomatically(context);
+                          if (deliveryAddress.value != null && deliveryAddress.value.isValid()) {
+                            Navigator.of(context).pushReplacementNamed('/Pages', arguments: 2);
+                          } else {
+                            scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Address could not be set')));
+                          }
                         },
                       ),
                       TextButton(
@@ -77,7 +76,6 @@ class LocationChoiceWidget extends StatelessWidget {
                           textStyle: Theme.of(context).textTheme.headline4,
                         ),
                         onPressed: () async {
-
                           await controller.pickLocationManually(context);
 
                           if (deliveryAddress.value != null && deliveryAddress.value.isValid()) {
@@ -85,7 +83,6 @@ class LocationChoiceWidget extends StatelessWidget {
                           } else {
                             scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Address could not be set')));
                           }
-
                         },
                       ),
                     ],

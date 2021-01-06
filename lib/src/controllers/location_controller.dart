@@ -10,25 +10,15 @@ import 'package:mvc_pattern/mvc_pattern.dart';
 
 class LocationChoiceController extends ControllerMVC {
 
-  Future<dynamic> pickLocationAutomatically(BuildContext context) async {
-
-    final whenDone = new Completer();
+  Future pickLocationAutomatically(BuildContext context) async {
     var loader = Helper.overlayLoader(context);
     Overlay.of(context).insert(loader);
-
-    pickAndSetLocationAutomatically().then((address) async {
-      deliveryAddress.value = address;
-      loader.remove();
-      whenDone.complete();
-    }).catchError((e) {
-      loader.remove();
-      whenDone.complete();
-    });
-
-    return whenDone.future;
+    var address = await pickAndSetLocationAutomatically();
+    deliveryAddress.value = address;
+    loader.remove();
   }
 
-  Future<Address> pickLocationManually(BuildContext bc) async {
+  Future pickLocationManually(BuildContext bc) async {
 
     var locationResult = await showLocationPicker(
       bc,
@@ -37,9 +27,10 @@ class LocationChoiceController extends ControllerMVC {
       myLocationButtonEnabled: true,
     );
 
-    deliveryAddress.value = await setLocationManually(locationResult);
-
-    return deliveryAddress.value;
+    if (locationResult != null) {
+      deliveryAddress.value = await setLocationManually(locationResult);
+    }
 
   }
+
 }

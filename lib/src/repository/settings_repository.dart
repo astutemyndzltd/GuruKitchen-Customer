@@ -95,28 +95,27 @@ Future<Address> setLocationManually(LocationResult locationResult) async {
   return address;
 }
 
-Future<dynamic> pickAndSetLocationAutomatically() async {
+Future<Address> pickAndSetLocationAutomatically() async {
+
   var location = new Location();
-  var mapsUtil = new MapsUtil();
-  final whenDone = new Completer();
-  Address _address = new Address();
-  location.requestService().then((value) async {
-    location.getLocation().then((_locationData) async {
-      var addressComponents = await mapsUtil.getAddress(new LatLng(_locationData?.latitude, _locationData?.longitude), setting.value.googleMapsKey);
-      var _addressName = addressComponents[0].toString();
-      var _placeId = addressComponents[1].toString();
-      _address = Address.fromJSON({'address': _addressName, 'latitude': _locationData?.latitude, 'longitude': _locationData?.longitude, 'place_id' : _placeId});
-      await changeLocation(_address); //setting in shared preference
-      whenDone.complete(_address);
-    }).timeout(Duration(seconds: 10), onTimeout: () async {
-      await changeLocation(_address);
-      whenDone.complete(_address);
+  var mapsUtility = new MapsUtil();
+  var serviceEnabled = await location.requestService();
+
+  if(serviceEnabled) {
+    try {
+      var locationData = await location.getLocation();
+      var addressComponents = await mapsUtility.getAddress(LatLng(locationData?.latitude, locationData?.longitude), setting.value.googleMapsKey);
+      var formattedAddress = addressComponents[0].toString();
+      var placeId = addressComponents[1].toString();
+      var address = Address.fromJSON({'address': formattedAddress, 'latitude': locationData?.latitude, 'longitude': locationData?.longitude, 'place_id' : placeId});
+      return await changeLocation(address); // putting in shared preference
+    }
+    catch(e){
       return null;
-    }).catchError((e) {
-      whenDone.complete(_address);
-    });
-  });
-  return whenDone.future;
+    }
+  }
+
+  return null;
 }
 
 Future<Address> changeCurrentLocation(Address _address) async {
