@@ -12,6 +12,7 @@ import '../repository/settings_repository.dart' as settingRepo;
 import '../repository/user_repository.dart' as userRepo;
 
 class SplashScreenController extends ControllerMVC {
+
   ValueNotifier<Map<String, double>> progress = new ValueNotifier(new Map());
   GlobalKey<ScaffoldState> scaffoldKey;
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
@@ -42,7 +43,7 @@ class SplashScreenController extends ControllerMVC {
     });
     Timer(Duration(seconds: 20), () {
       scaffoldKey?.currentState?.showSnackBar(SnackBar(
-        content: Text(S.of(context).verify_your_internet_connection),
+        content: Text('There was a problem connecting to the server. Please try again.'),
       ));
     });
   }
