@@ -20,7 +20,6 @@ import '../repository/settings_repository.dart' as settingsRepo;
 import '../repository/slider_repository.dart';
 
 class HomeController extends ControllerMVC {
-
   OverlayEntry overlayLoader;
 
   List<Category> categories = <Category>[];
@@ -30,7 +29,7 @@ class HomeController extends ControllerMVC {
   List<Review> recentReviews = <Review>[];
   List<Food> trendingFoods = <Food>[];
   List<Cuisine> cuisines = <Cuisine>[];
-  List<Restaurant> nearbyRestaurants = <Restaurant>[];
+  List<Restaurant> nearbyRestaurants = null;
   List<Restaurant> popularRestaurantsNearby = <Restaurant>[];
 
   bool listeningForNearbyRestaurants = false;
@@ -41,18 +40,16 @@ class HomeController extends ControllerMVC {
   }
 
   loadData() {
-
     bool f1Done = false, f2Done = false, f3Done = false, f4Done = false;
 
     VoidCallback refreshState = () {
-
       bool allDone = f1Done && f2Done && f3Done && f4Done;
 
-      if(allDone) {
+      if (allDone) {
         overlayLoader.remove();
         setState(() {});
-      };
-
+      }
+      ;
     };
 
     var future1 = listenForNearbyRestaurants();
@@ -60,15 +57,25 @@ class HomeController extends ControllerMVC {
     var future3 = listenForPopularRestaurants();
     var future4 = listenForRecentReviews();
 
-    future1.whenComplete(() { f1Done = true; refreshState(); });
-    future2.whenComplete(() { f2Done = true; refreshState(); });
-    future3.whenComplete(() { f3Done = true; refreshState(); });
-    future4.whenComplete(() { f4Done = true; refreshState(); });
-
+    future1.whenComplete(() {
+      f1Done = true;
+      refreshState();
+    });
+    future2.whenComplete(() {
+      f2Done = true;
+      refreshState();
+    });
+    future3.whenComplete(() {
+      f3Done = true;
+      refreshState();
+    });
+    future4.whenComplete(() {
+      f4Done = true;
+      refreshState();
+    });
   }
 
   Future<void> refreshHome() async {
-
     bool f1Done = false, f2Done = false, f3Done = false, f4Done = false;
 
     overlayLoader = Helper.overlayLoader(context);
@@ -77,11 +84,10 @@ class HomeController extends ControllerMVC {
     VoidCallback removeLoader = () {
       bool allDone = f1Done && f2Done && f3Done && f4Done;
 
-      if(allDone) {
+      if (allDone) {
         overlayLoader.remove();
         setState(() {});
       }
-
     };
 
     var future1 = listenForNearbyRestaurants();
@@ -89,11 +95,22 @@ class HomeController extends ControllerMVC {
     var future3 = listenForPopularRestaurants();
     var future4 = listenForRecentReviews();
 
-    future1.whenComplete(() { f1Done = true; removeLoader(); });
-    future2.whenComplete(() { f2Done = true; removeLoader(); });
-    future3.whenComplete(() { f3Done = true; removeLoader(); });
-    future4.whenComplete(() { f4Done = true; removeLoader(); });
-
+    future1.whenComplete(() {
+      f1Done = true;
+      removeLoader();
+    });
+    future2.whenComplete(() {
+      f2Done = true;
+      removeLoader();
+    });
+    future3.whenComplete(() {
+      f3Done = true;
+      removeLoader();
+    });
+    future4.whenComplete(() {
+      f4Done = true;
+      removeLoader();
+    });
   }
 
   Future<void> listenForNearbyRestaurants() async {
@@ -102,17 +119,17 @@ class HomeController extends ControllerMVC {
     showableRestaurants = [];
 
     for (var restaurant in nearbyRestaurants) {
-      if (!restaurant.closed) {
-        if (settingsRepo.dispatchMethod == DispatchMethod.delivery && !restaurant.availableForDelivery) continue;
-        if (settingsRepo.isPreOrderEnabled && !restaurant.availableForPreorder) continue;
-        showableRestaurants.add(restaurant);
-      }
+      if (settingsRepo.dispatchMethod == DispatchMethod.delivery && !restaurant.isAvailableForDelivery()) continue;
+      if (settingsRepo.dispatchMethod == DispatchMethod.pickup && !restaurant.isAvailableForPickup()) continue;
+      if (settingsRepo.dispatchMethod == DispatchMethod.preorder && !restaurant.isClosedAndAvailableForPreorder()) continue;
+      if (settingsRepo.dispatchMethod == DispatchMethod.none && !restaurant.isActuallyOpen()) continue;
+
+      showableRestaurants.add(restaurant);
     }
 
     listeningForNearbyRestaurants = false;
 
     if (!listeningForNearbyRestaurants && !listeningForPopularRestaurants) loadPopularRestaurants();
-
   }
 
   Future<void> listenForCuisines() async {
@@ -136,7 +153,6 @@ class HomeController extends ControllerMVC {
         popularRestaurantsNearby.add(p);
       }
     }
-
   }
 
   Future<void> listenForRecentReviews() async {
@@ -190,7 +206,4 @@ class HomeController extends ControllerMVC {
       loader.remove();
     });
   }
-
-
-
 }

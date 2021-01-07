@@ -167,7 +167,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
               ],
             ),
             // preorder
-            if (_con.restaurant != null && _con.restaurant.isAvailableForPreOrderTodayOrTomorrow())
+            if (_con.restaurant != null && _con.restaurant.isAvailableForPreorder())
               Container(
                 margin: EdgeInsets.only(top: 20),
                 padding: EdgeInsets.only(left: 0),

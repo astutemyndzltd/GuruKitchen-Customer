@@ -87,25 +87,84 @@ class Restaurant {
     return {'id': id, 'name': name, 'latitude': latitude, 'longitude': longitude, 'delivery_fee': deliveryFee, 'distance': distance, 'min_order_amount': minOrderAmount};
   }
 
-  bool isAvailableForPreOrderTodayOrTomorrow() {
-    if (this.availableForPreorder && this.openingTimes != null) {
-      var dateTime = DateTime.now();
-      var formatter = DateFormat('EEEE');
-      var today = formatter.format(dateTime).toLowerCase();
-      var tomorrow = formatter.format(dateTime.add(Duration(days: 1))).toLowerCase();
-      var slotsMap = this.openingTimes.toMap();
-      var todaySlots = slotsMap[today];
-      var tomorrowSlots = slotsMap[tomorrow];
+  bool isActuallyOpen() {
+    if (closed || openingTimes == null) return false;
 
-      return (todaySlots != null && todaySlots.length > 0 && tomorrowSlots != null && tomorrowSlots.length > 0);
+    var dateTime = DateTime.now();
+    var formatter = DateFormat('EEEE');
+    var today = formatter.format(dateTime).toLowerCase();
+    var timeSlotsForToday = openingTimes.toMap()[today];
+
+    if (timeSlotsForToday == null) return false;
+
+    var timeFormatter = DateFormat('jm');
+    var timeNow = timeFormatter.parse(timeFormatter.format(dateTime));
+
+    for (var slot in timeSlotsForToday) {
+      var opensAt = timeFormatter.parse(slot.opensAt);
+      var closesAt = timeFormatter.parse(slot.closesAt);
+
+      if (timeNow.compareTo(opensAt) >= 0 && timeNow.compareTo(closesAt) <= 0) {
+        return true;
+      }
     }
+
     return false;
+  }
+
+  bool isAvailableForDelivery() {
+    return isActuallyOpen() && availableForDelivery;
+  }
+
+  bool isAvailableForPickup() {
+    return isActuallyOpen() && !availableForDelivery;
+  }
+
+  bool isAvailableForPreorder() {
+     return isAvailableForPreorderToday() || isAvailableForPreorderTomorrow();
+  }
+
+  bool isClosedAndAvailableForPreorder() {
+    return !isActuallyOpen() && isAvailableForPreorder();
+  }
+
+  bool isAvailableForPreorderToday() {
+    if (!availableForPreorder || closed || openingTimes == null) return false;
+
+    var dateTime = DateTime.now();
+    var dayFormatter = DateFormat('EEEE');
+    var today = dayFormatter.format(dateTime).toLowerCase();
+    var todaySlots = openingTimes.toMap()[today];
+
+    if (todaySlots != null) {
+      var timeFormatter = DateFormat('jm');
+      var time = timeFormatter.parse(timeFormatter.format(dateTime.add(Duration(hours: 2))));
+
+      for (var slot in todaySlots) {
+        var opensAt = timeFormatter.parse(slot.opensAt);
+        var closesAt = timeFormatter.parse(slot.closesAt);
+
+        if (time.compareTo(opensAt) >= 0 && time.compareTo(closesAt) <= 0) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  bool isAvailableForPreorderTomorrow() {
+    if (!availableForPreorder || openingTimes == null) return false;
+
+    var formatter = DateFormat('EEEE');
+    var tomorrow = formatter.format(DateTime.now().add(Duration(days: 1))).toLowerCase();
+    var tomorrowSlots = openingTimes.toMap()[tomorrow];
+    return tomorrowSlots != null;
   }
 
 }
 
 class OpeningTimesForWeek {
-
   List<TimeSlot> monday;
   List<TimeSlot> tuesday;
   List<TimeSlot> wednesday;
@@ -116,12 +175,12 @@ class OpeningTimesForWeek {
 
   OpeningTimesForWeek.fromJSON(Map<String, dynamic> jsonMap) {
     monday = jsonMap['monday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
-    tuesday = jsonMap['tuesday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
-    wednesday = jsonMap['wednesday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
-    thursday = jsonMap['thursday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
-    friday = jsonMap['friday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
-    saturday = jsonMap['saturday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
-    sunday = jsonMap['sunday'] != null ? List.from(jsonMap['monday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
+    tuesday = jsonMap['tuesday'] != null ? List.from(jsonMap['tuesday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
+    wednesday = jsonMap['wednesday'] != null ? List.from(jsonMap['wednesday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
+    thursday = jsonMap['thursday'] != null ? List.from(jsonMap['thursday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
+    friday = jsonMap['friday'] != null ? List.from(jsonMap['friday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
+    saturday = jsonMap['saturday'] != null ? List.from(jsonMap['saturday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
+    sunday = jsonMap['sunday'] != null ? List.from(jsonMap['sunday'])?.map((e) => TimeSlot.fromJSON(e)).toList() : null;
   }
 
   Map<String, List<TimeSlot>> toMap() {
@@ -135,7 +194,6 @@ class OpeningTimesForWeek {
       "sunday": sunday,
     };
   }
-
 }
 
 class TimeSlot {

@@ -31,7 +31,6 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
   HomeController _con;
   List<String> homeSections = [];
 
-
   _HomeWidgetState() : super(HomeController()) {
     _con = controller;
   }
@@ -45,16 +44,13 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
       _con.overlayLoader = Helper.overlayLoader(context);
       Overlay.of(context).insert(_con.overlayLoader);
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
-
-    if(_con.showableRestaurants == null) {
+    if (_con.nearbyRestaurants == null) {
       homeSections = [];
-    }
-    else if (_con.showableRestaurants.isEmpty) {
+    } else if (_con.nearbyRestaurants.isEmpty) {
       homeSections = ['search', 'top_restaurants_heading', 'no_restaurants_to_show'];
     } else {
       homeSections = settingsRepo.setting.value.homeSections;
@@ -95,7 +91,6 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
               String _homeSection = homeSections.elementAt(index);
 
               switch (_homeSection) {
-
                 case 'no_restaurants_to_show':
                   return Container(
                     //color: Colors.red,
@@ -208,7 +203,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                           ],
                         ),
                       ),
-                      if (_con.showableRestaurants.isNotEmpty)
+                      if (_con.nearbyRestaurants.isNotEmpty)
                         // restaurants + dispatch method
                         Padding(
                           padding: const EdgeInsets.only(top: 15, left: 20, right: 20, bottom: 10),
@@ -250,7 +245,11 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                     InkWell(
                                       onTap: () {
                                         setState(() {
-                                          settingsRepo.dispatchMethod = DispatchMethod.delivery;
+                                          if (settingsRepo.dispatchMethod == DispatchMethod.delivery)
+                                            settingsRepo.dispatchMethod = DispatchMethod.none;
+                                          else
+                                            settingsRepo.dispatchMethod = DispatchMethod.delivery;
+
                                           _con.refreshHome();
                                         });
                                       },
@@ -258,7 +257,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(Radius.circular(5)),
-                                          color: settingsRepo.dispatchMethod == DispatchMethod.delivery ? Theme.of(context).accentColor : Theme.of(context).focusColor.withOpacity(0.1),
+                                          color: settingsRepo.dispatchMethod == DispatchMethod.delivery ? Colors.green : Theme.of(context).focusColor.withOpacity(0.1),
                                         ),
                                         child: Text(
                                           S.of(context).delivery,
@@ -271,7 +270,10 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                     InkWell(
                                       onTap: () {
                                         setState(() {
-                                          settingsRepo.dispatchMethod = DispatchMethod.pickup;
+                                          if (settingsRepo.dispatchMethod == DispatchMethod.pickup)
+                                            settingsRepo.dispatchMethod = DispatchMethod.none;
+                                          else
+                                            settingsRepo.dispatchMethod = DispatchMethod.pickup;
                                           _con.refreshHome();
                                         });
                                       },
@@ -279,7 +281,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(Radius.circular(5)),
-                                          color: settingsRepo.dispatchMethod == DispatchMethod.pickup ? Theme.of(context).accentColor : Theme.of(context).focusColor.withOpacity(0.1),
+                                          color: settingsRepo.dispatchMethod == DispatchMethod.pickup ? Colors.orange : Theme.of(context).focusColor.withOpacity(0.1),
                                         ),
                                         child: Text(
                                           S.of(context).pickup,
@@ -292,7 +294,11 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                     InkWell(
                                       onTap: () {
                                         setState(() {
-                                          settingsRepo.isPreOrderEnabled = !settingsRepo.isPreOrderEnabled;
+                                          if (settingsRepo.dispatchMethod == DispatchMethod.preorder)
+                                            settingsRepo.dispatchMethod = DispatchMethod.none;
+                                          else
+                                            settingsRepo.dispatchMethod = DispatchMethod.preorder;
+
                                           _con.refreshHome();
                                         });
                                       },
@@ -300,12 +306,12 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(Radius.circular(5)),
-                                          color: settingsRepo.isPreOrderEnabled ? Theme.of(context).accentColor : Theme.of(context).focusColor.withOpacity(0.1),
+                                          color: settingsRepo.dispatchMethod == DispatchMethod.preorder ? Colors.blue : Theme.of(context).focusColor.withOpacity(0.1),
                                         ),
                                         child: Text(
                                           'Pre-Order',
                                           //S.of(context).pickup,
-                                          style: TextStyle(color: settingsRepo.isPreOrderEnabled ? Theme.of(context).primaryColor : Theme.of(context).hintColor),
+                                          style: TextStyle(color: settingsRepo.dispatchMethod == DispatchMethod.preorder ? Theme.of(context).primaryColor : Theme.of(context).hintColor),
                                         ),
                                       ),
                                     )
@@ -319,7 +325,21 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                   );
 
                 case 'top_restaurants':
-                  return CardsCarouselWidget(restaurantsList: _con.showableRestaurants, heroTag: 'home_top_restaurants');
+                  return (_con.showableRestaurants != null && _con.showableRestaurants.isEmpty)
+                      ? Container(
+                          width: double.infinity,
+                          height: 288,
+                          child: Center(
+                            child: Text(
+                              'No results found',
+                              style: Theme.of(context).textTheme.headline4,
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                            ),
+                          ),
+                        )
+                      : CardsCarouselWidget(restaurantsList: _con.showableRestaurants, heroTag: 'home_top_restaurants');
 
                 case 'trending_week_heading':
                   return ListTile(
