@@ -91,8 +91,10 @@ Future<Stream<Restaurant>> getNearRestaurants(Address myLocation, Address areaLo
     _queryParams['areaLon'] = areaLocation.longitude.toString();
     _queryParams['areaLat'] = areaLocation.latitude.toString();
   }
+
   _queryParams.addAll(filter.toQuery());
   uri = uri.replace(queryParameters: _queryParams);
+
   try {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));

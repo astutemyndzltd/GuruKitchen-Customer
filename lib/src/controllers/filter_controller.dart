@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:GuruKitchen/src/models/category.dart';
+import 'package:GuruKitchen/src/repository/category_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,8 +13,10 @@ import '../models/filter.dart';
 import '../repository/cuisine_repository.dart';
 
 class FilterController extends ControllerMVC {
+
   GlobalKey<ScaffoldState> scaffoldKey;
   List<Cuisine> cuisines = [];
+  List<Category> foodCategories = [];
   Filter filter;
   Cart cart;
 
@@ -20,6 +24,7 @@ class FilterController extends ControllerMVC {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
     listenForFilter().whenComplete(() {
       listenForCuisines();
+      listenForFoodCategories();
     });
   }
 
@@ -31,21 +36,22 @@ class FilterController extends ControllerMVC {
   }
 
   Future<void> saveFilter() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    filter.cuisines = this.cuisines.where((_f) => _f.selected).toList();
+    var prefs = await SharedPreferences.getInstance();
+    filter.cuisines = this.cuisines.where((c) => c.selected).toList();
+    filter.foodCategories = this.foodCategories.where((fc) => fc.selected).toList();
     prefs.setString('filter', json.encode(filter.toMap()));
   }
 
   void listenForCuisines({String message}) async {
     cuisines.add(new Cuisine.fromJSON({'id': '0', 'name': S.of(context).all, 'selected': true}));
     final Stream<Cuisine> stream = await getCuisines();
-    stream.listen((Cuisine _cuisine) {
+    stream.listen((Cuisine cuisine) {
       setState(() {
-        if (filter.cuisines.contains(_cuisine)) {
-          _cuisine.selected = true;
+        if (filter.cuisines.contains(cuisine)) {
+          cuisine.selected = true;
           cuisines.elementAt(0).selected = false;
         }
-        cuisines.add(_cuisine);
+        cuisines.add(cuisine);
       });
     }, onError: (a) {
       print(a);
@@ -61,17 +67,30 @@ class FilterController extends ControllerMVC {
     });
   }
 
-  Future<void> refreshCuisines() async {
+  void listenForFoodCategories() async {
+    foodCategories.add(Category.fromJSON({'id': '0', 'name': 'All', 'selected': true}));
+    var streamOfCategories = await getCategories();
+    
+    streamOfCategories.listen((Category category) =>foodCategories.add(category),
+      onDone: () {
+        for(var fc in foodCategories) {
+          fc.selected = filter.foodCategories.firstWhere((cat) => cat.id == fc.id, orElse: () => null) != null;
+          fc.selected && (foodCategories[0].selected = false);
+          setState((){});
+        }
+      }
+    );
+  }
+
+  Future<void> refreshCuisinesPlusCategories() async {
     cuisines.clear();
-    listenForCuisines(message: S.of(context).addresses_refreshed_successfuly);
+    foodCategories.clear();
+    listenForCuisines();
+    listenForFoodCategories();
   }
 
   void clearFilter() {
-    setState(() {
-      filter.open = false;
-      filter.delivery = false;
-      resetCuisines();
-    });
+    setState(() {resetCuisines(); resetFoodCategories(); });
   }
 
   void resetCuisines() {
@@ -80,6 +99,12 @@ class FilterController extends ControllerMVC {
       _f.selected = false;
     });
     cuisines.elementAt(0).selected = true;
+  }
+
+  void resetFoodCategories() {
+    filter.foodCategories = [];
+    foodCategories.forEach((fc) => fc.selected = false);
+    foodCategories[0].selected = true;
   }
 
   void onChangeCuisinesFilter(int index) {
@@ -95,4 +120,19 @@ class FilterController extends ControllerMVC {
       });
     }
   }
+
+  void onChangeFoodCategoriesFilter(int index) {
+    if (index == 0) {
+      // all
+      setState(() {
+        resetFoodCategories();
+      });
+    } else {
+      setState(() {
+        foodCategories.elementAt(index).selected = !foodCategories.elementAt(index).selected;
+        foodCategories.elementAt(0).selected = false;
+      });
+    }
+  }
+
 }

@@ -48,6 +48,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
 
   @override
   Widget build(BuildContext context) {
+
     if (_con.nearbyRestaurants == null) {
       homeSections = [];
     } else if (_con.nearbyRestaurants.isEmpty) {
