@@ -57,8 +57,19 @@ class CardWidget extends StatelessWidget {
               ),
               Row(
                 children: <Widget>[
-                  //delivery button
                   SizedBox(width: 8),
+                  //closed but opening later button
+                  if(!restaurant.isActuallyOpen() && restaurant.openingLaterToday())
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                    decoration: BoxDecoration(color: Colors.pink, borderRadius: BorderRadius.circular(3)),
+                    child: Text(
+                      'Opening Later',
+                      style: TextStyle(color: Theme.of(context).primaryColor),
+                    ),
+                  ),
+                  //delivery button
                   if (restaurant.isAvailableForDelivery())
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 2, vertical: 8),

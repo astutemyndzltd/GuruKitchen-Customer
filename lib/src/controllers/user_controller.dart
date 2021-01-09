@@ -30,10 +30,14 @@ class UserController extends ControllerMVC {
     });
   }
 
+  bool isValidEmail(String email) {
+    var regex = new RegExp(r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+    return regex.hasMatch(email);
+  }
+
   Future<Address> addAddress(Address address) async {
     return await repository.addAddress(address);
   }
-
 
   void login() async {
     FocusScope.of(context).unfocus();
@@ -41,10 +45,8 @@ class UserController extends ControllerMVC {
       loginFormKey.currentState.save();
       Overlay.of(context).insert(loader);
       repository.login(user).then((value) async {
-
         if (value != null && value.apiToken != null) {
-
-          if(deliveryAddress.value != null) {
+          if (deliveryAddress.value != null) {
             var address = await this.addAddress(deliveryAddress.value);
             await changeLocation(address);
             deliveryAddress.value = address;
@@ -92,12 +94,15 @@ class UserController extends ControllerMVC {
   }
 
   void resetPassword() {
+    bool succeeded = false;
+
     FocusScope.of(context).unfocus();
     if (loginFormKey.currentState.validate()) {
       loginFormKey.currentState.save();
       Overlay.of(context).insert(loader);
       repository.resetPassword(user).then((value) {
         if (value != null && value == true) {
+          succeeded = true;
           scaffoldKey?.currentState?.showSnackBar(SnackBar(
             content: Text(S.of(context).your_reset_link_has_been_sent_to_your_email),
             action: SnackBarAction(
@@ -116,6 +121,11 @@ class UserController extends ControllerMVC {
         }
       }).whenComplete(() {
         Helper.hideLoader(loader);
+        if (!succeeded) {
+          scaffoldKey?.currentState?.showSnackBar(SnackBar(
+            content: Text('Email not registered'),
+          ));
+        }
       });
     }
   }

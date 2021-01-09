@@ -77,10 +77,11 @@ class _LoginWidgetState extends StateMVC<LoginWidget> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
+                      // email
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
                         onSaved: (input) => _con.user.email = input,
-                        validator: (input) => !input.contains('@') ? S.of(context).should_be_a_valid_email : null,
+                        validator: (input) => !_con.isValidEmail(input) ? 'Invalid email' : null,
                         decoration: InputDecoration(
                           labelText: S.of(context).email,
                           labelStyle: TextStyle(color: Theme.of(context).accentColor),
@@ -94,10 +95,11 @@ class _LoginWidgetState extends StateMVC<LoginWidget> {
                         ),
                       ),
                       SizedBox(height: 30),
+                      // password
                       TextFormField(
                         keyboardType: TextInputType.text,
                         onSaved: (input) => _con.user.password = input,
-                        validator: (input) => input.length < 3 ? S.of(context).should_be_more_than_3_characters : null,
+                        validator: (input) => input.length < 6 ? 'minimum 6 characters' : null,
                         obscureText: _con.hidePassword,
                         decoration: InputDecoration(
                           labelText: S.of(context).password,

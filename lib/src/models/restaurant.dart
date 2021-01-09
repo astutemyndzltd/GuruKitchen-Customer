@@ -162,6 +162,29 @@ class Restaurant {
     return tomorrowSlots != null;
   }
 
+  bool openingLaterToday() {
+    if (closed || openingTimes == null) return false;
+
+    var dateTime = DateTime.now();
+    var dayFormatter = DateFormat('EEEE');
+
+    var today = dayFormatter.format(dateTime).toLowerCase();
+    var todaySlots = openingTimes.toMap()[today];
+
+    if(todaySlots != null) {
+      var timeFormatter = DateFormat('jm');
+      var time = timeFormatter.parse(timeFormatter.format(dateTime));
+
+      for(var slot in todaySlots) {
+        var opensAt = timeFormatter.parse(slot.opensAt);
+        if(time.isBefore(opensAt)) return true;
+      }
+    }
+
+    return false;
+
+  }
+
 }
 
 class OpeningTimesForWeek {

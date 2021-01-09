@@ -51,6 +51,11 @@ Future<User> register(User user) async {
   return currentUser.value;
 }
 
+bool isValidEmail(String email) {
+  var regex = new RegExp(r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+  return regex.hasMatch(email);
+}
+
 Future<bool> resetPassword(User user) async {
   final String url = '${GlobalConfiguration().getValue('api_base_url')}send_reset_link_email';
   final client = new http.Client();

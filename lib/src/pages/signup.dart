@@ -68,10 +68,11 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
+                      // full name
                       TextFormField(
                         keyboardType: TextInputType.text,
                         onSaved: (input) => _con.user.name = input,
-                        validator: (input) => input.length < 3 ? S.of(context).should_be_more_than_3_letters : null,
+                        validator: (input) => input.length == 0 ? 'Required' : null,
                         decoration: InputDecoration(
                           labelText: S.of(context).full_name,
                           labelStyle: TextStyle(color: Theme.of(context).accentColor),
@@ -85,10 +86,11 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
                         ),
                       ),
                       SizedBox(height: 30),
+                      // email
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
                         onSaved: (input) => _con.user.email = input,
-                        validator: (input) => !input.contains('@') ? S.of(context).should_be_a_valid_email : null,
+                        validator: (input) => !_con.isValidEmail(input) ? 'Invalid email' : null,
                         decoration: InputDecoration(
                           labelText: S.of(context).email,
                           labelStyle: TextStyle(color: Theme.of(context).accentColor),
@@ -102,10 +104,11 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
                         ),
                       ),
                       SizedBox(height: 30),
+                      // password
                       TextFormField(
                         obscureText: _con.hidePassword,
                         onSaved: (input) => _con.user.password = input,
-                        validator: (input) => input.length < 6 ? S.of(context).should_be_more_than_6_letters : null,
+                        validator: (input) => input.length < 6 ? 'minimum 6 characters' : null,
                         decoration: InputDecoration(
                           labelText: S.of(context).password,
                           labelStyle: TextStyle(color: Theme.of(context).accentColor),

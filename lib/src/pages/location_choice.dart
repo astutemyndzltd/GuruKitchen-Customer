@@ -1,4 +1,5 @@
 import 'package:GuruKitchen/src/controllers/location_controller.dart';
+import 'package:GuruKitchen/src/helpers/helper.dart';
 import 'package:GuruKitchen/src/models/address.dart';
 import 'package:GuruKitchen/src/repository/settings_repository.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +18,9 @@ class LocationChoiceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return WillPopScope(
+      onWillPop: Helper.of(context).onWillPop,
+      child: Scaffold(
         key: scaffoldKey,
         body: SafeArea(
           child: Container(

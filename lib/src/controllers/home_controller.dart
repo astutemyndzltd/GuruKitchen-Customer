@@ -122,8 +122,7 @@ class HomeController extends ControllerMVC {
       if (settingsRepo.dispatchMethod == DispatchMethod.delivery && !restaurant.isAvailableForDelivery()) continue;
       if (settingsRepo.dispatchMethod == DispatchMethod.pickup && !restaurant.isAvailableForPickup()) continue;
       if (settingsRepo.dispatchMethod == DispatchMethod.preorder && !restaurant.isClosedAndAvailableForPreorder()) continue;
-      if (settingsRepo.dispatchMethod == DispatchMethod.none && !restaurant.isActuallyOpen()) continue;
-
+      if (settingsRepo.dispatchMethod == DispatchMethod.none && !restaurant.isActuallyOpen() && !restaurant.openingLaterToday()) continue;
       showableRestaurants.add(restaurant);
     }
 
@@ -206,4 +205,5 @@ class HomeController extends ControllerMVC {
       loader.remove();
     });
   }
+
 }

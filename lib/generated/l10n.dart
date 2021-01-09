@@ -737,7 +737,7 @@ class S {
   /// `Should be more than 3 letters`
   String get should_be_more_than_3_letters {
     return Intl.message(
-      'Should be more than 3 letters',
+      'Should be more than 6 letters',
       name: 'should_be_more_than_3_letters',
       desc: '',
       args: [],
@@ -887,7 +887,7 @@ class S {
   /// `Should be more than 3 characters`
   String get should_be_more_than_3_characters {
     return Intl.message(
-      'Should be more than 3 characters',
+      'Should be more than 6 characters',
       name: 'should_be_more_than_3_characters',
       desc: '',
       args: [],

@@ -7,6 +7,7 @@ import '../models/user.dart';
 import '../repository/user_repository.dart' as repository;
 
 class SettingsController extends ControllerMVC {
+
   CreditCard creditCard = new CreditCard();
   GlobalKey<FormState> loginFormKey;
   GlobalKey<ScaffoldState> scaffoldKey;
@@ -43,4 +44,10 @@ class SettingsController extends ControllerMVC {
   Future<void> refreshSettings() async {
     creditCard = new CreditCard();
   }
+
+  bool isValidEmail(String email) {
+    var regex = new RegExp(r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+    return regex.hasMatch(email);
+  }
+
 }
