@@ -65,32 +65,33 @@ class FoodController extends ControllerMVC {
   }
 
   void addToCart(Food food, {bool reset = false}) async {
-    setState(() {
-      this.loadCart = true;
-    });
-    var _newCart = new Cart();
-    _newCart.food = food;
-    _newCart.extras = food.extras.where((element) => element.checked).toList();
-    _newCart.quantity = this.quantity;
+    setState(() { this.loadCart = true; });
+
+    var newCartItem = new Cart();
+    newCartItem.food = food;
+    newCartItem.extras = food.extras.where((element) => element.checked).toList();
+    newCartItem.quantity = this.quantity;
+
     // if food exist in the cart then increment quantity
-    var _oldCart = isExistInCart(_newCart);
-    if (_oldCart != null) {
-      _oldCart.quantity += this.quantity;
-      updateCart(_oldCart).then((value) {
-        setState(() {
+    var oldCartItem = isExistInCart(newCartItem);
+
+    if (oldCartItem != null) {
+      oldCartItem.quantity += this.quantity;
+      updateCart(oldCartItem).then((value) { setState(() {
           this.loadCart = false;
-        });
+      });
       }).whenComplete(() {
         scaffoldKey?.currentState?.showSnackBar(SnackBar(
           content: Text(S.of(context).this_food_was_added_to_cart),
         ));
       });
-    } else {
+    }
+    else {
       // the food doesnt exist in the cart add new one
-      addCart(_newCart, reset).then((value) {
-        setState(() {
-          this.loadCart = false;
-        });
+      addCart(newCartItem, reset).then((value) {
+        value.food = newCartItem.food;
+        carts.add(value);
+        setState(() { this.loadCart = false; });
       }).whenComplete(() {
         scaffoldKey?.currentState?.showSnackBar(SnackBar(
           content: Text(S.of(context).this_food_was_added_to_cart),

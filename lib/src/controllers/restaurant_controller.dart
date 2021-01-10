@@ -16,6 +16,7 @@ import '../repository/restaurant_repository.dart';
 import '../repository/settings_repository.dart';
 
 class RestaurantController extends ControllerMVC {
+
   Restaurant restaurant;
   List<Gallery> galleries = <Gallery>[];
   List<Food> foods = <Food>[];

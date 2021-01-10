@@ -18,18 +18,12 @@ Future<Stream<Order>> getOrders() async {
     return new Stream.value(null);
   }
   final String _apiToken = 'api_token=${_user.apiToken}&';
-  final String url =
-      '${GlobalConfiguration().getValue('api_base_url')}orders?${_apiToken}with=user;foodOrders;foodOrders.food;foodOrders.extras;orderStatus;payment&search=user.id:${_user.id}&searchFields=user.id:=&orderBy=id&sortedBy=desc';
+  final String url = '${GlobalConfiguration().getValue('api_base_url')}orders?${_apiToken}with=user;foodOrders;foodOrders.food;foodOrders.extras;orderStatus;payment&search=user.id:${_user.id}&searchFields=user.id:=&orderBy=id&sortedBy=desc';
 
   final client = new http.Client();
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
-  return streamedRest.stream
-      .transform(utf8.decoder)
-      .transform(json.decoder)
-      .map((data) => Helper.getData(data))
-      .expand((data) => (data as List))
-      .map((data) {
+  return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
     return Order.fromJSON(data);
   });
 }
@@ -40,16 +34,11 @@ Future<Stream<Order>> getOrder(orderId) async {
     return new Stream.value(null);
   }
   final String _apiToken = 'api_token=${_user.apiToken}&';
-  final String url =
-      '${GlobalConfiguration().getValue('api_base_url')}orders/$orderId?${_apiToken}with=user;foodOrders;foodOrders.food;foodOrders.extras;orderStatus;deliveryAddress;payment';
+  final String url = '${GlobalConfiguration().getValue('api_base_url')}orders/$orderId?${_apiToken}with=user;foodOrders;foodOrders.food;foodOrders.extras;orderStatus;deliveryAddress;payment';
   final client = new http.Client();
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
-  return streamedRest.stream
-      .transform(utf8.decoder)
-      .transform(json.decoder)
-      .map((data) => Helper.getData(data))
-      .map((data) {
+  return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).map((data) {
     return Order.fromJSON(data);
   });
 }
@@ -60,18 +49,12 @@ Future<Stream<Order>> getRecentOrders() async {
     return new Stream.value(null);
   }
   final String _apiToken = 'api_token=${_user.apiToken}&';
-  final String url =
-      '${GlobalConfiguration().getValue('api_base_url')}orders?${_apiToken}with=user;foodOrders;foodOrders.food;foodOrders.extras;orderStatus;payment&search=user.id:${_user.id}&searchFields=user.id:=&orderBy=updated_at&sortedBy=desc&limit=3';
+  final String url = '${GlobalConfiguration().getValue('api_base_url')}orders?${_apiToken}with=user;foodOrders;foodOrders.food;foodOrders.extras;orderStatus;payment&search=user.id:${_user.id}&searchFields=user.id:=&orderBy=updated_at&sortedBy=desc&limit=3';
 
   final client = new http.Client();
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
-  return streamedRest.stream
-      .transform(utf8.decoder)
-      .transform(json.decoder)
-      .map((data) => Helper.getData(data))
-      .expand((data) => (data as List))
-      .map((data) {
+  return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
     return Order.fromJSON(data);
   });
 }
@@ -82,18 +65,12 @@ Future<Stream<OrderStatus>> getOrderStatus() async {
     return new Stream.value(null);
   }
   final String _apiToken = 'api_token=${_user.apiToken}';
-  final String url =
-      '${GlobalConfiguration().getValue('api_base_url')}order_statuses?$_apiToken';
+  final String url = '${GlobalConfiguration().getValue('api_base_url')}order_statuses?$_apiToken';
 
   final client = new http.Client();
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
-  return streamedRest.stream
-      .transform(utf8.decoder)
-      .transform(json.decoder)
-      .map((data) => Helper.getData(data))
-      .expand((data) => (data as List))
-      .map((data) {
+  return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
     return OrderStatus.fromJSON(data);
   });
 }
@@ -109,8 +86,7 @@ Future<Order> addOrder(Order order, Payment payment) async {
   order.user = _user;
   order.payment = payment;
   final String _apiToken = 'api_token=${_user.apiToken}';
-  final String url =
-      '${GlobalConfiguration().getValue('api_base_url')}orders?$_apiToken';
+  final String url = '${GlobalConfiguration().getValue('api_base_url')}orders?$_apiToken';
 
   final client = new http.Client();
   Map params = order.toMap();
@@ -129,8 +105,7 @@ Future<Order> cancelOrder(Order order) async {
   print(order.toMap());
   User _user = userRepo.currentUser.value;
   final String _apiToken = 'api_token=${_user.apiToken}';
-  final String url =
-      '${GlobalConfiguration().getValue('api_base_url')}orders/${order.id}?$_apiToken';
+  final String url = '${GlobalConfiguration().getValue('api_base_url')}orders/${order.id}?$_apiToken';
   final client = new http.Client();
   final response = await client.put(
     url,

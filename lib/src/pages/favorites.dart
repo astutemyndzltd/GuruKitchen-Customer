@@ -12,6 +12,11 @@ import '../elements/ShoppingCartButtonWidget.dart';
 import '../repository/user_repository.dart';
 
 class FavoritesWidget extends StatefulWidget {
+
+  final GlobalKey<ScaffoldState> parentScaffoldKey;
+
+  FavoritesWidget({this.parentScaffoldKey});
+
   @override
   _FavoritesWidgetState createState() => _FavoritesWidgetState();
 }

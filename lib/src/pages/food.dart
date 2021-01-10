@@ -129,7 +129,7 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                   children: <Widget>[
                                     Container(
                                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                                      decoration: BoxDecoration(color: _con.food.outOfStock ? Colors.red : Colors.green, borderRadius: BorderRadius.circular(24)),
+                                      decoration: BoxDecoration(color: _con.food.outOfStock ? Colors.red : Colors.green, borderRadius: BorderRadius.circular(3)),
                                       child: _con.food.outOfStock
                                           ? Text(
                                               'Sold Out',
@@ -399,35 +399,46 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                   children: <Widget>[
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width - 110,
+                                      // add to cart button
                                       child: FlatButton(
                                         onPressed: () {
+
+                                          if(_con.loadCart) return;
+
                                           if (currentUser.value.apiToken == null) {
                                             Navigator.of(context).pushNamed("/Login");
                                           }
                                           else {
+
+                                            if(!_con.food.restaurant.isActuallyOpen() && !_con.food.restaurant.isAvailableForPreorder()) {
+                                              _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("The restaurant is neither open nor available for pre-order")));
+                                              return;
+                                            }
+
                                             if (_con.food.outOfStock) {
                                               _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("This food can't be added to the cart as it is sold out currently")));
                                               return;
                                             }
 
-                                            if (_con.isSameRestaurants(_con.food)) {
-                                              if (_con.food.extras.length > 0) {
-                                                int noOfSelectedExtras = 0;
+                                            if (_con.food.extras.length > 0) {
+                                              int noOfSelectedExtras = 0;
 
-                                                for (int i = 0; i < _con.food.extras?.length; i++) {
-                                                  var extra = _con.food.extras[i];
-                                                  if (extra.checked) noOfSelectedExtras++;
-                                                }
-
-                                                if (noOfSelectedExtras == 0) {
-                                                  _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("You need to select at least one extra to add this food to cart")));
-                                                  return;
-                                                }
-
+                                              for (int i = 0; i < _con.food.extras?.length; i++) {
+                                                var extra = _con.food.extras[i];
+                                                if (extra.checked) noOfSelectedExtras++;
                                               }
 
+                                              if (noOfSelectedExtras == 0) {
+                                                _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("You need to select at least one extra to add this food to cart")));
+                                                return;
+                                              }
+
+                                            }
+
+                                            if (_con.isSameRestaurants(_con.food)) {
                                               _con.addToCart(_con.food);
-                                            } else {
+                                            }
+                                            else {
                                               showDialog(
                                                 context: context,
                                                 builder: (BuildContext context) {
@@ -441,6 +452,7 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                                 },
                                               );
                                             }
+
                                           }
                                         },
                                         padding: EdgeInsets.symmetric(vertical: 14),

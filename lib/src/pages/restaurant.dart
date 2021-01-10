@@ -95,6 +95,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
+                                    // restaurant name
                                     Expanded(
                                       child: Text(
                                         _con.restaurant?.name ?? '',
@@ -104,6 +105,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                         style: Theme.of(context).textTheme.headline3,
                                       ),
                                     ),
+                                    // rating
                                     SizedBox(
                                       height: 32,
                                       child: Chip(
@@ -112,6 +114,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: <Widget>[
                                             Text(_con.restaurant.rate, style: Theme.of(context).textTheme.bodyText1.merge(TextStyle(color: Theme.of(context).primaryColor))),
+                                            SizedBox(width:2),
                                             Icon(
                                               Icons.star_border,
                                               color: Theme.of(context).primaryColor,
@@ -120,7 +123,9 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                           ],
                                         ),
                                         backgroundColor: Theme.of(context).accentColor.withOpacity(0.9),
-                                        shape: StadiumBorder(),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(4.0),
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -128,38 +133,72 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                               ),
                               Row(
                                 children: <Widget>[
-                                  SizedBox(width: 20),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                                    decoration: BoxDecoration(color: _con.restaurant.closed ? Colors.grey : Colors.green, borderRadius: BorderRadius.circular(24)),
-                                    child: _con.restaurant.closed
-                                        ? Text(
-                                            S.of(context).closed,
-                                            style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
-                                          )
-                                        : Text(
-                                            S.of(context).open,
-                                            style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
-                                          ),
-                                  ),
+                                  SizedBox(width: 18),
+                                  // closed but opening later button
+                                  if (!_con.restaurant.isActuallyOpen() && _con.restaurant.openingLaterToday())
+                                    Container(
+                                      margin: EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+                                      padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                                      decoration: BoxDecoration(color: Colors.pink, borderRadius: BorderRadius.circular(3)),
+                                      child: Text(
+                                        'Opening Later',
+                                        style: TextStyle(color: Theme.of(context).primaryColor),
+                                      ),
+                                    ),
+                                  // delivery button
+                                  if (_con.restaurant.isAvailableForDelivery())
+                                    Container(
+                                      margin: EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+                                      padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                                      decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.circular(3)),
+                                      child: Text(
+                                        'Delivery',
+                                        style: TextStyle(color: Theme.of(context).primaryColor),
+                                      ),
+                                    ),
+                                  // pickup button
+                                  if (_con.restaurant.isAvailableForPickup())
+                                    Container(
+                                      margin: EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+                                      padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                                      decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(3)),
+                                      child: Text(
+                                        'Pickup',
+                                        style: TextStyle(color: Theme.of(context).primaryColor),
+                                      ),
+                                    ),
+                                  // preorder button
+                                  if (_con.restaurant.isClosedAndAvailableForPreorder())
+                                    Container(
+                                      margin: EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+                                      padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                                      decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.circular(3)),
+                                      child: Text(
+                                        'Pre-Order',
+                                        style: TextStyle(color: Theme.of(context).primaryColor),
+                                      ),
+                                    ),
                                   SizedBox(width: 10),
                                   Expanded(child: SizedBox(height: 0)),
+                                  // distance in kilometers
                                   Container(
                                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                                    decoration: BoxDecoration(color: Helper.canDelivery(_con.restaurant) ? Colors.green : Colors.grey, borderRadius: BorderRadius.circular(24)),
+                                    decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(3)),
                                     child: Text(
                                       Helper.getDistance(_con.restaurant.distance, Helper.of(context).trans(setting.value.distanceUnit)),
-                                      style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
+                                      style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
                                     ),
                                   ),
                                   SizedBox(width: 20),
                                 ],
                               ),
+                              // description
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                 child: Helper.applyHtml(context, _con.restaurant.description),
                               ),
                               ImageThumbCarouselWidget(galleriesList: _con.galleries),
+                              // information
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 20),
                                 child: ListTile(
@@ -179,7 +218,8 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                 child: Helper.applyHtml(context, _con.restaurant.information),
                               ),
-                              Container(
+                              // for more details please chat with our managers
+                              /*Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                                 margin: const EdgeInsets.symmetric(vertical: 5),
                                 color: Theme.of(context).primaryColor,
@@ -224,7 +264,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                     ),
                                   ],
                                 ),
-                              ),
+                              )*/
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                                 margin: const EdgeInsets.symmetric(vertical: 5),

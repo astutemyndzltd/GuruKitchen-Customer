@@ -91,8 +91,8 @@ class CardWidget extends StatelessWidget {
                         style: TextStyle(color: Theme.of(context).primaryColor),
                       ),
                     ),
+                  // preorder button
                   if (restaurant.isClosedAndAvailableForPreorder())
-                    // preorder button
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 2, vertical: 8),
                       padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3),

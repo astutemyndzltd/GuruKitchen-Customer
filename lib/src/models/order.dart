@@ -103,6 +103,4 @@ class Order {
         this.orderStatus.id == '1'; // 1 for order received status
   }
 
-
-
 }

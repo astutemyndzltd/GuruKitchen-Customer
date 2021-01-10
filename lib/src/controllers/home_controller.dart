@@ -49,7 +49,7 @@ class HomeController extends ControllerMVC {
         overlayLoader.remove();
         setState(() {});
       }
-      ;
+
     };
 
     var future1 = listenForNearbyRestaurants();

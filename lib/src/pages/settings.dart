@@ -239,7 +239,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                               style: Theme.of(context).textTheme.bodyText1,
                             ),
                           ),
-                          ListTile(
+                          /*ListTile(
                             onTap: () {
                               Navigator.of(context).pushNamed('/Languages');
                             },
@@ -262,7 +262,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                               S.of(context).english,
                               style: TextStyle(color: Theme.of(context).focusColor),
                             ),
-                          ),
+                          ),*/
                           ListTile(
                             onTap: () {
                               Navigator.of(context).pushNamed('/DeliveryAddresses');

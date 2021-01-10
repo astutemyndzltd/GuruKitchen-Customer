@@ -21,10 +21,7 @@ class DetailsWidget extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   Widget currentPage;
 
-  DetailsWidget({
-    Key key,
-    this.currentTab,
-  }) {
+  DetailsWidget({Key key, this.currentTab}) {
     if (currentTab != null) {
       if (currentTab is RouteArgument) {
         routeArgument = currentTab;
@@ -119,7 +116,8 @@ class _DetailsWidgetState extends StateMVC<DetailsWidget> {
                   this._selectTab(0);
                 },
               ),
-              IconButton(
+              //chat
+              /*IconButton(
                 icon: Icon(
                   Icons.chat,
                   size: widget.currentTab == 1 ? 28 : 24,
@@ -128,7 +126,7 @@ class _DetailsWidgetState extends StateMVC<DetailsWidget> {
                 onPressed: () {
                   this._selectTab(1);
                 },
-              ),
+              ),*/
               IconButton(
                 icon: Icon(
                   Icons.directions,
@@ -139,6 +137,7 @@ class _DetailsWidgetState extends StateMVC<DetailsWidget> {
                   this._selectTab(2);
                 },
               ),
+              // menu
               FlatButton(
                 onPressed: () {
                   this._selectTab(3);
