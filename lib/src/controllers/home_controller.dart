@@ -99,18 +99,22 @@ class HomeController extends ControllerMVC {
       f1Done = true;
       removeLoader();
     });
+
     future2.whenComplete(() {
       f2Done = true;
       removeLoader();
     });
+
     future3.whenComplete(() {
       f3Done = true;
       removeLoader();
     });
+
     future4.whenComplete(() {
       f4Done = true;
       removeLoader();
     });
+
   }
 
   Future<void> listenForNearbyRestaurants() async {

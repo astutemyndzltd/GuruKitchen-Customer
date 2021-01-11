@@ -13,7 +13,6 @@ import '../models/filter.dart';
 import '../repository/cuisine_repository.dart';
 
 class FilterController extends ControllerMVC {
-
   GlobalKey<ScaffoldState> scaffoldKey;
   List<Cuisine> cuisines = [];
   List<Category> foodCategories = [];
@@ -22,117 +21,105 @@ class FilterController extends ControllerMVC {
 
   FilterController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
-    listenForFilter().whenComplete(() {
-      listenForCuisines();
-      listenForFoodCategories();
-    });
+    this.initialize();
   }
 
-  Future<void> listenForFilter() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      filter = Filter.fromJSON(json.decode(prefs.getString('filter') ?? '{}'));
-    });
-  }
-
-  Future<void> saveFilter() async {
-    var prefs = await SharedPreferences.getInstance();
-    filter.cuisines = this.cuisines.where((c) => c.selected).toList();
-    filter.foodCategories = this.foodCategories.where((fc) => fc.selected).toList();
-    prefs.setString('filter', json.encode(filter.toMap()));
-  }
-
-  void listenForCuisines({String message}) async {
-    cuisines.add(new Cuisine.fromJSON({'id': '0', 'name': S.of(context).all, 'selected': true}));
-    final Stream<Cuisine> stream = await getCuisines();
-    stream.listen((Cuisine cuisine) {
-      setState(() {
-        if (filter.cuisines.contains(cuisine)) {
-          cuisine.selected = true;
-          cuisines.elementAt(0).selected = false;
-        }
-        cuisines.add(cuisine);
-      });
-    }, onError: (a) {
-      print(a);
-      scaffoldKey?.currentState?.showSnackBar(SnackBar(
-        content: Text(S.of(context).verify_your_internet_connection),
-      ));
-    }, onDone: () {
-      if (message != null) {
-        scaffoldKey?.currentState?.showSnackBar(SnackBar(
-          content: Text(message),
-        ));
-      }
-    });
-  }
-
-  void listenForFoodCategories() async {
-    foodCategories.add(Category.fromJSON({'id': '0', 'name': 'All', 'selected': true}));
-    var streamOfCategories = await getCategories();
-    
-    streamOfCategories.listen((Category category) =>foodCategories.add(category),
-      onDone: () {
-        for(var fc in foodCategories) {
-          fc.selected = filter.foodCategories.firstWhere((cat) => cat.id == fc.id, orElse: () => null) != null;
-          fc.selected && (foodCategories[0].selected = false);
-          setState((){});
-        }
-      }
-    );
-  }
-
-  Future<void> refreshCuisinesPlusCategories() async {
-    cuisines.clear();
-    foodCategories.clear();
+  initialize() async {
+    cuisines.add(Cuisine.from(id: '0', name: 'All', selected: true));
+    foodCategories.add(Category.from(id: '0', name: 'All', selected: true));
+    setState(() {});
+    await listenForFilter();
     listenForCuisines();
     listenForFoodCategories();
   }
 
+  Future<void> listenForFilter() async {
+    var prefs = await SharedPreferences.getInstance();
+    var filterString = prefs.getString('filter');
+    filter = Filter.fromJSON(json.decode(filterString ?? '{}'));
+  }
+
+  Future<void> saveFilter() async {
+    filter.selectedCuisines = cuisines.skip(1).where((c) => c.selected).toList();
+    filter.selectedFoodCategories = foodCategories.skip(1).where((fc) => fc.selected).toList();
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setString('filter', json.encode(filter.toMap()));
+  }
+
+  void listenForCuisines() async {
+    var streamOfCuisines = await getCuisines();
+    streamOfCuisines.listen((c) => cuisines.add(c), onDone: () {
+      for(var c in cuisines.skip(1)) {
+        c.selected = filter.selectedCuisines.firstWhere((sc) => sc.id == c.id, orElse: () => null) != null;
+        c.selected && (cuisines[0].selected = false);
+      }
+      setState(() {});
+    });
+
+  }
+
+  void listenForFoodCategories() async {
+    var streamOfCategories = await getCategories();
+    streamOfCategories.listen((fc) => foodCategories.add(fc), onDone: () {
+      for(var fc in foodCategories.skip(1)) {
+        fc.selected = filter.selectedFoodCategories.firstWhere((sfc) => sfc.id == fc.id, orElse: () => null) != null;
+        fc.selected && (foodCategories[0].selected = false);
+      }
+      setState(() {});
+    });
+  }
+
+  Future<void> refreshCuisinesPlusCategories() async {}
+
   void clearFilter() {
-    setState(() {resetCuisines(); resetFoodCategories(); });
+    resetCuisines();
+    resetFoodCategories();
+    setState((){});
   }
 
   void resetCuisines() {
-    filter.cuisines = [];
-    cuisines.forEach((Cuisine _f) {
-      _f.selected = false;
-    });
-    cuisines.elementAt(0).selected = true;
+    filter.selectedCuisines.clear();
+    cuisines.forEach((c) => c.selected = false);
+    cuisines[0].selected = true;
   }
 
   void resetFoodCategories() {
-    filter.foodCategories = [];
+    filter.selectedFoodCategories.clear();
     foodCategories.forEach((fc) => fc.selected = false);
     foodCategories[0].selected = true;
   }
 
   void onChangeCuisinesFilter(int index) {
-    if (index == 0) {
-      // all
-      setState(() {
-        resetCuisines();
-      });
-    } else {
-      setState(() {
-        cuisines.elementAt(index).selected = !cuisines.elementAt(index).selected;
-        cuisines.elementAt(0).selected = false;
-      });
+    cuisines[index].selected = !cuisines[index].selected;
+
+    if(cuisines[index].selected) {
+      if(index == 0) cuisines.skip(1).forEach((c) => c.selected = false);
+      else cuisines[0].selected = false;
     }
+    else {
+      if(index != 0) {
+        var totalSelected = cuisines.skip(1).where((c) => c.selected).length;
+        cuisines[0].selected = (totalSelected == 0);
+      }
+    }
+
+    setState((){});
   }
 
   void onChangeFoodCategoriesFilter(int index) {
-    if (index == 0) {
-      // all
-      setState(() {
-        resetFoodCategories();
-      });
-    } else {
-      setState(() {
-        foodCategories.elementAt(index).selected = !foodCategories.elementAt(index).selected;
-        foodCategories.elementAt(0).selected = false;
-      });
-    }
-  }
+    foodCategories[index].selected = !foodCategories[index].selected;
 
+    if(foodCategories[index].selected) {
+      if(index == 0) foodCategories.skip(1).forEach((fc) => fc.selected = false);
+      else foodCategories[0].selected = false;
+    }
+    else {
+      if(index != 0) {
+        var totalSelected = foodCategories.skip(1).where((fc) => fc.selected).length;
+        foodCategories[0].selected = (totalSelected == 0);
+      }
+    }
+
+    setState((){});
+  }
 }

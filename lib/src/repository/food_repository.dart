@@ -95,7 +95,7 @@ Future<Stream<Food>> getFoodsByCategory(categoryId) async {
   _queryParams['search'] = 'category_id:$categoryId';
   _queryParams['searchFields'] = 'category_id:=';
 
-  _queryParams = filter.toQuery(oldQuery: _queryParams);
+  //_queryParams = filter.toQuery(oldQuery: _queryParams);
   uri = uri.replace(queryParameters: _queryParams);
   try {
     final client = new http.Client();

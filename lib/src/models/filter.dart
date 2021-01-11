@@ -6,8 +6,8 @@ import '../models/cuisine.dart';
 class Filter {
   //bool delivery;
   //bool open;
-  List<Cuisine> cuisines;
-  List<Category> foodCategories;
+  List<Cuisine> selectedCuisines;
+  List<Category> selectedFoodCategories;
 
   Filter();
 
@@ -15,10 +15,10 @@ class Filter {
     try {
       //open = jsonMap['open'] ?? false;
       //delivery = jsonMap['delivery'] ?? false;
-      cuisines = jsonMap['cuisines'] != null && (jsonMap['cuisines'] as List).length > 0
+      selectedCuisines = jsonMap['cuisines'] != null && (jsonMap['cuisines'] as List).length > 0
           ? List.from(jsonMap['cuisines']).map((element) => Cuisine.fromJSON(element)).toList()
           : [];
-      foodCategories = jsonMap['food_categories'] != null && (jsonMap['food_categories'] as List).length > 0
+      selectedFoodCategories = jsonMap['food_categories'] != null && (jsonMap['food_categories'] as List).length > 0
           ? List.from(jsonMap['food_categories']).map((element) => Category.fromJSON(element)).toList()
           : [];
     } catch (e) {
@@ -28,8 +28,8 @@ class Filter {
 
   Map<String, dynamic> toMap() {
     var map = new Map<String, dynamic>();
-    map['cuisines'] = cuisines.map((element) => element.toMap()).toList();
-    map['food_categories'] = foodCategories.map((element) => element.toMap()).toList();
+    map['cuisines'] = selectedCuisines.map((element) => element.toMap()).toList();
+    map['food_categories'] = selectedFoodCategories.map((element) => element.toMap()).toList();
     return map;
   }
 
@@ -48,15 +48,15 @@ class Filter {
     return filter;
   }
 
-  Map<String, dynamic> toQuery({Map<String, dynamic> oldQuery}) {
+  Map<String, dynamic> toQuery() {
     Map<String, dynamic> query = {};
 
-    if (cuisines != null && cuisines.isNotEmpty) {
-      query['cuisines[]'] = cuisines.map((element) => element.id).toList();
+    if (selectedCuisines != null && selectedCuisines.isNotEmpty) {
+      query['cuisines[]'] = selectedCuisines.map((element) => element.id).toList();
     }
 
-    if(foodCategories != null && foodCategories.isNotEmpty) {
-      query['categories[]'] = foodCategories.map((element) => element.id).toList();
+    if(selectedFoodCategories != null && selectedFoodCategories.isNotEmpty) {
+      query['categories[]'] = selectedFoodCategories.map((element) => element.id).toList();
     }
 
     return query;

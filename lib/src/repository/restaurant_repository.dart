@@ -24,6 +24,14 @@ Future<List<Restaurant>> getNearbyRestaurants() async {
     queryParams['myLat'] = address.latitude.toString();
     queryParams['myLon'] = address.longitude.toString();
 
+    var prefs = await SharedPreferences.getInstance();
+    var filterString = prefs.getString('filter');
+
+    if(filterString != null) {
+      var filter = Filter.fromJSON(json.decode(filterString));
+      queryParams.addAll(filter.toQuery());
+    }
+
     uri = uri.replace(queryParameters: queryParams);
 
     try {

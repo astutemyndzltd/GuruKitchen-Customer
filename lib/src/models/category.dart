@@ -11,6 +11,8 @@ class Category {
 
   Category();
 
+  Category.from({this.id,this.name,this.selected});
+
   Category.fromJSON(Map<String, dynamic> jsonMap) {
     try {
       id = jsonMap['id'].toString();
