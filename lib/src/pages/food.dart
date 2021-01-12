@@ -444,7 +444,7 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                                 builder: (BuildContext context) {
                                                   // return object of type Dialog
                                                   return AddToCartAlertDialogWidget(
-                                                      oldFood: _con.carts.elementAt(0)?.food,
+                                                      oldFood: _con.cartItems.elementAt(0)?.food,
                                                       newFood: _con.food,
                                                       onPressed: (food, {reset: true}) {
                                                         return _con.addToCart(_con.food, reset: true);

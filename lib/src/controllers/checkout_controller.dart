@@ -35,7 +35,7 @@ class CheckoutController extends CartController {
     super.onLoadingCartDone();
   }
 
-  void addOrder(List<Cart> carts) {
+  void addOrder(List<CartItem> carts) {
     Order order = new Order();
     order.orderType = settingRepo.orderType;
     order.note = settingRepo.orderNote ?? '';

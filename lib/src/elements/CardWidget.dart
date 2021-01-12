@@ -152,8 +152,7 @@ class CardWidget extends StatelessWidget {
                       ),
                       restaurant.distanceInKm > 0
                           ? Text(
-                              restaurant.distanceInKm.toStringAsFixed(2) + ' Km',
-                              //Helper.getDistance(restaurant.distance, Helper.of(context).trans(setting.value.distanceUnit)),
+                              Helper.getDistance(restaurant.distanceInKm, Helper.of(context).trans(setting.value.distanceUnit)),
                               overflow: TextOverflow.fade,
                               maxLines: 1,
                               softWrap: false,

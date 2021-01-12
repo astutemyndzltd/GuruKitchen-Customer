@@ -182,29 +182,46 @@ class Helper {
 
   static String getDistance(double distance, String unit) {
     String _unit = setting.value.distanceUnit;
-    if (_unit == 'km') {
+    /*if (_unit == 'km') {
       distance *= 1.60934;
-    }
+    }*/
     return distance != null ? distance.toStringAsFixed(2) + " " + unit : "";
   }
 
-  static bool canDelivery(Restaurant _restaurant, {List<Cart> carts}) {
-    bool _can = true;
-    String _unit = setting.value.distanceUnit;
-    double _deliveryRange = _restaurant.deliveryRange;
-    double _distance = _restaurant.distance;
-    carts?.forEach((Cart _cart) {
-      _can &= !_cart.food.outOfStock;
+  static bool canDeliveryy(Restaurant restaurant, {List<CartItem> carts}) {
+    bool canDeliver = true;
+    String unit = setting.value.distanceUnit;
+    double deliveryRange = restaurant.deliveryRange;
+    double distance = restaurant.distance;
+
+    carts?.forEach((CartItem c) {
+      canDeliver &= !c.food.outOfStock;
     });
 
-    if (_unit == 'km') {
-      _deliveryRange /= 1.60934;
+    if (unit == 'km') {
+      deliveryRange /= 1.60934;
     }
-    if (_distance == 0 && !deliveryAddress.value.isUnknown()) {
-      _distance = sqrt(pow(69.1 * (double.parse(_restaurant.latitude) - deliveryAddress.value.latitude), 2) + pow(69.1 * (deliveryAddress.value.longitude - double.parse(_restaurant.longitude)) * cos(double.parse(_restaurant.latitude) / 57.3), 2));
+
+    if (distance == 0 && !deliveryAddress.value.isUnknown()) {
+      distance = sqrt(pow(69.1 * (double.parse(restaurant.latitude) - deliveryAddress.value.latitude), 2) + pow(69.1 * (deliveryAddress.value.longitude - double.parse(restaurant.longitude)) * cos(double.parse(restaurant.latitude) / 57.3), 2));
     }
-    _can &= _restaurant.availableForDelivery && (_distance < _deliveryRange) && !deliveryAddress.value.isUnknown();
-    return _can;
+
+    canDeliver &= restaurant.availableForDelivery && (distance < deliveryRange) && !deliveryAddress.value.isUnknown();
+    return canDeliver;
+  }
+
+  static bool canDeliver(Restaurant restaurant, {List<CartItem> cartItems}) {
+    if (deliveryAddress.value == null || !deliveryAddress.value.isValid()) return false;
+    if (!restaurant.availableForDelivery) return false;
+    if (restaurant.distance > restaurant.deliveryRange) return false;
+
+    for (var item in cartItems) {
+      if (item.food.outOfStock) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   static String skipHtml(String htmlString) {

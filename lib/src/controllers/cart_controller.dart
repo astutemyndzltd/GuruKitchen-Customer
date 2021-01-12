@@ -20,7 +20,7 @@ class Slots {
 }
 
 class CartController extends ControllerMVC {
-  List<Cart> carts = <Cart>[];
+  List<CartItem> carts = <CartItem>[];
   double taxAmount = 0.0;
   double deliveryFee = 0.0;
   int cartCount = 0;
@@ -36,8 +36,8 @@ class CartController extends ControllerMVC {
 
   void listenForCarts({String message}) async {
     carts.clear();
-    final Stream<Cart> stream = await getCart();
-    stream.listen((Cart _cart) {
+    final Stream<CartItem> stream = await getCart();
+    stream.listen((CartItem _cart) {
       if (!carts.contains(_cart)) {
         setState(() {
           coupon = _cart.food.applyCoupon(coupon);
@@ -93,7 +93,7 @@ class CartController extends ControllerMVC {
     listenForCarts(message: S.of(context).carts_refreshed_successfuly);
   }
 
-  void removeFromCart(Cart _cart) async {
+  void removeFromCart(CartItem _cart) async {
     setState(() {
       this.carts.remove(_cart);
     });
@@ -116,7 +116,7 @@ class CartController extends ControllerMVC {
       cartPrice *= cart.quantity;
       subTotal += cartPrice;
     });
-    if (Helper.canDelivery(carts[0].food.restaurant, carts: carts)) {
+    if (Helper.canDeliver(carts[0].food.restaurant, cartItems: carts)) {
       deliveryFee = carts[0].food.restaurant.deliveryFee;
     }
     taxAmount = (subTotal + deliveryFee) * carts[0].food.restaurant.defaultTax / 100;
@@ -141,7 +141,7 @@ class CartController extends ControllerMVC {
     });
   }
 
-  incrementQuantity(Cart cart) {
+  incrementQuantity(CartItem cart) {
     if (cart.quantity <= 99) {
       ++cart.quantity;
       updateCart(cart);
@@ -149,7 +149,7 @@ class CartController extends ControllerMVC {
     }
   }
 
-  decrementQuantity(Cart cart) {
+  decrementQuantity(CartItem cart) {
     if (cart.quantity > 1) {
       --cart.quantity;
       updateCart(cart);

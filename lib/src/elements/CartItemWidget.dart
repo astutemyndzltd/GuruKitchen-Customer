@@ -8,7 +8,7 @@ import '../models/route_argument.dart';
 // ignore: must_be_immutable
 class CartItemWidget extends StatefulWidget {
   String heroTag;
-  Cart cart;
+  CartItem cart;
   VoidCallback increment;
   VoidCallback decrement;
   VoidCallback onDismissed;

@@ -10,7 +10,7 @@ import '../models/cart.dart';
 import '../models/user.dart';
 import '../repository/user_repository.dart' as userRepo;
 
-Future<Stream<Cart>> getCart() async {
+Future<Stream<CartItem>> getCart() async {
   User _user = userRepo.currentUser.value;
   if (_user.apiToken == null) {
     return new Stream.value(null);
@@ -22,7 +22,7 @@ Future<Stream<Cart>> getCart() async {
   final client = new http.Client();
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
   return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
-    return Cart.fromJSON(data);
+    return CartItem.fromJSON(data);
   });
 }
 
@@ -42,10 +42,10 @@ Future<Stream<int>> getCartCount() async {
       );
 }
 
-Future<Cart> addCart(Cart cart, bool reset) async {
+Future<CartItem> addCart(CartItem cart, bool reset) async {
   User _user = userRepo.currentUser.value;
   if (_user.apiToken == null) {
-    return new Cart();
+    return new CartItem();
   }
   Map<String, dynamic> decodedJSON = {};
   final String _apiToken = 'api_token=${_user.apiToken}';
@@ -63,13 +63,13 @@ Future<Cart> addCart(Cart cart, bool reset) async {
   } on FormatException catch (e) {
     print(CustomTrace(StackTrace.current, message: e.toString()));
   }
-  return Cart.fromJSON(decodedJSON);
+  return CartItem.fromJSON(decodedJSON);
 }
 
-Future<Cart> updateCart(Cart cart) async {
+Future<CartItem> updateCart(CartItem cart) async {
   User _user = userRepo.currentUser.value;
   if (_user.apiToken == null) {
-    return new Cart();
+    return new CartItem();
   }
   final String _apiToken = 'api_token=${_user.apiToken}';
   cart.userId = _user.id;
@@ -80,10 +80,10 @@ Future<Cart> updateCart(Cart cart) async {
     headers: {HttpHeaders.contentTypeHeader: 'application/json'},
     body: json.encode(cart.toMap()),
   );
-  return Cart.fromJSON(json.decode(response.body)['data']);
+  return CartItem.fromJSON(json.decode(response.body)['data']);
 }
 
-Future<bool> removeCart(Cart cart) async {
+Future<bool> removeCart(CartItem cart) async {
   User _user = userRepo.currentUser.value;
   if (_user.apiToken == null) {
     return false;

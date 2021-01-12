@@ -49,7 +49,7 @@ class CartBottomDetailsWidget extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodyText1,
                         ),
                       ),
-                      if (Helper.canDelivery(_con.carts[0].food.restaurant, carts: _con.carts)) Helper.getPrice(_con.carts[0].food.restaurant.deliveryFee, context, style: Theme.of(context).textTheme.subtitle1, zeroPlaceholder: 'Free') else Helper.getPrice(0, context, style: Theme.of(context).textTheme.subtitle1, zeroPlaceholder: 'Free')
+                      if (Helper.canDeliver(_con.carts[0].food.restaurant, cartItems: _con.carts)) Helper.getPrice(_con.carts[0].food.restaurant.deliveryFee, context, style: Theme.of(context).textTheme.subtitle1, zeroPlaceholder: 'Free') else Helper.getPrice(0, context, style: Theme.of(context).textTheme.subtitle1, zeroPlaceholder: 'Free')
                     ],
                   ),
                   Row(

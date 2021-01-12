@@ -11,7 +11,7 @@ import '../repository/user_repository.dart' as userRepo;
 class DeliveryAddressesController extends ControllerMVC with ChangeNotifier {
   List<model.Address> addresses = <model.Address>[];
   GlobalKey<ScaffoldState> scaffoldKey;
-  Cart cart;
+  CartItem cart;
 
   DeliveryAddressesController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -40,8 +40,8 @@ class DeliveryAddressesController extends ControllerMVC with ChangeNotifier {
   }
 
   void listenForCart() async {
-    final Stream<Cart> stream = await getCart();
-    stream.listen((Cart _cart) {
+    final Stream<CartItem> stream = await getCart();
+    stream.listen((CartItem _cart) {
       cart = _cart;
     });
   }

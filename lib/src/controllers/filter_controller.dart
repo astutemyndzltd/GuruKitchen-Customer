@@ -17,17 +17,14 @@ class FilterController extends ControllerMVC {
   List<Cuisine> cuisines = [];
   List<Category> foodCategories = [];
   Filter filter;
-  Cart cart;
+  CartItem cart;
 
   FilterController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
     this.initialize();
   }
 
-  initialize() async {
-    cuisines.add(Cuisine.from(id: '0', name: 'All', selected: true));
-    foodCategories.add(Category.from(id: '0', name: 'All', selected: true));
-    setState(() {});
+  void initialize() async {
     await listenForFilter();
     listenForCuisines();
     listenForFoodCategories();
@@ -48,6 +45,7 @@ class FilterController extends ControllerMVC {
 
   void listenForCuisines() async {
     var streamOfCuisines = await getCuisines();
+    cuisines.add(Cuisine.from(id: '0', name: 'All', selected: true));
     streamOfCuisines.listen((c) => cuisines.add(c), onDone: () {
       for(var c in cuisines.skip(1)) {
         c.selected = filter.selectedCuisines.firstWhere((sc) => sc.id == c.id, orElse: () => null) != null;
@@ -60,6 +58,7 @@ class FilterController extends ControllerMVC {
 
   void listenForFoodCategories() async {
     var streamOfCategories = await getCategories();
+    foodCategories.add(Category.from(id: '0', name: 'All', selected: true));
     streamOfCategories.listen((fc) => foodCategories.add(fc), onDone: () {
       for(var fc in foodCategories.skip(1)) {
         fc.selected = filter.selectedFoodCategories.firstWhere((sfc) => sfc.id == fc.id, orElse: () => null) != null;
@@ -69,7 +68,9 @@ class FilterController extends ControllerMVC {
     });
   }
 
-  Future<void> refreshCuisinesPlusCategories() async {}
+  Future<void> refreshCuisinesPlusCategories() async {
+
+  }
 
   void clearFilter() {
     resetCuisines();
@@ -104,6 +105,7 @@ class FilterController extends ControllerMVC {
     }
 
     setState((){});
+
   }
 
   void onChangeFoodCategoriesFilter(int index) {
@@ -122,4 +124,5 @@ class FilterController extends ControllerMVC {
 
     setState((){});
   }
+
 }
