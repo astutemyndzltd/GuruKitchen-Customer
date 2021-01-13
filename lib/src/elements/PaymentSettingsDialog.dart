@@ -16,7 +16,6 @@ class PaymentSettingsDialog extends StatefulWidget {
 
 class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
   GlobalKey<FormState> _paymentSettingsFormKey = new GlobalKey<FormState>();
-  TextEditingController controller = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +58,7 @@ class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
                             keyboardType: TextInputType.number,
                             decoration: getInputDecoration(hintText: 'mm/yy', labelText: S.of(context).exp_date),
                             initialValue: widget.creditCard.expMonth.isNotEmpty ? widget.creditCard.expMonth + '/' + widget.creditCard.expYear : null,
-                            // TODO validate date
                             validator: (input) => !input.contains('/') || input.length != 5 ? S.of(context).not_a_valid_date : null,
-                            controller: this.controller,
                             inputFormatters: [CardExpiryDateTextInputFormatter()],
                             onSaved: (input) {
                               widget.creditCard.expMonth = input.split('/').elementAt(0);

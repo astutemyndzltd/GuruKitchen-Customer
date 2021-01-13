@@ -80,6 +80,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                         ],
                       ),
                     ),
+                    // profile settings
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                       decoration: BoxDecoration(
@@ -177,6 +178,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                         ],
                       ),
                     ),
+                    // payment settings
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                       decoration: BoxDecoration(
@@ -221,6 +223,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                         ],
                       ),
                     ),
+                    // app settings
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                       decoration: BoxDecoration(
