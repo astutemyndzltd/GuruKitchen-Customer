@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/repository/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -21,7 +22,7 @@ class ShoppingCartFloatButtonWidget extends StatefulWidget {
   _ShoppingCartFloatButtonWidgetState createState() => _ShoppingCartFloatButtonWidgetState();
 }
 
-class _ShoppingCartFloatButtonWidgetState extends StateMVC<ShoppingCartFloatButtonWidget> {
+class _ShoppingCartFloatButtonWidgetState extends StateMVC<ShoppingCartFloatButtonWidget> with RouteAware {
   CartController _con;
 
   _ShoppingCartFloatButtonWidgetState() : super(CartController()) {
@@ -35,6 +36,12 @@ class _ShoppingCartFloatButtonWidgetState extends StateMVC<ShoppingCartFloatButt
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 60,
@@ -45,7 +52,7 @@ class _ShoppingCartFloatButtonWidgetState extends StateMVC<ShoppingCartFloatButt
         shape: StadiumBorder(),
         onPressed: () {
           if (currentUser.value.apiToken != null) {
-            Navigator.of(context).pushNamed('/Cart', arguments: widget.routeArgument).then((v) => _con.listenForCartsCount());
+            Navigator.of(context).pushNamed('/Cart', arguments: widget.routeArgument);
           } else {
             Navigator.of(context).pushNamed('/Login');
           }
@@ -75,4 +82,10 @@ class _ShoppingCartFloatButtonWidgetState extends StateMVC<ShoppingCartFloatButt
       ),
     );
   }
+
+  @override
+  void didPopNext() {
+    _con.listenForCartsCount();
+  }
+
 }

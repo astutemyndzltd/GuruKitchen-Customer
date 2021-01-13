@@ -79,6 +79,12 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                               ),
                             ),
                           ),
+                          actions: [
+                            IconButton(
+                              icon: new Icon(Icons.close),
+                              onPressed: () => Navigator.of(context).pop(null),
+                            )
+                          ],
                         ),
                         SliverToBoxAdapter(
                           child: Padding(

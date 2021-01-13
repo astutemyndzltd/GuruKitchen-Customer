@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/repository/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -19,7 +20,7 @@ class ShoppingCartButtonWidget extends StatefulWidget {
   _ShoppingCartButtonWidgetState createState() => _ShoppingCartButtonWidgetState();
 }
 
-class _ShoppingCartButtonWidgetState extends StateMVC<ShoppingCartButtonWidget> {
+class _ShoppingCartButtonWidgetState extends StateMVC<ShoppingCartButtonWidget> with RouteAware {
   CartController _con;
 
   _ShoppingCartButtonWidgetState() : super(CartController()) {
@@ -33,11 +34,17 @@ class _ShoppingCartButtonWidgetState extends StateMVC<ShoppingCartButtonWidget> 
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FlatButton(
       onPressed: () {
         if (currentUser.value.apiToken != null) {
-          Navigator.of(context).pushNamed('/Cart', arguments: RouteArgument(param: '/Pages', id: '2')).then((value) => _con.listenForCartsCount());
+          Navigator.of(context).pushNamed('/Cart', arguments: RouteArgument(param: '/Pages', id: '2'));
         } else {
           Navigator.of(context).pushNamed('/Login');
         }
@@ -67,4 +74,10 @@ class _ShoppingCartButtonWidgetState extends StateMVC<ShoppingCartButtonWidget> 
       color: Colors.transparent,
     );
   }
+
+  @override
+  void didPopNext() {
+    _con.listenForCartsCount();
+  }
+
 }

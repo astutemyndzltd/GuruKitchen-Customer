@@ -27,8 +27,9 @@ String orderNote = '';
 String preorderInfo = '';
 DispatchMethod dispatchMethod = DispatchMethod.none;
 final navigatorKey = GlobalKey<NavigatorState>();
+final RouteObserver<PageRoute> routeObserver = new RouteObserver();
 
-/************************************************************/
+/******************************************************************/
 
 Future<Setting> initSettings() async {
 
