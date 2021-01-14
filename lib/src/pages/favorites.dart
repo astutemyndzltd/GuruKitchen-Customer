@@ -62,12 +62,12 @@ class _FavoritesWidgetState extends StateMVC<FavoritesWidget> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
-                    Padding(
+                    /*Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: SearchBarWidget(onClickFilter: (e) {
                         Scaffold.of(context).openEndDrawer();
                       }),
-                    ),
+                    ),*/
                     SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.only(left: 20, right: 10),

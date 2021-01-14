@@ -149,7 +149,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                       ),
                       padding: EdgeInsets.symmetric(horizontal: 0),
                     ),
-                    if (widget.order.canCancelOrder())
+                    /*if (widget.order.canCancelOrder())
                       FlatButton(
                         onPressed: () {
                           showDialog(
@@ -199,7 +199,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                           children: <Widget>[Text(S.of(context).cancel + " ")],
                         ),
                         padding: EdgeInsets.symmetric(horizontal: 10),
-                      ),
+                      ),*/
                   ],
                 ),
               ),

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:GuruKitchen/src/controllers/cart_controller.dart';
 import 'package:GuruKitchen/src/repository/settings_repository.dart';
 import 'package:collapsible/collapsible.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
@@ -31,11 +32,11 @@ class DeliveryPickupWidget extends StatefulWidget {
 }
 
 class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
-
   DeliveryPickupController _con;
 
   ScrollController scrollController = new ScrollController();
-  int tabIndex = 0, buttonIndex = null;
+  int tabIndex = 0, buttonIndex = null, tabLength = 0;
+  List<String> timesForToday = [], timesForTomorrow = [];
 
   _DeliveryPickupWidgetState() : super(DeliveryPickupController()) {
     _con = controller;
@@ -44,12 +45,16 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Slots timeSlots = _con.generateTimeSlots(15, Duration());
+
+    if (_con.restaurant != null) {
+      timesForToday = _con.restaurant.generateTimesForToday();
+      timesForTomorrow = _con.restaurant.generateTimesForTomorrow();
+      if (timesForToday.length > 0) tabLength++;
+      if (timesForTomorrow.length > 0) tabLength++;
+    }
 
     if (_con.list == null) {
       _con.list = new PaymentMethodList(context);
-//      widget.pickup = widget.list.pickupList.elementAt(0);
-//      widget.delivery = widget.list.pickupList.elementAt(1);
     }
 
     return Scaffold(
@@ -121,7 +126,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.headline4,
                     ),
-                    subtitle: _con.carts.isNotEmpty && Helper.canDeliver(_con.carts[0].food.restaurant, cartItems:  _con.carts)
+                    subtitle: _con.carts.isNotEmpty && Helper.canDeliver(_con.carts[0].food.restaurant, cartItems: _con.carts)
                         ? Text(
                             S.of(context).click_to_confirm_your_address_and_pay_or_long_press,
                             maxLines: 3,
@@ -166,7 +171,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
                     : NotDeliverableAddressesItemWidget()
               ],
             ),
-            // preorder
+            // preorder part
             if (_con.restaurant != null && _con.restaurant.isAvailableForPreorder())
               Container(
                 margin: EdgeInsets.only(top: 20),
@@ -179,43 +184,44 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
                       padding: EdgeInsets.only(bottom: 12, top: 12, left: 20),
                       width: double.infinity,
                       child: Text(
-                        'Get By',
+                        'Get it by',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.headline4,
                       ),
                     ),
-                    // now
-                    Container(
-                      padding: EdgeInsets.only(left: 20),
-                      decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.black12))),
-                      height: 45,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Icon(Icons.timer),
-                          SizedBox(width: 13),
-                          Text(
-                            'Now',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.headline4.copyWith(fontWeight: FontWeight.w500),
-                          ),
-                          Expanded(child: SizedBox()),
-                          Radio(
-                            value: 'now',
-                            groupValue: _con.radioState,
-                            activeColor: Theme.of(context).accentColor,
-                            focusColor: Theme.of(context).accentColor,
-                            onChanged: (v) {
-                              setState(() => _con.radioState = v);
-                              preorderInfo = '';
-                            },
-                          ),
-                        ],
+                    // now row
+                    if (_con.restaurant.isActuallyOpen())
+                      Container(
+                        padding: EdgeInsets.only(left: 20),
+                        decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.black12))),
+                        height: 45,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Icon(Icons.timer),
+                            SizedBox(width: 13),
+                            Text(
+                              'Now',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.headline4.copyWith(fontWeight: FontWeight.w500),
+                            ),
+                            Expanded(child: SizedBox()),
+                            Radio(
+                              value: 'now',
+                              groupValue: _con.radioState,
+                              activeColor: Theme.of(context).accentColor,
+                              focusColor: Theme.of(context).accentColor,
+                              onChanged: (v) {
+                                setState(() => _con.radioState = v);
+                                preorderInfo = '';
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    // later
+                    // later row
                     Container(
                       padding: EdgeInsets.only(left: 20),
                       decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.black12))),
@@ -256,18 +262,19 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
                       collapsed: _con.radioState == 'now',
                       axis: CollapsibleAxis.vertical,
                       child: DefaultTabController(
-                        length: timeSlots.tomorrow == null ? 1 : 2,
+                        length: tabLength,
                         child: Column(
                           children: [
                             TabBar(
                               tabs: [
-                                Tab(
-                                  child: Text(
-                                    'Today',
-                                    style: Theme.of(context).textTheme.headline4.copyWith(fontSize: 17, fontWeight: FontWeight.w500),
+                                if (timesForToday.length > 0)
+                                  Tab(
+                                    child: Text(
+                                      'Today',
+                                      style: Theme.of(context).textTheme.headline4.copyWith(fontSize: 17, fontWeight: FontWeight.w500),
+                                    ),
                                   ),
-                                ),
-                                if (timeSlots.tomorrow != null)
+                                if (timesForTomorrow.length > 0)
                                   Tab(
                                     child: Text(
                                       'Tomorrow',
@@ -275,41 +282,43 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
                                     ),
                                   ),
                               ],
-
                             ),
                             Container(
                               height: 150,
                               child: TabBarView(
                                 children: [
-                                  // today
-                                  Center(
-                                    child: Container(
-                                      height: 40,
-                                      child: ListView.separated(
-                                        scrollDirection: Axis.horizontal,
-                                        itemBuilder: (context, index) {
-                                          return TextButton(
-                                            child: Text(timeSlots.today[index]),
-                                            style: TextButton.styleFrom(
-                                              minimumSize: Size(140, 40),
-                                              backgroundColor: (tabIndex == 0 && buttonIndex == index) ? Colors.blueAccent : Theme.of(context).accentColor,
-                                              primary: Theme.of(context).primaryColor,
-                                              textStyle: Theme.of(context).textTheme.headline4,
-                                            ),
-                                            onPressed: () {
-                                              // yet to be implemented
-                                              setState(() { buttonIndex = index; tabIndex = 0; });
-                                              preorderInfo = timeSlots.today[index];
+                                  // today time slots
+                                  if (timesForToday.length > 0)
+                                    Center(
+                                      child: Container(
+                                        height: 40,
+                                        child: ListView.separated(
+                                            scrollDirection: Axis.horizontal,
+                                            itemBuilder: (context, index) {
+                                              return TextButton(
+                                                child: Text(timesForToday[index]),
+                                                style: TextButton.styleFrom(
+                                                  minimumSize: Size(140, 40),
+                                                  backgroundColor: (tabIndex == 0 && buttonIndex == index) ? Colors.blueAccent : Theme.of(context).accentColor,
+                                                  primary: Theme.of(context).primaryColor,
+                                                  textStyle: Theme.of(context).textTheme.headline4,
+                                                ),
+                                                onPressed: () {
+                                                  // yet to be implemented
+                                                  setState(() {
+                                                    buttonIndex = index;
+                                                    tabIndex = 0;
+                                                  });
+                                                  preorderInfo = timesForToday[index];
+                                                },
+                                              );
                                             },
-                                          );
-                                        },
-                                        separatorBuilder: (c, i) => SizedBox(width: 15),
-                                        itemCount: timeSlots.today?.length ?? 0,
+                                            separatorBuilder: (c, i) => SizedBox(width: 15),
+                                            itemCount: timesForToday.length),
                                       ),
                                     ),
-                                  ),
-                                  // tomorrow
-                                  if (timeSlots.tomorrow != null)
+                                  // tomorrow time slots
+                                  if (timesForTomorrow.length > 0)
                                     Center(
                                       child: Container(
                                         height: 40,
@@ -317,23 +326,26 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
                                           scrollDirection: Axis.horizontal,
                                           itemBuilder: (context, index) {
                                             return TextButton(
-                                              child: Text(timeSlots.tomorrow[index]),
+                                              child: Text(timesForTomorrow[index]),
                                               style: TextButton.styleFrom(
                                                 minimumSize: Size(140, 40),
-                                                backgroundColor: (tabIndex == 1 && buttonIndex == index) ? Colors.blueAccent : Theme.of(context).accentColor ,
+                                                backgroundColor: (tabIndex == 1 && buttonIndex == index) ? Colors.blueAccent : Theme.of(context).accentColor,
                                                 primary: Theme.of(context).primaryColor,
                                                 textStyle: Theme.of(context).textTheme.headline4,
                                               ),
                                               onPressed: () {
                                                 // yet to be implemented
-                                                setState(() { buttonIndex = index; tabIndex = 1; });
-                                                var tomorrow = DateFormat('yyyy-MM-dd').format(DateTime.now());
-                                                preorderInfo = '${tomorrow}, ${timeSlots.tomorrow[index]}';
+                                                setState(() {
+                                                  buttonIndex = index;
+                                                  tabIndex = 1;
+                                                });
+                                                var tomorrow = DateFormat('yyyy-MM-dd').format(DateTime.now().add(Duration(days: 1)));
+                                                preorderInfo = '${tomorrow}, ${timesForTomorrow[index]}';
                                               },
                                             );
                                           },
                                           separatorBuilder: (c, i) => SizedBox(width: 15),
-                                          itemCount: timeSlots.tomorrow?.length ?? 0,
+                                          itemCount: timesForTomorrow.length,
                                         ),
                                       ),
                                     ),

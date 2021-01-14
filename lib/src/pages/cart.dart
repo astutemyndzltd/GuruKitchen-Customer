@@ -91,7 +91,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                           ),
                         ),
                         ListView.separated(
-                          padding: EdgeInsets.only(top: 15, bottom: 120),
+                          padding: EdgeInsets.only(top: 15, bottom: 180),
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
                           primary: false,
@@ -119,7 +119,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                     ),
                     Container(
                         padding: const EdgeInsets.all(18),
-                        margin: EdgeInsets.only(bottom: 15),
+                        margin: EdgeInsets.only(bottom: 0),
                         decoration: BoxDecoration(
                           //color: Colors.green,
                           color: Theme.of(context).primaryColor,

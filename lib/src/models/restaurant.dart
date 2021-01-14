@@ -121,7 +121,7 @@ class Restaurant {
   }
 
   bool isAvailableForPreorder() {
-     return isAvailableForPreorderToday() || isAvailableForPreorderTomorrow();
+    return isAvailableForPreorderToday() || isAvailableForPreorderTomorrow();
   }
 
   bool isClosedAndAvailableForPreorder() {
@@ -138,19 +138,72 @@ class Restaurant {
 
     if (todaySlots != null) {
       var timeFormatter = DateFormat('jm');
-      var time = timeFormatter.parse(timeFormatter.format(dateTime.add(Duration(hours: 2))));
+      var time = timeFormatter.parse(timeFormatter.format(dateTime.add(Duration(hours: 1))));
 
       for (var slot in todaySlots) {
         var opensAt = timeFormatter.parse(slot.opensAt);
         var closesAt = timeFormatter.parse(slot.closesAt);
 
-        if (time.compareTo(opensAt) >= 0 && time.compareTo(closesAt) <= 0) {
+        if (time.isBefore(opensAt) || (time.compareTo(opensAt) >= 0 && time.compareTo(closesAt) <= 0)) {
           return true;
         }
       }
     }
 
     return false;
+  }
+
+  List<String> generateTimesForToday({int durationInMin = 15}) {
+    var times = List<String>();
+
+    if (isAvailableForPreorderToday()) {
+      var dateTime = DateTime.now();
+      var dayFormatter = DateFormat('EEEE');
+      var timeFormatter = DateFormat('jm');
+      var today = dayFormatter.format(dateTime).toLowerCase();
+      var todaySlots = openingTimes.toMap()[today];
+      var time = timeFormatter.parse(timeFormatter.format(dateTime.add(Duration(hours: 1))));
+
+      for (var slot in todaySlots) {
+        var opensAt = timeFormatter.parse(slot.opensAt);
+        var closesAt = timeFormatter.parse(slot.closesAt);
+        var minutesToAdd = (durationInMin * ((opensAt.minute ~/ durationInMin) + (opensAt.minute % durationInMin == 0 ? 0 : 1))) - opensAt.minute;
+        var startTime = opensAt.add(Duration(minutes: minutesToAdd));
+
+        while (startTime.compareTo(closesAt) <= 0) {
+          if (startTime.compareTo(time) >= 0) times.add(timeFormatter.format(startTime));
+          startTime = startTime.add(Duration(minutes: durationInMin));
+        }
+      }
+    }
+
+    return times;
+  }
+
+  List<String> generateTimesForTomorrow({int durationInMin = 15}) {
+    var times = List<String>();
+
+    if (isAvailableForPreorderTomorrow()) {
+      var dateTime = DateTime.now();
+      var dayFormatter = DateFormat('EEEE');
+      var timeFormatter = DateFormat('jm');
+      var tomorrow = dayFormatter.format(dateTime.add(Duration(days: 1))).toLowerCase();
+      var tomorrowSlots = openingTimes.toMap()[tomorrow];
+
+      for (var slot in tomorrowSlots) {
+        var opensAt = timeFormatter.parse(slot.opensAt);
+        var closesAt = timeFormatter.parse(slot.closesAt);
+        var minutesToAdd = (durationInMin * ((opensAt.minute ~/ durationInMin) + (opensAt.minute % durationInMin == 0 ? 0 : 1))) - opensAt.minute;
+        var startTime = opensAt.add(Duration(minutes: minutesToAdd));
+
+        while (startTime.compareTo(closesAt) <= 0) {
+          times.add(timeFormatter.format(startTime));
+          startTime = startTime.add(Duration(minutes: durationInMin));
+        }
+      }
+    }
+
+    return times;
   }
 
   bool isAvailableForPreorderTomorrow() {
@@ -171,18 +224,17 @@ class Restaurant {
     var today = dayFormatter.format(dateTime).toLowerCase();
     var todaySlots = openingTimes.toMap()[today];
 
-    if(todaySlots != null) {
+    if (todaySlots != null) {
       var timeFormatter = DateFormat('jm');
       var time = timeFormatter.parse(timeFormatter.format(dateTime));
 
-      for(var slot in todaySlots) {
+      for (var slot in todaySlots) {
         var opensAt = timeFormatter.parse(slot.opensAt);
-        if(time.isBefore(opensAt)) return true;
+        if (time.isBefore(opensAt)) return true;
       }
     }
 
     return false;
-
   }
 
 }

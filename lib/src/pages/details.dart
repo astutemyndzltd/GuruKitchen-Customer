@@ -64,7 +64,6 @@ class _DetailsWidgetState extends StateMVC<DetailsWidget> {
           _con.listenForRestaurant(id: widget.routeArgument.param).then((value) {
             setState(() {
               _con.restaurant = value as Restaurant;
-              print(_con.restaurant.toMap());
               widget.currentPage = RestaurantWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(param: _con.restaurant));
             });
           });

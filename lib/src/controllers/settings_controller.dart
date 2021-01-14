@@ -15,6 +15,7 @@ class SettingsController extends ControllerMVC {
   SettingsController() {
     loginFormKey = new GlobalKey<FormState>();
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
+    listenForUser();
   }
 
   void update(User user) async {

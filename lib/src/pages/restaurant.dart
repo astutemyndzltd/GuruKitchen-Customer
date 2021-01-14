@@ -214,8 +214,9 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                   ),
                                 ),
                               ),
+                              if(_con.restaurant.information != null  && _con.restaurant.information.isNotEmpty)
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                                 child: Helper.applyHtml(context, _con.restaurant.information),
                               ),
                               // for more details please chat with our managers

@@ -62,7 +62,7 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
           style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 0)),
         ),
         actions: <Widget>[
-          new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
+          ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -73,10 +73,11 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            Padding(
+            // search bar
+            /*Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SearchBarWidget(),
-            ),
+            ),*/
             ListTile(
               dense: true,
               contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
