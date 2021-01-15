@@ -40,7 +40,8 @@ class _OrderSuccessWidgetState extends StateMVC<OrderSuccessWidget> {
           automaticallyImplyLeading: false,
           leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              //Navigator.of(context).pop();
+              Navigator.pushReplacementNamed(context, '/Pages', arguments: 2);
             },
             icon: Icon(Icons.arrow_back),
             color: Theme.of(context).hintColor,

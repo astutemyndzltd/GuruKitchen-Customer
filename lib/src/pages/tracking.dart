@@ -243,7 +243,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget> with SingleTickerPro
                                     child: Wrap(
                                       alignment: WrapAlignment.end,
                                       children: <Widget>[
-                                        if (_con.order.canCancelOrder())
+                                        /*if (_con.order.canCancelOrder())
                                           FlatButton(
                                             onPressed: () {
                                               showDialog(
@@ -293,7 +293,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget> with SingleTickerPro
                                               children: <Widget>[Text(S.of(context).cancelOrder + " ", style: TextStyle(height: 1.3)), Icon(Icons.clear)],
                                             ),
                                             padding: EdgeInsets.symmetric(horizontal: 20),
-                                          ),
+                                          ),*/
                                       ],
                                     ),
                                   ),

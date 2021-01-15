@@ -20,7 +20,7 @@ class CartWidget extends StatefulWidget {
   _CartWidgetState createState() => _CartWidgetState();
 }
 
-class _CartWidgetState extends StateMVC<CartWidget> {
+class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
   CartController _con;
 
   _CartWidgetState() : super(CartController()) {
@@ -31,6 +31,17 @@ class _CartWidgetState extends StateMVC<CartWidget> {
   void initState() {
     _con.listenForCarts();
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
+  }
+
+  @override
+  void didPopNext() {
+    _con.listenForCarts();
   }
 
   @override

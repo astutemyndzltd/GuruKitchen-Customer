@@ -37,6 +37,7 @@ class PagesWidget extends StatefulWidget {
 }
 
 class _PagesWidgetState extends State<PagesWidget> {
+
   initState() {
     super.initState();
 
@@ -127,7 +128,7 @@ class _PagesWidgetState extends State<PagesWidget> {
                   child: new Icon(Icons.home, color: Theme.of(context).primaryColor),
                 )),
             BottomNavigationBarItem(
-              icon: new Icon(Icons.fastfood),
+              icon: new Icon(Icons.local_mall),
               label: '',
             ),
             /*BottomNavigationBarItem(
