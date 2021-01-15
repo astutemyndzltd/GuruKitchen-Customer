@@ -416,7 +416,7 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
 
                                             if(_con.loadCart) return;
 
-                                            if(!_con.food.restaurant.isActuallyOpen() && !_con.food.restaurant.isAvailableForPreorder()) {
+                                            if(!_con.food.restaurant.isCurrentlyOpen() && !_con.food.restaurant.isAvailableForPreorder()) {
                                               _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("The restaurant is neither open nor available for pre-order")));
                                               return;
                                             }

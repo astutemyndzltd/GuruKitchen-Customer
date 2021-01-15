@@ -59,7 +59,7 @@ class CardWidget extends StatelessWidget {
                 children: <Widget>[
                   SizedBox(width: 8),
                   //closed but opening later button
-                  if(!restaurant.isActuallyOpen() && restaurant.openingLaterToday())
+                  if(!restaurant.isCurrentlyOpen() && restaurant.openingLaterToday())
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 2, vertical: 8),
                     padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3),

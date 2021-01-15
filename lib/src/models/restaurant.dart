@@ -87,7 +87,7 @@ class Restaurant {
     return {'id': id, 'name': name, 'latitude': latitude, 'longitude': longitude, 'delivery_fee': deliveryFee, 'distance': distance, 'min_order_amount': minOrderAmount};
   }
 
-  bool isActuallyOpen() {
+  bool isCurrentlyOpen() {
     if (closed || openingTimes == null) return false;
 
     var dateTime = DateTime.now();
@@ -113,11 +113,11 @@ class Restaurant {
   }
 
   bool isAvailableForDelivery() {
-    return isActuallyOpen() && availableForDelivery;
+    return isCurrentlyOpen() && availableForDelivery;
   }
 
   bool isAvailableForPickup() {
-    return isActuallyOpen() && !availableForDelivery;
+    return isCurrentlyOpen() && !availableForDelivery;
   }
 
   bool isAvailableForPreorder() {
@@ -125,7 +125,7 @@ class Restaurant {
   }
 
   bool isClosedAndAvailableForPreorder() {
-    return !isActuallyOpen() && isAvailableForPreorder();
+    return !isCurrentlyOpen() && isAvailableForPreorder();
   }
 
   bool isAvailableForPreorderToday() {
@@ -138,7 +138,7 @@ class Restaurant {
 
     if (todaySlots != null) {
       var timeFormatter = DateFormat('jm');
-      var time = timeFormatter.parse(timeFormatter.format(dateTime.add(Duration(hours: 1))));
+      var time = timeFormatter.parse(timeFormatter.format(dateTime));
 
       for (var slot in todaySlots) {
         var opensAt = timeFormatter.parse(slot.opensAt);
@@ -162,7 +162,7 @@ class Restaurant {
       var timeFormatter = DateFormat('jm');
       var today = dayFormatter.format(dateTime).toLowerCase();
       var todaySlots = openingTimes.toMap()[today];
-      var time = timeFormatter.parse(timeFormatter.format(dateTime.add(Duration(hours: 1))));
+      var time = timeFormatter.parse(timeFormatter.format(dateTime));
 
       for (var slot in todaySlots) {
         var opensAt = timeFormatter.parse(slot.opensAt);
@@ -171,13 +171,14 @@ class Restaurant {
         var startTime = opensAt.add(Duration(minutes: minutesToAdd));
 
         while (startTime.compareTo(closesAt) <= 0) {
-          if (startTime.compareTo(time) >= 0) times.add(timeFormatter.format(startTime));
+          if (startTime.compareTo(time) >= 0 && startTime.difference(time) >= Duration(hours: 1)) times.add(timeFormatter.format(startTime));
           startTime = startTime.add(Duration(minutes: durationInMin));
         }
       }
     }
 
     return times;
+
   }
 
   List<String> generateTimesForTomorrow({int durationInMin = 15}) {
