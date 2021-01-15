@@ -73,6 +73,11 @@ class CartBottomDetailsWidget extends StatelessWidget {
                         child: FlatButton(
                           onPressed: () {
 
+                            if(!_con.restaurant.isCurrentlyOpen() && !_con.restaurant.isAvailableForPreorder()) {
+                              Helper.showSnackbar(context, "The restaurant is neither open nor available for pre-order");
+                              return;
+                            }
+
                             if(_con is DeliveryPickupController) {
                               var con= _con as DeliveryPickupController;
 
