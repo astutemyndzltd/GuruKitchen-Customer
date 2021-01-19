@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:stripe_payment/stripe_payment.dart' as stripe;
 import '../../generated/l10n.dart';
 import '../models/cart.dart';
 import '../models/coupon.dart';
@@ -35,7 +35,7 @@ class CheckoutController extends CartController {
     super.onLoadingCartDone();
   }
 
-  void addOrder(List<CartItem> carts) {
+  void addOrder(List<CartItem> carts) async {
     Order order = new Order();
     order.orderType = settingRepo.orderType;
     order.note = settingRepo.orderNote ?? '';
@@ -47,25 +47,39 @@ class CheckoutController extends CartController {
     orderStatus.id = '1'; // TODO default order status Id
     order.orderStatus = orderStatus;
     order.deliveryAddress = settingRepo.deliveryAddress.value;
-    carts.forEach((_cart) {
-      FoodOrder foodOrder = new FoodOrder();
-      foodOrder.quantity = _cart.quantity;
-      foodOrder.price = _cart.food.price;
-      foodOrder.food = _cart.food;
-      foodOrder.extras = _cart.extras;
-      order.foodOrders.add(foodOrder);
-    });
 
-    orderRepo.addOrder(order, this.payment).then((value) async {
-      settingRepo.coupon = new Coupon.fromJSON({});
-      return value;
-    }).then((value) {
-      if (value is Order) {
-        setState(() {
-          loading = false;
-        });
+    double orderPrice = 0;
+
+    for (var cartItem in carts) {
+      var foodOrder = new FoodOrder();
+      foodOrder.quantity = cartItem.quantity;
+      foodOrder.price = cartItem.food.price;
+      foodOrder.food = cartItem.food;
+      foodOrder.extras = cartItem.extras;
+      orderPrice += (foodOrder.quantity * foodOrder.price);
+      order.foodOrders.add(foodOrder);
+    }
+
+    orderPrice += order.deliveryFee;
+    orderPrice += orderPrice * (order.tax / 100);
+
+    var paymentMethodId = settingRepo.paymentMethodId;
+
+    var response = await orderRepo.addOrder(order: order, payment: this.payment, price: orderPrice, paymentMethodId: paymentMethodId);
+
+    if (response['message'] == 'requires action') {
+      var clientSecret = response['data']['client_secret'].toString();
+      var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
+
+      if (paymentIntent.status == 'succeeded') {
+        response = await orderRepo.addOrder(order: order, payment: this.payment, price: orderPrice, paymentIntentId: paymentIntent.paymentIntentId);
       }
-    });
+    }
+
+    settingRepo.coupon = Coupon.fromJSON({});
+
+    setState(() { loading = false; });
+
   }
 
   void updateCreditCard(CreditCard creditCard) {

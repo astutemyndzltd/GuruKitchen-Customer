@@ -15,15 +15,15 @@ class UserController extends ControllerMVC {
   bool loading = false;
   GlobalKey<FormState> loginFormKey;
   GlobalKey<ScaffoldState> scaffoldKey;
-  FirebaseMessaging _firebaseMessaging;
+  FirebaseMessaging firebaseMessaging;
   OverlayEntry loader;
 
   UserController() {
     loader = Helper.overlayLoader(context);
     loginFormKey = new GlobalKey<FormState>();
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
-    _firebaseMessaging = FirebaseMessaging();
-    _firebaseMessaging.getToken().then((String _deviceToken) {
+    firebaseMessaging = FirebaseMessaging();
+    firebaseMessaging.getToken().then((String _deviceToken) {
       user.deviceToken = _deviceToken;
     }).catchError((e) {
       print('Notification not configured');
@@ -31,7 +31,7 @@ class UserController extends ControllerMVC {
   }
 
   bool isValidEmail(String email) {
-    var regex = new RegExp(r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+    var regex = RegExp(r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
     return regex.hasMatch(email);
   }
 

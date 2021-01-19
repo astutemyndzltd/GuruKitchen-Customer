@@ -98,6 +98,7 @@ class _DetailsWidgetState extends StateMVC<DetailsWidget> {
       onWillPop: Helper.of(context).onWillPop,
       child: Scaffold(
           key: widget.scaffoldKey,
+
           drawer: DrawerWidget(),
           bottomNavigationBar: Container(
             height: 66,

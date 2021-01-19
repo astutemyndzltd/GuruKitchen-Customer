@@ -51,6 +51,8 @@ dependencies:
   flushbar: ^1.10.4
   collapsible: ^0.1.0
   intl: ^0.16.0
+  stripe_payment: ^1.0.9
+
 
 
 dev_dependencies:

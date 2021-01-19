@@ -61,7 +61,7 @@ class Helper {
   }
 
   static Future<Marker> getMarker(Map<String, dynamic> res) async {
-    final Uint8List markerIcon = await getBytesFromAsset('assets/img/marker.png', 120);
+    final Uint8List markerIcon = await getBytesFromAsset('assets/img/marker.png', 130);
     final Marker marker = Marker(
         markerId: MarkerId(res['id']),
         icon: BitmapDescriptor.fromBytes(markerIcon),
@@ -81,7 +81,7 @@ class Helper {
   }
 
   static Future<Marker> getMyPositionMarker(double latitude, double longitude) async {
-    final Uint8List markerIcon = await getBytesFromAsset('assets/img/my_marker.png', 120);
+    final Uint8List markerIcon = await getBytesFromAsset('assets/img/my_marker.png', 130);
     final Marker marker = Marker(markerId: MarkerId(Random().nextInt(100).toString()), icon: BitmapDescriptor.fromBytes(markerIcon), anchor: Offset(0.5, 0.5), position: LatLng(latitude, longitude));
 
     return marker;

@@ -59,16 +59,16 @@ class CardWidget extends StatelessWidget {
                 children: <Widget>[
                   SizedBox(width: 8),
                   //closed but opening later button
-                  if(!restaurant.isCurrentlyOpen() && restaurant.openingLaterToday())
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 2, vertical: 8),
-                    padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                    decoration: BoxDecoration(color: Colors.pink, borderRadius: BorderRadius.circular(3)),
-                    child: Text(
-                      'Opening Later',
-                      style: TextStyle(color: Theme.of(context).primaryColor),
+                  if (!restaurant.isCurrentlyOpen() && restaurant.openingLaterToday())
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+                      padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      decoration: BoxDecoration(color: Colors.pink, borderRadius: BorderRadius.circular(3)),
+                      child: Text(
+                        'Opening Later',
+                        style: TextStyle(color: Theme.of(context).primaryColor),
+                      ),
                     ),
-                  ),
                   //delivery button
                   if (restaurant.isAvailableForDelivery())
                     Container(
@@ -150,14 +150,20 @@ class CardWidget extends StatelessWidget {
                         color: Theme.of(context).accentColor,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                       ),
-                      restaurant.distanceInKm > 0
-                          ? Text(
-                              Helper.getDistance(restaurant.distanceInKm, Helper.of(context).trans(setting.value.distanceUnit)),
-                              overflow: TextOverflow.fade,
-                              maxLines: 1,
-                              softWrap: false,
-                            )
-                          : SizedBox(height: 0)
+                      if (restaurant.distanceInKm > 0)
+                        Text(
+                          Helper.getDistance(restaurant.distanceInKm, Helper.of(context).trans(setting.value.distanceUnit)),
+                          overflow: TextOverflow.fade,
+                          maxLines: 1,
+                          softWrap: false,
+                        )
+                      else if (restaurant.distance > 0)
+                        Text(
+                          Helper.getDistance(restaurant.distance, Helper.of(context).trans(setting.value.distanceUnit)),
+                          overflow: TextOverflow.fade,
+                          maxLines: 1,
+                          softWrap: false,
+                        )
                     ],
                   ),
                 ),

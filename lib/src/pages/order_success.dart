@@ -8,6 +8,7 @@ import '../helpers/helper.dart';
 import '../models/payment.dart';
 import '../models/route_argument.dart';
 
+
 class OrderSuccessWidget extends StatefulWidget {
   final RouteArgument routeArgument;
 
@@ -42,8 +43,8 @@ class _OrderSuccessWidgetState extends StateMVC<OrderSuccessWidget> {
             automaticallyImplyLeading: false,
             leading: IconButton(
               onPressed: () {
-                //Navigator.of(context).pop();
-                Navigator.pushReplacementNamed(context, '/Pages', arguments: 2);
+                Navigator.of(context).pop();
+                //Navigator.pushReplacementNamed(context, '/Pages', arguments: 2);
               },
               icon: Icon(Icons.arrow_back),
               color: Theme.of(context).hintColor,

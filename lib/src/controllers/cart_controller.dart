@@ -14,10 +14,7 @@ import '../repository/coupon_repository.dart';
 import '../repository/settings_repository.dart';
 import '../repository/user_repository.dart';
 
-class Slots {
-  List<String> today;
-  List<String> tomorrow;
-}
+
 
 class CartController extends ControllerMVC {
   List<CartItem> carts = <CartItem>[];
@@ -28,7 +25,6 @@ class CartController extends ControllerMVC {
   double total = 0.0;
   GlobalKey<ScaffoldState> scaffoldKey;
   Restaurant restaurant;
-  Slots timeSlots;
 
   CartController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
