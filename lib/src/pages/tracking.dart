@@ -189,7 +189,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget> with SingleTickerPro
                                             children: <Widget>[
                                               Helper.getPrice(Helper.getTotalOrdersPrice(_con.order), context, style: Theme.of(context).textTheme.headline4),
                                               Text(
-                                                '${_con.order.payment.method}',
+                                                'Card - ${_con.order.payment.method} | ${_con.order.orderType}${_con.order.preorderInfo != null ? ' | Pre-Order' : ''}',
                                                 style: Theme.of(context).textTheme.caption,
                                               )
                                             ],

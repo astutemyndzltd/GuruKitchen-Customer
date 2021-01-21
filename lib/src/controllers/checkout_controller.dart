@@ -49,25 +49,20 @@ class CheckoutController extends CartController {
     order.orderStatus = orderStatus;
     order.deliveryAddress = settingRepo.deliveryAddress.value;
 
-    double orderPrice = 0;
-
     for (var cartItem in carts) {
       var foodOrder = new FoodOrder();
       foodOrder.quantity = cartItem.quantity;
       foodOrder.price = cartItem.food.price;
       foodOrder.food = cartItem.food;
       foodOrder.extras = cartItem.extras;
-      orderPrice += (cartItem.getFoodPrice() * cartItem.quantity);
+
       order.foodOrders.add(foodOrder);
     }
-
-    orderPrice += order.deliveryFee;
-    orderPrice += orderPrice * (order.tax / 100);
 
     var overlayLoader = Helper.overlayLoader(context);
     Overlay.of(context).insert(overlayLoader);
 
-    var response = await orderRepo.addOrder(order: order, payment: this.payment, price: orderPrice, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
+    var response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
 
     if (response['message'] == 'requires action') {
 
@@ -76,7 +71,7 @@ class CheckoutController extends CartController {
       try {
         var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
         if (paymentIntent.status == 'succeeded') {
-          response = await orderRepo.addOrder(order: order, payment: this.payment, price: orderPrice, paymentIntentId: paymentIntent.paymentIntentId, cardBrand: paymentMethod.card.brand.capitalize());
+          response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentIntentId: paymentIntent.paymentIntentId, cardBrand: paymentMethod.card.brand.capitalize());
         }
       }
       catch(e) {

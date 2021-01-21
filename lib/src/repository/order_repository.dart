@@ -94,7 +94,7 @@ Future<dynamic> addOrder({Order order, Payment payment, double price, String pay
   params.addAll(creditCard.toMap());
 
   var second = new Map<String, dynamic>();
-  second.addAll({'order_amount' : price });
+  second.addAll({'order_amount' : price.toStringAsFixed(2) });
   second.addAll({'card_brand' : cardBrand });
 
   if (paymentMethodId != null) second.addAll({ 'payment_method_id' : paymentMethodId });

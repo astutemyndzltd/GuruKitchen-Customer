@@ -61,7 +61,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                           children: <Widget>[
                             Helper.getPrice(Helper.getTotalOrdersPrice(widget.order), context, style: Theme.of(context).textTheme.headline4),
                             Text(
-                              '${widget.order.payment.method} | ${widget.order.orderType}${widget.order.preorderInfo != null ? ' | Pre-Order' : ''}',
+                              'Card - ${widget.order.payment.method} | ${widget.order.orderType}${widget.order.preorderInfo != null ? ' | Pre-Order' : ''}',
                               style: Theme.of(context).textTheme.caption,
                             )
                           ],
