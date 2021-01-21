@@ -76,7 +76,7 @@ Future<Stream<OrderStatus>> getOrderStatus() async {
   });
 }
 
-Future<dynamic> addOrder({Order order, Payment payment, double price, String paymentMethodId, String paymentIntentId}) async {
+Future<dynamic> addOrder({Order order, Payment payment, double price, String paymentMethodId, String paymentIntentId, String cardBrand}) async {
 
   var user = userRepo.currentUser.value;
 
@@ -95,6 +95,7 @@ Future<dynamic> addOrder({Order order, Payment payment, double price, String pay
 
   var second = new Map<String, dynamic>();
   second.addAll({'order_amount' : price });
+  second.addAll({'card_brand' : cardBrand });
 
   if (paymentMethodId != null) second.addAll({ 'payment_method_id' : paymentMethodId });
   if (paymentIntentId != null) second.addAll({ 'payment_intent_id' : paymentIntentId });

@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/models/payment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
@@ -26,7 +27,6 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
 
   @override
   void initState() {
-    settingRepo.paymentMethodId = null;
     _con.listenForCarts();
     super.initState();
   }
@@ -202,16 +202,34 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                                         cvc: cardInfo.cvc,
                                       );
 
-                                      StripePayment.setOptions(StripeOptions(publishableKey: 'pk_test_51HfZLPCJjypXkhpYgZ2i1vPlxnqah9jki9STVEAcy4DxMIvwcILwZ4o7Ns33mQugIHjI37FRqbw5rRgEvaprBgXc00TMJZZFB0'));
+                                      StripePayment.setOptions(StripeOptions(publishableKey: settingRepo.setting.value.stripeKey));
+
                                       var paymentMethod = await StripePayment.createPaymentMethod(PaymentMethodRequest(card: card));
-                                      settingRepo.paymentMethodId = paymentMethod.id;
 
-                                      Navigator.of(context).pushNamed('/OrderSuccess', arguments: new RouteArgument(param: 'Credit Card'));
+                                      var onSuccess = ()  {
 
-                                    } on PlatformException catch (e) {
+                                        var details = {
+                                          'subtotal' : _con.subTotal,
+                                          'delivery_fee' : _con.deliveryFee,
+                                          'tax' : _con.carts[0].food.restaurant.defaultTax,
+                                          'tax_amount' : _con.taxAmount,
+                                          'total' : _con.total
+                                        };
+
+                                        Navigator.of(context).pushNamed('/OrderSuccess', arguments: details);
+
+                                      };
+
+                                      var onError = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Please try with a different card')));
+                                      var onAuthenticationFailed = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Authentication failed')));
+
+                                      _con.addOrder(paymentMethod, onAuthenticationFailed, onSuccess, onError);
+
+                                    }
+                                    on PlatformException catch (e) {
                                       _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text(e.message)));
                                     }
-                                    on Exception catch(e) {
+                                    on Exception catch (e) {
                                       print(e.toString());
                                       _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Some error occurred. Try again')));
                                     }

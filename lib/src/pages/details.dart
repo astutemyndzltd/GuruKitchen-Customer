@@ -17,6 +17,7 @@ import 'menu_list.dart';
 import 'restaurant.dart';
 
 class DetailsWidget extends StatefulWidget {
+
   RouteArgument routeArgument;
   dynamic currentTab;
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();

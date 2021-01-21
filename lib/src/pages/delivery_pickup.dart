@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:GuruKitchen/src/controllers/cart_controller.dart';
 import 'package:GuruKitchen/src/repository/settings_repository.dart';
 import 'package:collapsible/collapsible.dart';
 import 'package:flutter/cupertino.dart';
@@ -124,6 +123,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
               if (isAvailableForOrders)
                 PickUpMethodItem(
                     paymentMethod: _con.getPickUpMethod(),
+                    checkedFromStart: isAvailableForOrders && !isAvailableForDelivery,
                     onPressed: (paymentMethod) {
                       _con.togglePickUp();
                     }),

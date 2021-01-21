@@ -6,9 +6,9 @@ import '../models/payment_method.dart';
 class PickUpMethodItem extends StatefulWidget {
   PaymentMethod paymentMethod;
   ValueChanged<PaymentMethod> onPressed;
+  bool checkedFromStart;
 
-  PickUpMethodItem({Key key, this.paymentMethod, this.onPressed})
-      : super(key: key);
+  PickUpMethodItem({Key key, this.paymentMethod, this.onPressed, this.checkedFromStart}) : super(key: key);
 
   @override
   _PickUpMethodItemState createState() => _PickUpMethodItemState();
@@ -18,13 +18,23 @@ class _PickUpMethodItemState extends State<PickUpMethodItem> {
   String heroTag;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((ts) {
+      if(widget.checkedFromStart) this.widget.onPressed(widget.paymentMethod);
+    });
+
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
       splashColor: Theme.of(context).accentColor,
       focusColor: Theme.of(context).accentColor,
       highlightColor: Theme.of(context).primaryColor,
       onTap: () {
-        this.widget.onPressed(widget.paymentMethod);
+        if(!widget.checkedFromStart) this.widget.onPressed(widget.paymentMethod);
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),

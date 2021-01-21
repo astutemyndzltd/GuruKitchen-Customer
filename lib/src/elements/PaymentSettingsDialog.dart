@@ -48,7 +48,7 @@ class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
                           keyboardType: TextInputType.number,
                           decoration: getInputDecoration(hintText: '4242 4242 4242 4242', labelText: S.of(context).number),
                           initialValue: widget.creditCard.number.isNotEmpty ? widget.creditCard.number : null,
-                          validator: (input) => input.trim().length != 16 ? S.of(context).not_a_valid_number : null,
+                          validator: (input) => input.trim().length < 13 ? S.of(context).not_a_valid_number : null,
                           onSaved: (input) => widget.creditCard.number = input,
                         ),
                         // expiry date
@@ -101,7 +101,7 @@ class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
             });
       },
       child: Text(
-        S.of(context).edit,
+        'Edit',
         style: Theme.of(context).textTheme.bodyText2,
       ),
     );
@@ -135,7 +135,6 @@ class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
 class CardExpiryDateTextInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
-
     if (oldValue.text.length == 1 && newValue.text.length == 2) {
       return TextEditingValue(text: newValue.text + '/', selection: TextSelection.collapsed(offset: newValue.selection.end + 1));
     }

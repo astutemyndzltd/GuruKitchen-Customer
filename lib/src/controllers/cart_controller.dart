@@ -186,5 +186,4 @@ class CartController extends ControllerMVC {
     return Theme.of(context).focusColor.withOpacity(0.7);
   }
 
-
 }

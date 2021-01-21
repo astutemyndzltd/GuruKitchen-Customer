@@ -93,14 +93,6 @@ class RouteGenerator {
                 DeliveryPickupWidget(routeArgument: args as RouteArgument));
       case '/Checkout':
         return MaterialPageRoute(builder: (_) => CheckoutWidget());
-      case '/CashOnDelivery':
-        return MaterialPageRoute(
-            builder: (_) => OrderSuccessWidget(
-                routeArgument: RouteArgument(param: 'Cash on Delivery')));
-      case '/PayOnPickup':
-        return MaterialPageRoute(
-            builder: (_) => OrderSuccessWidget(
-                routeArgument: RouteArgument(param: 'Pay on Pickup')));
       case '/PayPal':
         return MaterialPageRoute(
             builder: (_) =>
@@ -112,7 +104,7 @@ class RouteGenerator {
       case '/OrderSuccess':
         return MaterialPageRoute(
             builder: (_) =>
-                OrderSuccessWidget(routeArgument: args as RouteArgument));
+                OrderSuccessWidget(orderDetails: args));
       case '/Languages':
         return MaterialPageRoute(builder: (_) => LanguagesWidget());
       case '/Help':

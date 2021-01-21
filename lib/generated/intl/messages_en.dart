@@ -145,10 +145,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "faqsRefreshedSuccessfuly":
             MessageLookupByLibrary.simpleMessage("Faqs refreshed successfully"),
         "favorite_foods":
-            MessageLookupByLibrary.simpleMessage("Favorite Foods"),
-        "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),
+            MessageLookupByLibrary.simpleMessage("Favourite Foods"),
+        "favorites": MessageLookupByLibrary.simpleMessage("Favourites"),
         "favorites_refreshed_successfuly": MessageLookupByLibrary.simpleMessage(
-            "Favorites refreshed successfully"),
+            "Favourites refreshed successfully"),
         "featured_foods":
             MessageLookupByLibrary.simpleMessage("Featured Foods"),
         "fields": MessageLookupByLibrary.simpleMessage("Fields"),
@@ -394,9 +394,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
                 "The restaurant has been rated successfully"),
         "thisFoodWasAddedToFavorite": MessageLookupByLibrary.simpleMessage(
-            "This food was added to favorite"),
+            "This food was added to favourite"),
         "thisFoodWasRemovedFromFavorites": MessageLookupByLibrary.simpleMessage(
-            "This food was removed from favorites"),
+            "This food was removed from favourites"),
         "thisNotificationHasMarkedAsRead": MessageLookupByLibrary.simpleMessage(
             "This notification has marked as read"),
         "thisNotificationHasMarkedAsUnread":

@@ -3,6 +3,7 @@ import '../models/extra.dart';
 import '../models/food.dart';
 
 class CartItem {
+
   String id;
   Food food;
   double quantity;

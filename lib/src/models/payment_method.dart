@@ -23,6 +23,13 @@ class PaymentMethodList {
   PaymentMethodList(BuildContext _context) {
     this._paymentsList = [
       new PaymentMethod(
+        'cards',
+        'Credit or Debit Card',
+        'Click to pay with your credit or debit card',
+        '/Checkout',
+        'assets/img/payment-card.png'
+      )
+      /*new PaymentMethod(
           "visacard",
           S.of(_context).visa_card,
           S.of(_context).click_to_pay_with_your_visa_card,
@@ -46,7 +53,7 @@ class PaymentMethodList {
           S.of(_context).paypal,
           S.of(_context).click_to_pay_with_your_paypal_account,
           "/PayPal",
-          "assets/img/paypal.png"),
+          "assets/img/paypal.png"),*/
     ];
     this._cashList = [
       /* new PaymentMethod(

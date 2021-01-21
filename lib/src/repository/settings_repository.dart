@@ -25,7 +25,6 @@ Coupon coupon = new Coupon.fromJSON({});
 String orderType = null;
 String orderNote = '';
 String preorderInfo = '';
-String paymentMethodId = null;
 
 DispatchMethod dispatchMethod = DispatchMethod.none;
 final navigatorKey = GlobalKey<NavigatorState>();

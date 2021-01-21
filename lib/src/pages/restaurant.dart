@@ -134,6 +134,17 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                               Row(
                                 children: <Widget>[
                                   SizedBox(width: 18),
+                                  // closed and not opening later
+                                  if(!_con.restaurant.isCurrentlyOpen() && !_con.restaurant.openingLaterToday())
+                                    Container(
+                                      margin: EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+                                      padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                                      decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(3)),
+                                      child: Text(
+                                        'Closed',
+                                        style: TextStyle(color: Theme.of(context).primaryColor),
+                                      ),
+                                    ),
                                   // closed but opening later button
                                   if (!_con.restaurant.isCurrentlyOpen() && _con.restaurant.openingLaterToday())
                                     Container(

@@ -24,6 +24,12 @@ import '../repository/settings_repository.dart';
 import 'app_config.dart' as config;
 import 'custom_trace.dart';
 
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1)}";
+  }
+}
+
 class Helper {
   BuildContext context;
   DateTime currentBackPressTime;
@@ -293,11 +299,11 @@ class Helper {
 
   static String getCreditCardNumber(String number) {
     String result = '';
-    if (number != null && number.isNotEmpty && number.length == 16) {
+    if (number != null && number.isNotEmpty) {
       result = number.substring(0, 4);
       result += ' ' + number.substring(4, 8);
       result += ' ' + number.substring(8, 12);
-      result += ' ' + number.substring(12, 16);
+      result += ' ' + number.substring(12);
     }
     return result;
   }

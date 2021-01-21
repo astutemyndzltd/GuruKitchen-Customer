@@ -55,6 +55,16 @@ class Extra {
     return map;
   }
 
+
+  Map toShortMap() {
+    var map = new Map<String, dynamic>();
+    map["id"] = id;
+    map["price"] = price;
+    return map;
+  }
+
+
+
   @override
   bool operator ==(dynamic other) {
     return other.id == this.id;

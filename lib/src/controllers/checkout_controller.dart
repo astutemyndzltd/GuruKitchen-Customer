@@ -1,10 +1,14 @@
+import 'dart:convert';
+
+import 'package:GuruKitchen/src/helpers/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stripe_payment/stripe_payment.dart' as stripe;
+import 'package:stripe_payment/stripe_payment.dart';
 import '../../generated/l10n.dart';
 import '../models/cart.dart';
 import '../models/coupon.dart';
-import '../models/credit_card.dart';
+import '../models/credit_card.dart' as guru;
 import '../models/food_order.dart';
 import '../models/order.dart';
 import '../models/order_status.dart';
@@ -15,13 +19,14 @@ import '../repository/user_repository.dart' as userRepo;
 import 'cart_controller.dart';
 
 class CheckoutController extends CartController {
+
   Payment payment;
-  CreditCard creditCard = new CreditCard();
-  bool loading = true;
+  guru.CreditCard creditCard;
 
   CheckoutController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
-    listenForCreditCard();
+    this.payment = new Payment('Credit Card');
+    this.listenForCreditCard();
   }
 
   void listenForCreditCard() async {
@@ -29,22 +34,18 @@ class CheckoutController extends CartController {
     setState(() {});
   }
 
-  @override
-  void onLoadingCartDone() {
-    if (payment != null) addOrder(carts);
-    super.onLoadingCartDone();
-  }
+  void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError ) async {
 
-  void addOrder(List<CartItem> carts) async {
-    Order order = new Order();
+    var order = Order();
     order.orderType = settingRepo.orderType;
     order.note = settingRepo.orderNote ?? '';
     order.preorderInfo = settingRepo.preorderInfo;
-    order.foodOrders = new List<FoodOrder>();
+    order.foodOrders = List<FoodOrder>();
     order.tax = carts[0].food.restaurant.defaultTax;
     order.deliveryFee = order.orderType == 'Pickup' ? 0 : carts[0].food.restaurant.deliveryFee;
-    OrderStatus orderStatus = new OrderStatus();
-    orderStatus.id = '1'; // TODO default order status Id
+
+    var orderStatus = new OrderStatus();
+    orderStatus.id = '1';
     order.orderStatus = orderStatus;
     order.deliveryAddress = settingRepo.deliveryAddress.value;
 
@@ -56,33 +57,47 @@ class CheckoutController extends CartController {
       foodOrder.price = cartItem.food.price;
       foodOrder.food = cartItem.food;
       foodOrder.extras = cartItem.extras;
-      orderPrice += (foodOrder.quantity * foodOrder.price);
+      orderPrice += (cartItem.getFoodPrice() * cartItem.quantity);
       order.foodOrders.add(foodOrder);
     }
 
     orderPrice += order.deliveryFee;
     orderPrice += orderPrice * (order.tax / 100);
 
-    var paymentMethodId = settingRepo.paymentMethodId;
+    var overlayLoader = Helper.overlayLoader(context);
+    Overlay.of(context).insert(overlayLoader);
 
-    var response = await orderRepo.addOrder(order: order, payment: this.payment, price: orderPrice, paymentMethodId: paymentMethodId);
+    var response = await orderRepo.addOrder(order: order, payment: this.payment, price: orderPrice, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
 
     if (response['message'] == 'requires action') {
-      var clientSecret = response['data']['client_secret'].toString();
-      var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
 
-      if (paymentIntent.status == 'succeeded') {
-        response = await orderRepo.addOrder(order: order, payment: this.payment, price: orderPrice, paymentIntentId: paymentIntent.paymentIntentId);
+      var clientSecret = response['data']['client_secret'].toString();
+
+      try {
+        var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
+        if (paymentIntent.status == 'succeeded') {
+          response = await orderRepo.addOrder(order: order, payment: this.payment, price: orderPrice, paymentIntentId: paymentIntent.paymentIntentId, cardBrand: paymentMethod.card.brand.capitalize());
+        }
+      }
+      catch(e) {
+        onAuthenticationFailed?.call();
       }
     }
 
-    settingRepo.coupon = Coupon.fromJSON({});
+    if (response['message'] == 'succeeded') {
+      settingRepo.coupon = Coupon.fromJSON({});
+      onSuccess?.call();
+    }
 
-    setState(() { loading = false; });
+    if (response['message'] == 'invalid status') {
+      onError?.call();
+    }
+
+    overlayLoader.remove();
 
   }
 
-  void updateCreditCard(CreditCard creditCard) {
+  void updateCreditCard(guru.CreditCard creditCard) {
     userRepo.setCreditCard(creditCard).then((value) {
       setState(() {});
       scaffoldKey?.currentState?.showSnackBar(SnackBar(
@@ -90,4 +105,5 @@ class CheckoutController extends CartController {
       ));
     });
   }
+
 }
