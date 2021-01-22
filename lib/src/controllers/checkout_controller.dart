@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:GuruKitchen/src/helpers/helper.dart';
+import 'package:GuruKitchen/src/repository/restaurant_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stripe_payment/stripe_payment.dart' as stripe;
@@ -34,7 +35,7 @@ class CheckoutController extends CartController {
     setState(() {});
   }
 
-  void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError ) async {
+  void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError, VoidCallback onRestaurantNotAvailable) async {
 
     var order = Order();
     order.orderType = settingRepo.orderType;
@@ -55,37 +56,47 @@ class CheckoutController extends CartController {
       foodOrder.price = cartItem.food.price;
       foodOrder.food = cartItem.food;
       foodOrder.extras = cartItem.extras;
-
       order.foodOrders.add(foodOrder);
     }
 
     var overlayLoader = Helper.overlayLoader(context);
     Overlay.of(context).insert(overlayLoader);
 
-    var response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
+    var restaurant = await getRestaurantDetails(carts[0].food.restaurant.id);
 
-    if (response['message'] == 'requires action') {
+    bool proceed = settingRepo.preorderInfo != '' ? restaurant.isAvailableForPreorder() : restaurant.isCurrentlyOpen();
 
-      var clientSecret = response['data']['client_secret'].toString();
+    if (proceed) {
 
-      try {
-        var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
-        if (paymentIntent.status == 'succeeded') {
-          response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentIntentId: paymentIntent.paymentIntentId, cardBrand: paymentMethod.card.brand.capitalize());
+      var response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
+
+      if (response['message'] == 'requires action') {
+
+        var clientSecret = response['data']['client_secret'].toString();
+
+        try {
+          var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
+          if (paymentIntent.status == 'succeeded') {
+            response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentIntentId: paymentIntent.paymentIntentId, cardBrand: paymentMethod.card.brand.capitalize());
+          }
+        }
+        catch(e) {
+          onAuthenticationFailed?.call();
         }
       }
-      catch(e) {
-        onAuthenticationFailed?.call();
+
+      if (response['message'] == 'succeeded') {
+        settingRepo.coupon = Coupon.fromJSON({});
+        onSuccess?.call();
       }
-    }
 
-    if (response['message'] == 'succeeded') {
-      settingRepo.coupon = Coupon.fromJSON({});
-      onSuccess?.call();
-    }
+      if (response['message'] == 'invalid status') {
+        onError?.call();
+      }
 
-    if (response['message'] == 'invalid status') {
-      onError?.call();
+    }
+    else {
+      onRestaurantNotAvailable?.call();
     }
 
     overlayLoader.remove();

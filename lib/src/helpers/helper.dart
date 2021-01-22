@@ -30,6 +30,13 @@ extension StringExtension on String {
   }
 }
 
+extension DoubleExtension on double {
+  double toFixed2() {
+    var f = 100;//pow(this, fractionDigits);
+    return (this * f).round() / f;
+  }
+}
+
 class Helper {
   BuildContext context;
   DateTime currentBackPressTime;
@@ -108,6 +115,7 @@ class Helper {
   }
 
   static Widget getPrice(double myPrice, BuildContext context, {TextStyle style, String zeroPlaceholder = '-'}) {
+
     if (style != null) {
       style = style.merge(TextStyle(fontSize: style.fontSize + 2));
     }
@@ -128,11 +136,11 @@ class Helper {
                         )
                     : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize - 6)),
                 children: <TextSpan>[
-                  TextSpan(text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
+                  TextSpan(text: myPrice.toFixed2().toString() ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
                 ],
               )
             : TextSpan(
-                text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '',
+                text: myPrice.toFixed2().toString() ?? '',
                 style: style ?? Theme.of(context).textTheme.subtitle1,
                 children: <TextSpan>[
                   TextSpan(

@@ -85,7 +85,8 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                                   child: CircleAvatar(
                                     backgroundImage: NetworkImage(currentUser.value.image.thumb),
                                   ),
-                                )),
+                                ),
+                            ),
                           ],
                         ),
                       ),

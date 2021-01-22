@@ -14,6 +14,22 @@ import '../models/restaurant.dart';
 import '../models/review.dart';
 import '../repository/user_repository.dart';
 
+Future<Restaurant> getRestaurantDetails(String id) async {
+  var uri = Helper.getUri('api/restaurants/${id}');
+  try {
+    final response = await http.get(uri.toString());
+
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      return Restaurant.fromJSON(json['data']);
+    }
+
+  } catch (e) {
+    print(CustomTrace(StackTrace.current, message: uri.toString()).toString());
+    return null;
+  }
+}
+
 Future<List<Restaurant>> getNearbyRestaurants() async {
   var uri = Helper.getUri('api/restaurants/nearby');
   Map<String, dynamic> queryParams = {};

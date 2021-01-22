@@ -222,8 +222,9 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
 
                                       var onError = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Please try with a different card')));
                                       var onAuthenticationFailed = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Authentication failed')));
+                                      var onRestaurantNotAvailable = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('The restaurant is neither open nor available for pre-order')));
 
-                                      _con.addOrder(paymentMethod, onAuthenticationFailed, onSuccess, onError);
+                                      _con.addOrder(paymentMethod, onAuthenticationFailed, onSuccess, onError, onRestaurantNotAvailable);
 
                                     }
                                     on PlatformException catch (e) {
