@@ -177,11 +177,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "home_address": MessageLookupByLibrary.simpleMessage("Home Address"),
     "how_would_you_rate_this_restaurant":
     MessageLookupByLibrary.simpleMessage(
-        "How would you rate this restaurant ?"),
+        "How would you rate this restaurant?"),
     "i_dont_have_an_account":
     MessageLookupByLibrary.simpleMessage("Create Account"),
     "i_forgot_password":
-    MessageLookupByLibrary.simpleMessage("Forget Password?"),
+    MessageLookupByLibrary.simpleMessage("Forgot Password?"),
     "i_have_account_back_to_login":
     MessageLookupByLibrary.simpleMessage("Return to Login"),
     "i_remember_my_password_return_to_login":
@@ -189,7 +189,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "information": MessageLookupByLibrary.simpleMessage("Information"),
     "ingredients": MessageLookupByLibrary.simpleMessage("Ingredients"),
     "invalidCouponCode":
-    MessageLookupByLibrary.simpleMessage("Invalid Coupon"),
+    MessageLookupByLibrary.simpleMessage("Invalid discount code"),
     "items": MessageLookupByLibrary.simpleMessage("Items"),
     "john_doe": MessageLookupByLibrary.simpleMessage("John Doe"),
     "keep_your_old_meals_of_this_restaurant":

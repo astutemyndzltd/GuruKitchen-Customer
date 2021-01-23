@@ -10,7 +10,6 @@ import '../repository/user_repository.dart' as userRepo;
 import 'cart_controller.dart';
 
 class DeliveryPickupController extends CartController {
-  String method = null;
   GlobalKey<ScaffoldState> scaffoldKey;
   model.Address deliveryAddress;
   PaymentMethodList list;
@@ -21,6 +20,20 @@ class DeliveryPickupController extends CartController {
     super.listenForCarts();
     listenForDeliveryAddress();
     //print(settingRepo.deliveryAddress.value.toMap());
+  }
+
+  @override
+  void onLoadingCartDone() {
+    if (settingRepo.orderType == 'Delivery') {
+      if (!getDeliveryMethod().selected) {
+        toggleDelivery();
+      }
+    }
+    if (settingRepo.orderType == 'Pickup') {
+      if (!getPickUpMethod().selected) {
+        if (restaurant.availableForDelivery) togglePickUp();
+      }
+    }
   }
 
   void listenForDeliveryAddress() async {
@@ -70,7 +83,8 @@ class DeliveryPickupController extends CartController {
     });
     setState(() {
       getDeliveryMethod().selected = !getDeliveryMethod().selected;
-      method = getDeliveryMethod().selected ? 'Delivery' : null;
+      settingRepo.orderType = getDeliveryMethod().selected ? 'Delivery' : null;
+      calculateSubtotal();
     });
   }
 
@@ -82,7 +96,8 @@ class DeliveryPickupController extends CartController {
     });
     setState(() {
       getPickUpMethod().selected = !getPickUpMethod().selected;
-      method = getPickUpMethod().selected ? 'Pickup' : null;
+      settingRepo.orderType = getPickUpMethod().selected ? 'Pickup' : null;
+      calculateSubtotal();
     });
   }
 
@@ -92,8 +107,6 @@ class DeliveryPickupController extends CartController {
 
   @override
   void goCheckout(BuildContext context) {
-    settingRepo.orderType = method;
     Navigator.of(context).pushNamed(getSelectedMethod().route);
   }
-
 }

@@ -33,6 +33,9 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
 
   @override
   Widget build(BuildContext context) {
+
+    //print('deliveryFee -> ${_con.deliveryFee} | ${Helper.getPrice(_con.deliveryFee, context)}');
+
     return WillPopScope(
       onWillPop: Helper.of(context).onWillPop,
       child: Scaffold(
@@ -159,7 +162,7 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                                     style: Theme.of(context).textTheme.bodyText1,
                                   ),
                                 ),
-                                Helper.getPrice(_con.carts[0].food.restaurant.deliveryFee, context, style: Theme.of(context).textTheme.subtitle1)
+                                Helper.getPrice(_con.deliveryFee, context, style: Theme.of(context).textTheme.subtitle1)
                               ],
                             ),
                             SizedBox(height: 3),
@@ -223,8 +226,9 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                                       var onError = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Please try with a different card')));
                                       var onAuthenticationFailed = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Authentication failed')));
                                       var onRestaurantNotAvailable = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('The restaurant is neither open nor available for pre-order')));
+                                      var onUnavailableForDelivery = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('The restaurant is not available for delivery')));
 
-                                      _con.addOrder(paymentMethod, onAuthenticationFailed, onSuccess, onError, onRestaurantNotAvailable);
+                                      _con.addOrder(paymentMethod, onAuthenticationFailed, onSuccess, onError, onRestaurantNotAvailable, onUnavailableForDelivery);
 
                                     }
                                     on PlatformException catch (e) {
@@ -234,6 +238,9 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                                       print(e.toString());
                                       _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Some error occurred. Try again')));
                                     }
+                                  }
+                                  else {
+                                    _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Enter all card details')));
                                   }
                                 },
                                 padding: EdgeInsets.symmetric(vertical: 14),

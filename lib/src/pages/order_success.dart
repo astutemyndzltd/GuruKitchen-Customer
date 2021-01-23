@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/repository/settings_repository.dart';
 import 'package:flutter/material.dart';
 import '../../generated/l10n.dart';
 import '../helpers/helper.dart';
@@ -9,6 +10,8 @@ class OrderSuccessWidget extends StatelessWidget {
   OrderSuccessWidget({Key key, this.orderDetails}) : super(key: key);
 
   Widget build(BuildContext context) {
+
+    orderType = null;
 
     return WillPopScope(
       onWillPop: Helper.of(context).onWillPop,

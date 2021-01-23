@@ -17,6 +17,7 @@ import '../repository/user_repository.dart';
 
 
 class CartController extends ControllerMVC {
+
   List<CartItem> carts = <CartItem>[];
   double taxAmount = 0.0;
   double deliveryFee = 0.0;
@@ -46,6 +47,12 @@ class CartController extends ControllerMVC {
         content: Text(S.of(context).verify_your_internet_connection),
       ));
     }, onDone: () {
+
+      if(carts.isEmpty) {
+        orderType = null;
+      }
+
+
       if (carts.isNotEmpty) {
         restaurant = carts[0].food.restaurant;
       }
@@ -92,6 +99,9 @@ class CartController extends ControllerMVC {
   void removeFromCart(CartItem _cart) async {
     setState(() {
       this.carts.remove(_cart);
+      if(this.carts.isEmpty) {
+        orderType = null;
+      }
     });
     removeCart(_cart).then((value) {
       calculateSubtotal();
@@ -112,9 +122,13 @@ class CartController extends ControllerMVC {
       cartPrice *= cart.quantity;
       subTotal += cartPrice;
     });
-    if (Helper.canDeliver(carts[0].food.restaurant, cartItems: carts)) {
+
+    /*if (Helper.canDeliver(carts[0].food.restaurant, cartItems: carts)) {
       deliveryFee = carts[0].food.restaurant.deliveryFee;
-    }
+    }*/
+
+    deliveryFee = orderType == 'Delivery' ? carts[0].food.restaurant.deliveryFee : 0;
+
     taxAmount = (subTotal + deliveryFee) * carts[0].food.restaurant.defaultTax / 100;
     total = subTotal + taxAmount + deliveryFee;
     setState(() {});

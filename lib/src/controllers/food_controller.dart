@@ -53,9 +53,12 @@ class FoodController extends ControllerMVC {
   }
 
   void listenForCart() async {
+    this.loadCart = true;
     final Stream<CartItem> stream = await getCart();
     stream.listen((CartItem _cart) {
       cartItems.add(_cart);
+    }, onDone: () {
+      this.loadCart = false;
     });
   }
 

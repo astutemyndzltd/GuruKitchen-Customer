@@ -32,7 +32,7 @@ extension StringExtension on String {
 
 extension DoubleExtension on double {
   double toFixed2() {
-    var f = 100;//pow(this, fractionDigits);
+    var f = 100; //pow(this, fractionDigits);
     return (this * f).round() / f;
   }
 }
@@ -115,7 +115,6 @@ class Helper {
   }
 
   static Widget getPrice(double myPrice, BuildContext context, {TextStyle style, String zeroPlaceholder = '-'}) {
-
     if (style != null) {
       style = style.merge(TextStyle(fontSize: style.fontSize + 2));
     }
@@ -181,7 +180,7 @@ class Helper {
     order.foodOrders.forEach((foodOrder) {
       total += getTotalOrderPrice(foodOrder);
     });
-    return order.tax * total / 100;
+    return order.tax * (total + order.deliveryFee) / 100;
   }
 
   static double getTotalOrdersPrice(Order order) {

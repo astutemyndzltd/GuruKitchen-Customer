@@ -49,7 +49,12 @@ class CartBottomDetailsWidget extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodyText1,
                         ),
                       ),
-                      if (Helper.canDeliver(_con.carts[0].food.restaurant, cartItems: _con.carts)) Helper.getPrice(_con.carts[0].food.restaurant.deliveryFee, context, style: Theme.of(context).textTheme.subtitle1, zeroPlaceholder: 'Free') else Helper.getPrice(0, context, style: Theme.of(context).textTheme.subtitle1, zeroPlaceholder: 'Free')
+                      Helper.getPrice(
+                        _con.deliveryFee,
+                        context,
+                        style: Theme.of(context).textTheme.subtitle1,
+                        zeroPlaceholder: '-',
+                      )
                     ],
                   ),
                   Row(
@@ -72,21 +77,20 @@ class CartBottomDetailsWidget extends StatelessWidget {
                         width: MediaQuery.of(context).size.width - 40,
                         child: FlatButton(
                           onPressed: () {
-
-                            if(!_con.restaurant.isCurrentlyOpen() && !_con.restaurant.isAvailableForPreorder()) {
+                            if (!_con.restaurant.isCurrentlyOpen() && !_con.restaurant.isAvailableForPreorder()) {
                               Helper.showSnackbar(context, "The restaurant is neither open nor available for pre-order");
                               return;
                             }
 
-                            if(_con is DeliveryPickupController) {
-                              var con= _con as DeliveryPickupController;
+                            if (_con is DeliveryPickupController) {
+                              var con = _con as DeliveryPickupController;
 
-                              if(con.getSelectedMethod() == null) {
+                              if (con.getSelectedMethod() == null) {
                                 Helper.showSnackbar(context, "Please select delivery or pickup");
                                 return;
                               }
 
-                              if(con.radioState == 'later' && preorderInfo == '') {
+                              if (con.radioState == 'later' && preorderInfo == '') {
                                 Helper.showSnackbar(context, "Please select arrival time");
                                 return;
                               }

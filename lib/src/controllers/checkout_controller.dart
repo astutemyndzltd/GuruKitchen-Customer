@@ -35,7 +35,7 @@ class CheckoutController extends CartController {
     setState(() {});
   }
 
-  void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError, VoidCallback onRestaurantNotAvailable) async {
+  void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError, VoidCallback onRestaurantNotAvailable, VoidCallback onUnavailableForDelivery) async {
 
     var order = Order();
     order.orderType = settingRepo.orderType;
@@ -68,32 +68,36 @@ class CheckoutController extends CartController {
 
     if (proceed) {
 
-      var response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
+      if(settingRepo.orderType != 'Delivery' || restaurant.availableForDelivery) {
+        var response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
 
-      if (response['message'] == 'requires action') {
+        if (response['message'] == 'requires action') {
 
-        var clientSecret = response['data']['client_secret'].toString();
+          var clientSecret = response['data']['client_secret'].toString();
 
-        try {
-          var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
-          if (paymentIntent.status == 'succeeded') {
-            response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentIntentId: paymentIntent.paymentIntentId, cardBrand: paymentMethod.card.brand.capitalize());
+          try {
+            var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
+            if (paymentIntent.status == 'succeeded') {
+              response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentIntentId: paymentIntent.paymentIntentId, cardBrand: paymentMethod.card.brand.capitalize());
+            }
+          }
+          catch(e) {
+            onAuthenticationFailed?.call();
           }
         }
-        catch(e) {
-          onAuthenticationFailed?.call();
+
+        if (response['message'] == 'succeeded') {
+          settingRepo.coupon = Coupon.fromJSON({});
+          onSuccess?.call();
+        }
+
+        if (response['message'] == 'invalid status') {
+          onError?.call();
         }
       }
-
-      if (response['message'] == 'succeeded') {
-        settingRepo.coupon = Coupon.fromJSON({});
-        onSuccess?.call();
+      else {
+        onUnavailableForDelivery?.call();
       }
-
-      if (response['message'] == 'invalid status') {
-        onError?.call();
-      }
-
     }
     else {
       onRestaurantNotAvailable?.call();

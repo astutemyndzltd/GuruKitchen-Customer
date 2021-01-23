@@ -21,7 +21,9 @@ class CartWidget extends StatefulWidget {
 }
 
 class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
+
   CartController _con;
+
 
   _CartWidgetState() : super(CartController()) {
     _con = controller;

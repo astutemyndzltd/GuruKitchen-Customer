@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/elements/AvatarWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -36,10 +37,9 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
                       currentUser.value.email,
                       style: Theme.of(context).textTheme.caption,
                     ),
-                    currentAccountPicture: CircleAvatar(
-                      backgroundColor: Theme.of(context).accentColor,
-                      backgroundImage: NetworkImage(currentUser.value.image.thumb),
-                    ),
+                    currentAccountPicture: AvatarWidget(dimension: 0, textFontSize: 30, onTap: () {
+                      currentUser.value.apiToken != null ? Navigator.of(context).pushNamed('/Profile') : Navigator.of(context).pushNamed('/Login');
+                    },),
                   )
                 : Container(
                     padding: EdgeInsets.symmetric(vertical: 30, horizontal: 15),

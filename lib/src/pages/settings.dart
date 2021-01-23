@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/elements/AvatarWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -74,19 +75,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                               ),
                             ),
-                            SizedBox(
-                                width: 55,
-                                height: 55,
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(300),
-                                  onTap: () {
-                                    Navigator.of(context).pushNamed('/Profile');
-                                  },
-                                  child: CircleAvatar(
-                                    backgroundImage: NetworkImage(currentUser.value.image.thumb),
-                                  ),
-                                ),
-                            ),
+                            AvatarWidget(dimension: 55, textFontSize: 23, onTap: () => Navigator.of(context).pushNamed("/Profile")),
                           ],
                         ),
                       ),

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:GuruKitchen/src/elements/UserAvatarWidget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +24,11 @@ class ReviewItemWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              ClipRRect(
+              Padding(
+                padding: const EdgeInsets.only(top: 14.0),
+                child: UserAvatarWidget(dimension: 50, textFontSize: 21, text: review?.user?.name),
+              ),
+              /*ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(100)),
                 child: CachedNetworkImage(
                   height: 65,
@@ -38,7 +43,7 @@ class ReviewItemWidget extends StatelessWidget {
                   ),
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
-              ),
+              ),*/
               SizedBox(width: 15),
               Flexible(
                 child: Column(
@@ -87,12 +92,15 @@ class ReviewItemWidget extends StatelessWidget {
               )
             ],
           ),
-          Text(
-            Helper.skipHtml(review.review),
-            style: Theme.of(context).textTheme.bodyText2,
-            overflow: TextOverflow.ellipsis,
-            softWrap: false,
-            maxLines: 3,
+          Container(
+            padding: EdgeInsets.only(left: 65),
+            child: Text(
+              Helper.skipHtml(review.review),
+              style: Theme.of(context).textTheme.bodyText2,
+              overflow: TextOverflow.ellipsis,
+              softWrap: false,
+              maxLines: 3,
+            ),
           )
         ],
       ),

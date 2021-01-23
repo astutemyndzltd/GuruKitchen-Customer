@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/repository/settings_repository.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class FoodWidget extends StatefulWidget {
   }
 }
 
-class _FoodWidgetState extends StateMVC<FoodWidget> {
+class _FoodWidgetState extends StateMVC<FoodWidget> with RouteAware {
   FoodController _con;
 
   _FoodWidgetState() : super(FoodController()) {
@@ -40,6 +41,19 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
     _con.listenForFavorite(foodId: widget.routeArgument.id);
     super.initState();
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
+  }
+
+  @override
+  void didPopNext() {
+    _con.cartItems = [];
+    _con.listenForCart();
+  }
+
 
   @override
   Widget build(BuildContext context) {
