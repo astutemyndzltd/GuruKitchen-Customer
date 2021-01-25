@@ -89,7 +89,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                                     Helper.getPrice(widget.order.deliveryFee, context, style: Theme.of(context).textTheme.subtitle1)
                                   ],
                                 ),
-                                Row(
+                                /*Row(
                                   children: <Widget>[
                                     Expanded(
                                       child: Text(
@@ -99,7 +99,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                                     ),
                                     Helper.getPrice(Helper.getTaxOrder(widget.order), context, style: Theme.of(context).textTheme.subtitle1)
                                   ],
-                                ),
+                                ),*/
                                 Row(
                                   children: <Widget>[
                                     Expanded(

@@ -34,8 +34,6 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
   @override
   Widget build(BuildContext context) {
 
-    //print('deliveryFee -> ${_con.deliveryFee} | ${Helper.getPrice(_con.deliveryFee, context)}');
-
     return WillPopScope(
       onWillPop: Helper.of(context).onWillPop,
       child: Scaffold(
@@ -133,7 +131,7 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                   Positioned(
                     bottom: 0,
                     child: Container(
-                      height: 255,
+                      height: 210,
                       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                       decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)), boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)]),
                       child: SizedBox(
@@ -166,7 +164,7 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                               ],
                             ),
                             SizedBox(height: 3),
-                            Row(
+                            /*Row(
                               children: <Widget>[
                                 Expanded(
                                   child: Text(
@@ -176,8 +174,8 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                                 ),
                                 Helper.getPrice(_con.taxAmount, context, style: Theme.of(context).textTheme.subtitle1)
                               ],
-                            ),
-                            Divider(height: 30),
+                            ),*/
+                            Divider(height: 20),
                             Row(
                               children: <Widget>[
                                 Expanded(
@@ -227,8 +225,9 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                                       var onAuthenticationFailed = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Authentication failed')));
                                       var onRestaurantNotAvailable = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('The restaurant is neither open nor available for pre-order')));
                                       var onUnavailableForDelivery = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('The restaurant is not available for delivery')));
+                                      var onFoodOutOfStock = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('One or more food items is currently out of stock')));
 
-                                      _con.addOrder(paymentMethod, onAuthenticationFailed, onSuccess, onError, onRestaurantNotAvailable, onUnavailableForDelivery);
+                                      _con.addOrder(paymentMethod, onAuthenticationFailed, onSuccess, onError, onRestaurantNotAvailable, onUnavailableForDelivery, onFoodOutOfStock);
 
                                     }
                                     on PlatformException catch (e) {

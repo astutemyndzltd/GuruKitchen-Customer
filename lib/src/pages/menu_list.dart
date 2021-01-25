@@ -25,7 +25,6 @@ class MenuWidget extends StatefulWidget {
 
 class _MenuWidgetState extends StateMVC<MenuWidget> {
   RestaurantController _con;
-  List<String> selectedCategories;
 
   _MenuWidgetState() : super(RestaurantController()) {
     _con = controller;
@@ -36,8 +35,7 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
     _con.restaurant = widget.routeArgument.param as Restaurant;
     _con.listenForTrendingFoods(_con.restaurant.id);
     _con.listenForCategories(_con.restaurant.id);
-    selectedCategories = ['0'];
-    _con.listenForFoods(_con.restaurant.id);
+    //_con.listenForFoods(_con.restaurant.id);
     super.initState();
   }
 
@@ -123,15 +121,13 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
                       scrollDirection: Axis.horizontal,
                       children: List.generate(_con.categories.length, (index) {
                         var _category = _con.categories.elementAt(index);
-                        var _selected = this.selectedCategories.contains(_category.id);
+                        var _selected = this._con.selectedCategories.contains(_category.id);
                         return Padding(
                           padding: const EdgeInsetsDirectional.only(start: 20),
                           child: RawChip(
                             elevation: 0,
                             label: Text(_category.name),
-                            labelStyle: _selected
-                                ? Theme.of(context).textTheme.bodyText2.merge(TextStyle(color: Theme.of(context).primaryColor))
-                                : Theme.of(context).textTheme.bodyText2,
+                            labelStyle: _selected ? Theme.of(context).textTheme.bodyText2.merge(TextStyle(color: Theme.of(context).primaryColor)) : Theme.of(context).textTheme.bodyText2,
                             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 15),
                             backgroundColor: Theme.of(context).focusColor.withOpacity(0.1),
                             selectedColor: Theme.of(context).accentColor,
@@ -157,16 +153,16 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
                             onSelected: (bool value) {
                               setState(() {
                                 if (_category.id == '0') {
-                                  this.selectedCategories = ['0'];
+                                  this._con.selectedCategories = ['0'];
                                 } else {
-                                  this.selectedCategories.removeWhere((element) => element == '0');
+                                  this._con.selectedCategories.removeWhere((element) => element == '0');
                                 }
                                 if (value) {
-                                  this.selectedCategories.add(_category.id);
+                                  this._con.selectedCategories.add(_category.id);
                                 } else {
-                                  this.selectedCategories.removeWhere((element) => element == _category.id);
+                                  this._con.selectedCategories.removeWhere((element) => element == _category.id);
                                 }
-                                _con.selectCategory(this.selectedCategories);
+                                _con.selectCategory(this._con.selectedCategories);
                               });
                             },
                           ),

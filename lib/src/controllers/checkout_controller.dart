@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:GuruKitchen/src/helpers/helper.dart';
+import 'package:GuruKitchen/src/repository/cart_repository.dart';
 import 'package:GuruKitchen/src/repository/restaurant_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,7 +21,6 @@ import '../repository/user_repository.dart' as userRepo;
 import 'cart_controller.dart';
 
 class CheckoutController extends CartController {
-
   Payment payment;
   guru.CreditCard creditCard;
 
@@ -35,8 +35,7 @@ class CheckoutController extends CartController {
     setState(() {});
   }
 
-  void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError, VoidCallback onRestaurantNotAvailable, VoidCallback onUnavailableForDelivery) async {
-
+  void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError, VoidCallback onRestaurantNotAvailable, VoidCallback onUnavailableForDelivery, VoidCallback onFoodOutOfStock) async {
     var order = Order();
     order.orderType = settingRepo.orderType;
     order.note = settingRepo.orderNote ?? '';
@@ -62,49 +61,84 @@ class CheckoutController extends CartController {
     var overlayLoader = Helper.overlayLoader(context);
     Overlay.of(context).insert(overlayLoader);
 
-    var restaurant = await getRestaurantDetails(carts[0].food.restaurant.id);
+    List<CartItem> cartItems = await getCartItemsNew();
+    var restaurant = cartItems[0].food.restaurant;
 
-    bool proceed = settingRepo.preorderInfo != '' ? restaurant.isAvailableForPreorder() : restaurant.isCurrentlyOpen();
-
-    if (proceed) {
-
-      if(settingRepo.orderType != 'Delivery' || restaurant.availableForDelivery) {
-        var response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
-
-        if (response['message'] == 'requires action') {
-
-          var clientSecret = response['data']['client_secret'].toString();
-
-          try {
-            var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
-            if (paymentIntent.status == 'succeeded') {
-              response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentIntentId: paymentIntent.paymentIntentId, cardBrand: paymentMethod.card.brand.capitalize());
-            }
-          }
-          catch(e) {
-            onAuthenticationFailed?.call();
-          }
-        }
-
-        if (response['message'] == 'succeeded') {
-          settingRepo.coupon = Coupon.fromJSON({});
-          onSuccess?.call();
-        }
-
-        if (response['message'] == 'invalid status') {
-          onError?.call();
-        }
-      }
-      else {
-        onUnavailableForDelivery?.call();
+    for (var item in cartItems) {
+      if (item.food.outOfStock) {
+        onFoodOutOfStock?.call();
+        overlayLoader.remove();
+        return;
       }
     }
-    else {
-      onRestaurantNotAvailable?.call();
+
+    //////////////////////////////////////////////////////////////
+
+    bool isPreOrder = settingRepo.preorderInfo != '';
+
+    if (isPreOrder) {
+      var ifForTomorrow = settingRepo.preorderInfo.contains(',');
+
+      if (ifForTomorrow) {
+        if (!restaurant.isAvailableForPreorderTomorrow()) {
+          onRestaurantNotAvailable?.call();
+          overlayLoader.remove();
+          return;
+        }
+      } else {
+        if (!restaurant.isAvailableForPreorderToday()) {
+          onRestaurantNotAvailable?.call();
+          overlayLoader.remove();
+          return;
+        }
+      }
+
+    } else {
+      if (!restaurant.isCurrentlyOpen()) {
+        onRestaurantNotAvailable?.call();
+        overlayLoader.remove();
+        return;
+      }
+    }
+
+    ////////////////////////////////////////////////////////////
+
+    bool isDelivery = settingRepo.orderType == 'Delivery';
+
+    if (isDelivery) {
+      if (!restaurant.availableForDelivery) {
+        onUnavailableForDelivery?.call();
+        overlayLoader.remove();
+        return;
+      }
+    }
+
+
+    var response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
+
+    if (response['message'] == 'requires action') {
+      var clientSecret = response['data']['client_secret'].toString();
+
+      try {
+        var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
+        if (paymentIntent.status == 'succeeded') {
+          response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentIntentId: paymentIntent.paymentIntentId, cardBrand: paymentMethod.card.brand.capitalize());
+        }
+      } catch (e) {
+        onAuthenticationFailed?.call();
+      }
+    }
+
+    if (response['message'] == 'succeeded') {
+      settingRepo.coupon = Coupon.fromJSON({});
+      onSuccess?.call();
+    }
+
+    if (response['message'] == 'invalid status') {
+      onError?.call();
     }
 
     overlayLoader.remove();
-
   }
 
   void updateCreditCard(guru.CreditCard creditCard) {
@@ -115,5 +149,4 @@ class CheckoutController extends CartController {
       ));
     });
   }
-
 }

@@ -288,7 +288,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
                                     Future.delayed(Duration(milliseconds: 500), () {
                                       scrollController.animateTo(
                                         scrollController.position.maxScrollExtent,
-                                        duration: Duration(milliseconds: 1000),
+                                        duration: Duration(milliseconds: 1500),
                                         curve: Curves.easeOut,
                                       );
                                     });

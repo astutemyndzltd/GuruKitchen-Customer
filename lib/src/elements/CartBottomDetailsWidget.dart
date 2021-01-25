@@ -20,7 +20,7 @@ class CartBottomDetailsWidget extends StatelessWidget {
     return _con.carts.isEmpty
         ? SizedBox(height: 0)
         : Container(
-            height: 172,
+            height: 160,
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)), boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)]),
             child: SizedBox(
@@ -57,7 +57,7 @@ class CartBottomDetailsWidget extends StatelessWidget {
                       )
                     ],
                   ),
-                  Row(
+                  /*Row(
                     children: <Widget>[
                       Expanded(
                         child: Text(
@@ -67,7 +67,7 @@ class CartBottomDetailsWidget extends StatelessWidget {
                       ),
                       Helper.getPrice(_con.taxAmount, context, style: Theme.of(context).textTheme.subtitle1)
                     ],
-                  ),
+                  ),*/
                   SizedBox(height: 10),
                   Stack(
                     fit: StackFit.loose,
@@ -91,7 +91,7 @@ class CartBottomDetailsWidget extends StatelessWidget {
                               }
 
                               if (con.radioState == 'later' && preorderInfo == '') {
-                                Helper.showSnackbar(context, "Please select arrival time");
+                                Helper.showSnackbar(context, "Please select ${orderType.toLowerCase()} time");
                                 return;
                               }
                             }

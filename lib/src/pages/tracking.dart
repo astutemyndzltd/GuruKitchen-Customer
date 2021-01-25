@@ -218,7 +218,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget> with SingleTickerPro
                                                       Helper.getPrice(_con.order.deliveryFee, context, style: Theme.of(context).textTheme.subtitle1)
                                                     ],
                                                   ),
-                                                  Row(
+                                                  /*Row(
                                                     children: <Widget>[
                                                       Expanded(
                                                         child: Text(
@@ -228,7 +228,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget> with SingleTickerPro
                                                       ),
                                                       Helper.getPrice(Helper.getTaxOrder(_con.order), context, style: Theme.of(context).textTheme.subtitle1)
                                                     ],
-                                                  ),
+                                                  ),*/
                                                   Row(
                                                     children: <Widget>[
                                                       Expanded(

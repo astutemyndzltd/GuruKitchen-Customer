@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
 import '../../generated/l10n.dart';
@@ -24,6 +25,7 @@ class RestaurantController extends ControllerMVC {
   List<Food> trendingFoods = <Food>[];
   List<Food> featuredFoods = <Food>[];
   List<Review> reviews = <Review>[];
+  List<String> selectedCategories = [];
   GlobalKey<ScaffoldState> scaffoldKey;
 
   RestaurantController() {
@@ -70,11 +72,12 @@ class RestaurantController extends ControllerMVC {
   void listenForFoods(String idRestaurant, {List<String> categoriesId}) async {
     final Stream<Food> stream = await getFoodsOfRestaurant(idRestaurant, categories: categoriesId);
     stream.listen((Food _food) {
-      setState(() => foods.add(_food));
+      foods.add(_food);
     }, onError: (a) {
       print(a);
     }, onDone: () {
       restaurant..name = foods.elementAt(0).restaurant.name;
+      setState((){});
     });
   }
 
@@ -99,11 +102,13 @@ class RestaurantController extends ControllerMVC {
   Future<void> listenForCategories(String restaurantId) async {
     final Stream<Category> stream = await getCategoriesOfRestaurant(restaurantId);
     stream.listen((Category _category) {
-      setState(() => categories.add(_category));
+      categories.add(_category);
     }, onError: (a) {
       print(a);
     }, onDone: () {
-      categories.insert(0, new Category.fromJSON({'id': '0', 'name': S.of(context).all}));
+      //categories.insert(0, new Category.fromJSON({'id': '0', 'name': S.of(context).all}));
+      selectedCategories = [categories[0].id];
+      selectCategory(selectedCategories);
     });
   }
 

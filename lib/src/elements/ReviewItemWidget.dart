@@ -49,59 +49,67 @@ class ReviewItemWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Expanded(
-                          child: Text(
-                            review.user.name,
-                            overflow: TextOverflow.fade,
-                            softWrap: false,
-                            maxLines: 2,
-                            style: Theme.of(context).textTheme.headline6.merge(TextStyle(color: Theme.of(context).hintColor)),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 32,
-                          child: Chip(
-                            padding: EdgeInsets.all(0),
-                            label: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(review.rate, style: Theme.of(context).textTheme.bodyText1.merge(TextStyle(color: Theme.of(context).primaryColor))),
-                                Icon(
-                                  Icons.star_border,
-                                  color: Theme.of(context).primaryColor,
-                                  size: 16,
-                                ),
-                              ],
+                    Padding(
+                      padding: const EdgeInsets.only(top :8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Expanded(
+                            child: Text(
+                              review.user.name,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              maxLines: 2,
+                              style: Theme.of(context).textTheme.headline6.merge(TextStyle(color: Theme.of(context).hintColor)),
                             ),
-                            backgroundColor: Theme.of(context).accentColor.withOpacity(0.9),
-                            shape: StadiumBorder(),
                           ),
-                        ),
-                      ],
+                          SizedBox(
+                            height: 32,
+                            child: Chip(
+                              padding: EdgeInsets.all(0),
+                              label: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(review.rate, style: Theme.of(context).textTheme.bodyText1.merge(TextStyle(color: Theme.of(context).primaryColor))),
+                                  Icon(
+                                    Icons.star_border,
+                                    color: Theme.of(context).primaryColor,
+                                    size: 16,
+                                  ),
+                                ],
+                              ),
+                              backgroundColor: Theme.of(context).accentColor.withOpacity(0.9),
+                              shape: StadiumBorder(),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    Text(
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(left: 0),
+                          child: Text(
+                            Helper.skipHtml(review.review),
+                            style: Theme.of(context).textTheme.bodyText2,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                            maxLines: 3,
+                          ),
+                        )
+                      ],
+                    )
+                    /*Text(
                       review.user.bio.substring(0, min(30, review.user.bio.length)),
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.caption,
-                    )
+                    )*/
                   ],
                 ),
               )
             ],
           ),
-          Container(
-            padding: EdgeInsets.only(left: 65),
-            child: Text(
-              Helper.skipHtml(review.review),
-              style: Theme.of(context).textTheme.bodyText2,
-              overflow: TextOverflow.ellipsis,
-              softWrap: false,
-              maxLines: 3,
-            ),
-          )
+
         ],
       ),
     );

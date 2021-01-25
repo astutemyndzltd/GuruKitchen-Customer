@@ -101,7 +101,7 @@ class OrderSuccessWidget extends StatelessWidget {
               Positioned(
                 bottom: 0,
                 child: Container(
-                  height: 255,
+                  height: 210,
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)), boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)]),
                   child: SizedBox(
@@ -137,7 +137,7 @@ class OrderSuccessWidget extends StatelessWidget {
                         ),
                         SizedBox(height: 3),
                         // tax
-                        Row(
+                        /*Row(
                           children: <Widget>[
                             Expanded(
                               child: Text(
@@ -147,8 +147,8 @@ class OrderSuccessWidget extends StatelessWidget {
                             ),
                             Helper.getPrice(orderDetails['tax_amount'], context, style: Theme.of(context).textTheme.subtitle1)
                           ],
-                        ),
-                        Divider(height: 30),
+                        ),*/
+                        Divider(height: 20),
                         // total
                         Row(
                           children: <Widget>[
