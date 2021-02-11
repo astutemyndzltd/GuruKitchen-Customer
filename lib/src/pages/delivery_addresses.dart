@@ -1,9 +1,6 @@
-import 'package:GuruKitchen/src/helpers/helper.dart';
+import '../../src/helpers/helper.dart';
 import 'package:flutter/material.dart';
-import 'package:google_map_location_picker/google_map_location_picker.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
-
 import '../../generated/l10n.dart';
 import '../controllers/delivery_addresses_controller.dart';
 import '../elements/CircularLoadingWidget.dart';
@@ -13,7 +10,6 @@ import '../elements/ShoppingCartButtonWidget.dart';
 import '../models/address.dart';
 import '../models/payment_method.dart';
 import '../models/route_argument.dart';
-import '../repository/settings_repository.dart';
 
 class DeliveryAddressesWidget extends StatefulWidget {
   final RouteArgument routeArgument;
@@ -58,32 +54,34 @@ class _DeliveryAddressesWidgetState extends StateMVC<DeliveryAddressesWidget> {
             new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
           ],
         ),
-        floatingActionButton: _con.cart != null && _con.cart.food.restaurant.availableForDelivery
+
+        /*floatingActionButton: _con.cart != null && _con.cart.food.restaurant.availableForDelivery
             ? FloatingActionButton(
-                onPressed: () async {
-                  LocationResult result = await showLocationPicker(
-                    context,
-                    setting.value.googleMapsKey,
-                    initialCenter: LatLng(deliveryAddress.value?.latitude ?? 0, deliveryAddress.value?.longitude ?? 0),
-                    //automaticallyAnimateToCurrentLocation: true,
-                    //mapStylePath: 'assets/mapStyle.json',
-                    myLocationButtonEnabled: true,
-                    //resultCardAlignment: Alignment.bottomCenter,
-                  );
-                  _con.addAddress(new Address.fromJSON({
-                    'address': result.address,
-                    'latitude': result.latLng.latitude,
-                    'longitude': result.latLng.longitude,
-                  }));
-                  print("result = $result");
-                  //setState(() => _pickedLocation = result);
-                },
-                backgroundColor: Theme.of(context).accentColor,
-                child: Icon(
-                  Icons.add,
-                  color: Theme.of(context).primaryColor,
-                ))
-            : SizedBox(height: 0),
+            onPressed: () async {
+              LocationResult result = await showLocationPicker(
+                context,
+                setting.value.googleMapsKey,
+                initialCenter: LatLng(deliveryAddress.value?.latitude ?? 0, deliveryAddress.value?.longitude ?? 0),
+                //automaticallyAnimateToCurrentLocation: true,
+                //mapStylePath: 'assets/mapStyle.json',
+                myLocationButtonEnabled: true,
+                //resultCardAlignment: Alignment.bottomCenter,
+              );
+              _con.addAddress(new Address.fromJSON({
+                'address': result.address,
+                'latitude': result.latLng.latitude,
+                'longitude': result.latLng.longitude,
+              }));
+              print("result = $result");
+              //setState(() => _pickedLocation = result);
+            },
+            backgroundColor: Theme.of(context).accentColor,
+            child: Icon(
+              Icons.add,
+              color: Theme.of(context).primaryColor,
+            ))
+            : SizedBox(height: 0),*/
+
         body: RefreshIndicator(
           onRefresh: _con.refreshAddresses,
           child: SingleChildScrollView(
@@ -117,41 +115,41 @@ class _DeliveryAddressesWidgetState extends StateMVC<DeliveryAddressesWidget> {
                 _con.addresses.isEmpty
                     ? CircularLoadingWidget(height: 250)
                     : ListView.separated(
-                        padding: EdgeInsets.symmetric(vertical: 15),
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        primary: false,
-                        itemCount: _con.addresses.length,
-                        separatorBuilder: (context, index) {
-                          return SizedBox(height: 15);
-                        },
-                        itemBuilder: (context, index) {
-                          return DeliveryAddressesItemWidget(
-                            address: _con.addresses.elementAt(index),
-                            onPressed: (Address _address) {
-                              DeliveryAddressDialog(
-                                context: context,
-                                address: _address,
-                                onChanged: (Address _address) {
-                                  _con.updateAddress(_address);
-                                },
-                              );
-                            },
-                            onLongPress: (Address _address) {
-                              DeliveryAddressDialog(
-                                context: context,
-                                address: _address,
-                                onChanged: (Address _address) {
-                                  _con.updateAddress(_address);
-                                },
-                              );
-                            },
-                            onDismissed: (Address _address) {
-                              _con.removeDeliveryAddress(_address);
-                            },
-                          );
-                        },
-                      ),
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  primary: false,
+                  itemCount: _con.addresses.length,
+                  separatorBuilder: (context, index) {
+                    return SizedBox(height: 15);
+                  },
+                  itemBuilder: (context, index) {
+                    return DeliveryAddressesItemWidget(
+                      address: _con.addresses.elementAt(index),
+                      onPressed: (Address _address) {
+                        DeliveryAddressDialog(
+                          context: context,
+                          address: _address,
+                          onChanged: (Address _address) {
+                            _con.updateAddress(_address);
+                          },
+                        );
+                      },
+                      onLongPress: (Address _address) {
+                        DeliveryAddressDialog(
+                          context: context,
+                          address: _address,
+                          onChanged: (Address _address) {
+                            _con.updateAddress(_address);
+                          },
+                        );
+                      },
+                      onDismissed: (Address _address) {
+                        _con.removeDeliveryAddress(_address);
+                      },
+                    );
+                  },
+                ),
               ],
             ),
           ),

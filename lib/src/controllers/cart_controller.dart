@@ -15,7 +15,6 @@ import '../repository/settings_repository.dart';
 import '../repository/user_repository.dart';
 
 
-
 class CartController extends ControllerMVC {
 
   List<CartItem> carts = <CartItem>[];
@@ -51,7 +50,6 @@ class CartController extends ControllerMVC {
       if(carts.isEmpty) {
         orderType = null;
       }
-
 
       if (carts.isNotEmpty) {
         restaurant = carts[0].food.restaurant;

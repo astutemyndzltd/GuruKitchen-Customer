@@ -10,11 +10,7 @@ class CreditCardsWidget extends StatelessWidget {
   CreditCard creditCard;
   ValueChanged<CreditCard> onChanged;
 
-  CreditCardsWidget({
-    this.creditCard,
-    this.onChanged,
-    Key key,
-  }) : super(key: key);
+  CreditCardsWidget({ this.creditCard, this.onChanged, Key key }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

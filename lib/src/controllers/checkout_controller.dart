@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:GuruKitchen/src/helpers/helper.dart';
-import 'package:GuruKitchen/src/repository/cart_repository.dart';
-import 'package:GuruKitchen/src/repository/restaurant_repository.dart';
+import '../../src/helpers/helper.dart';
+import '../../src/repository/cart_repository.dart';
+import '../../src/repository/restaurant_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stripe_payment/stripe_payment.dart' as stripe;
@@ -21,8 +21,11 @@ import '../repository/user_repository.dart' as userRepo;
 import 'cart_controller.dart';
 
 class CheckoutController extends CartController {
+
   Payment payment;
   guru.CreditCard creditCard;
+  final orderType = settingRepo.orderType;
+  bool processingOrder = false;
 
   CheckoutController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -36,8 +39,14 @@ class CheckoutController extends CartController {
   }
 
   void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError, VoidCallback onRestaurantNotAvailable, VoidCallback onUnavailableForDelivery, VoidCallback onFoodOutOfStock) async {
+
+    //processingOrder = true;
+
+    var overlayLoader = Helper.overlayLoader(context);
+    Overlay.of(context).insert(overlayLoader);
+
     var order = Order();
-    order.orderType = settingRepo.orderType;
+    order.orderType = this.orderType;
     order.note = settingRepo.orderNote ?? '';
     order.preorderInfo = settingRepo.preorderInfo;
     order.foodOrders = List<FoodOrder>();
@@ -58,8 +67,6 @@ class CheckoutController extends CartController {
       order.foodOrders.add(foodOrder);
     }
 
-    var overlayLoader = Helper.overlayLoader(context);
-    Overlay.of(context).insert(overlayLoader);
 
     List<CartItem> cartItems = await getCartItemsNew();
     var restaurant = cartItems[0].food.restaurant;
@@ -92,7 +99,6 @@ class CheckoutController extends CartController {
           return;
         }
       }
-
     } else {
       if (!restaurant.isCurrentlyOpen()) {
         onRestaurantNotAvailable?.call();
@@ -103,7 +109,7 @@ class CheckoutController extends CartController {
 
     ////////////////////////////////////////////////////////////
 
-    bool isDelivery = settingRepo.orderType == 'Delivery';
+    bool isDelivery = this.orderType == 'Delivery';
 
     if (isDelivery) {
       if (!restaurant.availableForDelivery) {
@@ -113,32 +119,39 @@ class CheckoutController extends CartController {
       }
     }
 
+    try {
+      var response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
 
-    var response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
+      if (response['message'] == 'requires action') {
+        var clientSecret = response['data']['client_secret'].toString();
 
-    if (response['message'] == 'requires action') {
-      var clientSecret = response['data']['client_secret'].toString();
+        try {
+          var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
+          if (paymentIntent.status == 'succeeded') {
+            response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentIntentId: paymentIntent.paymentIntentId, cardBrand: paymentMethod.card.brand.capitalize());
+          }
+        } catch (e) {
+          onAuthenticationFailed?.call();
 
-      try {
-        var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
-        if (paymentIntent.status == 'succeeded') {
-          response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentIntentId: paymentIntent.paymentIntentId, cardBrand: paymentMethod.card.brand.capitalize());
         }
-      } catch (e) {
-        onAuthenticationFailed?.call();
+      }
+
+      if (response['message'] == 'succeeded') {
+        settingRepo.coupon = Coupon.fromJSON({});
+        onSuccess?.call();
+      }
+
+      if (response['message'] == 'invalid status') {
+        onError?.call();
       }
     }
-
-    if (response['message'] == 'succeeded') {
-      settingRepo.coupon = Coupon.fromJSON({});
-      onSuccess?.call();
+    catch(e) {
+      throw new Exception();
+    }
+    finally {
+      overlayLoader.remove();
     }
 
-    if (response['message'] == 'invalid status') {
-      onError?.call();
-    }
-
-    overlayLoader.remove();
   }
 
   void updateCreditCard(guru.CreditCard creditCard) {

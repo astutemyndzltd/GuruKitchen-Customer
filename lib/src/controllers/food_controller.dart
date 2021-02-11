@@ -53,13 +53,9 @@ class FoodController extends ControllerMVC {
   }
 
   void listenForCart() async {
-    this.loadCart = true;
-    final Stream<CartItem> stream = await getCart();
-    stream.listen((CartItem _cart) {
-      cartItems.add(_cart);
-    }, onDone: () {
-      this.loadCart = false;
-    });
+    setState(() { this.loadCart = true; });
+    final cartStream = await getCart();
+    cartStream.listen((cartItem) => cartItems.add(cartItem), onDone: () => setState(() { this.loadCart = false; }));
   }
 
   bool isSameRestaurants(Food food) {
@@ -69,9 +65,10 @@ class FoodController extends ControllerMVC {
     return true;
   }
 
-  void addToCart(Food food, {bool reset = false}) async {
-    
-    setState(() { this.loadCart = true; });
+  void addToCart(Food food, { bool reset = false }) async {
+    setState(() {
+      this.loadCart = true;
+    });
 
     var newCartItem = new CartItem();
     newCartItem.food = food;
@@ -80,19 +77,19 @@ class FoodController extends ControllerMVC {
 
     var oldCartItem = fetchOldItem(newCartItem);
 
-    if(oldCartItem != null) {
+    if (oldCartItem != null) {
       oldCartItem.quantity += quantity;
       await updateCart(oldCartItem);
-    }
-    else {
+    } else {
       var addedItem = await addCart(newCartItem, reset);
       newCartItem.id = addedItem.id;
       cartItems.add(newCartItem);
     }
 
-    setState(() { this.loadCart = false; });
+    setState(() {
+      this.loadCart = false;
+    });
     scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Added to cart successfully')));
-
   }
 
   CartItem fetchOldItem(CartItem cartItem) {
@@ -155,5 +152,6 @@ class FoodController extends ControllerMVC {
       calculateTotal();
     }
   }
+
 
 }

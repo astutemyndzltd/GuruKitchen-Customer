@@ -75,7 +75,8 @@ Future<bool> resetPassword(User user) async {
 Future<void> logout() async {
   currentUser.value = new User();
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.remove('current_user');
+  //await prefs.remove('current_user');
+  await prefs.clear();
 }
 
 void setCurrentUser(jsonString) async {
@@ -137,8 +138,7 @@ Future<User> update(User user) async {
 Future<Stream<Address>> getAddresses() async {
   User _user = currentUser.value;
   final String _apiToken = 'api_token=${_user.apiToken}&';
-  final String url =
-      '${GlobalConfiguration().getValue('api_base_url')}delivery_addresses?$_apiToken&search=user_id:${_user.id}&searchFields=user_id:=&orderBy=updated_at&sortedBy=desc';
+  final String url = '${GlobalConfiguration().getValue('api_base_url')}delivery_addresses?$_apiToken&search=user_id:${_user.id}&searchFields=user_id:=&orderBy=updated_at&sortedBy=desc';
   try {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
@@ -196,10 +196,7 @@ Future<Address> removeDeliveryAddress(Address address) async {
   final String url = '${GlobalConfiguration().getValue('api_base_url')}delivery_addresses/${address.id}?$_apiToken';
   final client = new http.Client();
   try {
-    final response = await client.delete(
-      url,
-      headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-    );
+    final response = await client.delete(url, headers: {HttpHeaders.contentTypeHeader: 'application/json'});
     return Address.fromJSON(json.decode(response.body)['data']);
   } catch (e) {
     print(CustomTrace(StackTrace.current, message: url));

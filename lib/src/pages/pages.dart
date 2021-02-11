@@ -56,20 +56,29 @@ class _PagesWidgetState extends State<PagesWidget> {
 
   void _selectTab(int tabItem) {
     setState(() {
+
+      //print('tabItem -> $tabItem');
+
       widget.currentTab = tabItem;
+
       switch (tabItem) {
+
         case 0:
           widget.currentPage = NotificationsWidget(parentScaffoldKey: widget.scaffoldKey);
           break;
+
         case 1:
           widget.currentPage = MapWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: widget.routeArgument);
           break;
+
         case 2:
           widget.currentPage = HomeWidget(parentScaffoldKey: widget.scaffoldKey);
           break;
+
         case 3:
           widget.currentPage = OrdersWidget(parentScaffoldKey: widget.scaffoldKey);
           break;
+
         case 4:
           widget.currentPage = FavoritesWidget(parentScaffoldKey: widget.scaffoldKey);
           //widget.currentPage = MessagesWidget(parentScaffoldKey: widget.scaffoldKey);
@@ -99,16 +108,18 @@ class _PagesWidgetState extends State<PagesWidget> {
           backgroundColor: Colors.transparent,
           selectedIconTheme: IconThemeData(size: 28),
           unselectedItemColor: Theme.of(context).focusColor.withOpacity(1),
-          currentIndex: widget.currentTab,
+          currentIndex: widget.currentTab == 4 ? 1 :  widget.currentTab - 1,
           onTap: (int i) {
-            this._selectTab(i);
+            //print('tab no => ' + i.toString());
+            this._selectTab(i + 1);
           },
           // this will be set when a new tab is tapped
           items: [
-            BottomNavigationBarItem(
+            // notifications
+            /*BottomNavigationBarItem(
               icon: Icon(Icons.notifications),
               label: '',
-            ),
+            ),*/
             BottomNavigationBarItem(
               icon: Icon(Icons.location_on),
               label: '',
@@ -135,10 +146,11 @@ class _PagesWidgetState extends State<PagesWidget> {
               icon: new Icon(Icons.chat),
               label: '',
             ),*/
-            BottomNavigationBarItem(
+            // fav food
+            /*BottomNavigationBarItem(
               icon: Icon(Icons.favorite),
               label: '',
-            )
+            )*/
           ],
         ),
       ),

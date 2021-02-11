@@ -3,7 +3,6 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -128,30 +127,30 @@ class Helper {
         maxLines: 1,
         text: setting.value?.currencyRight != null && setting.value?.currencyRight == false
             ? TextSpan(
-                text: setting.value?.defaultCurrency,
-                style: style == null
-                    ? Theme.of(context).textTheme.subtitle1.merge(
-                          TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize - 3),
-                        )
-                    : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize - 6)),
-                children: <TextSpan>[
-                  TextSpan(text: myPrice.toFixed2().toString() ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
-                ],
-              )
+          text: setting.value?.defaultCurrency,
+          style: style == null
+              ? Theme.of(context).textTheme.subtitle1.merge(
+            TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize - 3),
+          )
+              : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize - 6)),
+          children: <TextSpan>[
+            TextSpan(text: myPrice.toFixed2().toString() ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
+          ],
+        )
             : TextSpan(
-                text: myPrice.toFixed2().toString() ?? '',
-                style: style ?? Theme.of(context).textTheme.subtitle1,
-                children: <TextSpan>[
-                  TextSpan(
-                    text: setting.value?.defaultCurrency,
-                    style: style == null
-                        ? Theme.of(context).textTheme.subtitle1.merge(
-                              TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize - 6),
-                            )
-                        : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize - 6)),
-                  ),
-                ],
-              ),
+          text: myPrice.toFixed2().toString() ?? '',
+          style: style ?? Theme.of(context).textTheme.subtitle1,
+          children: <TextSpan>[
+            TextSpan(
+              text: setting.value?.defaultCurrency,
+              style: style == null
+                  ? Theme.of(context).textTheme.subtitle1.merge(
+                TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize - 6),
+              )
+                  : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize - 6)),
+            ),
+          ],
+        ),
       );
     } catch (e) {
       return Text('');
@@ -405,13 +404,13 @@ class Helper {
   }
 
   static void showSnackbar(BuildContext context, String message) {
-    Flushbar(
-            padding: EdgeInsets.symmetric(horizontal: 28, vertical: 13),
-            messageText: Text(
-              message,
-              style: TextStyle(color: Colors.white, fontFamily: 'Roboto', fontSize: 15),
-            ),
-            duration: Duration(seconds: 3))
-        .show(context);
+    /*Flushbar(
+      padding: EdgeInsets.symmetric(horizontal: 28, vertical: 13),
+      messageText: Text(
+        message,
+        style: TextStyle(color: Colors.white, fontFamily: 'Roboto', fontSize: 15),
+      ),
+      duration: Duration(seconds: 3),
+    ).show(context);*/
   }
 }

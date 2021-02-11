@@ -2,7 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:GuruKitchen/src/models/dispatchmethod.dart';
+import 'package:GuruKitchen/src/helpers/firebase_messaging_streams.dart';
+import 'package:connectivity/connectivity.dart';
+
+import '../../src/models/dispatchmethod.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +15,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../helpers/custom_trace.dart';
 import '../helpers/maps_util.dart';
 import '../models/address.dart';
@@ -21,19 +23,19 @@ import '../models/setting.dart';
 
 ValueNotifier<Setting> setting = new ValueNotifier(new Setting());
 ValueNotifier<Address> deliveryAddress = new ValueNotifier(new Address());
+final firebaseMessagingStreams = FirebaseMessagingStreams();
 Coupon coupon = new Coupon.fromJSON({});
 String orderType = null;
 String orderNote = '';
 String preorderInfo = '';
-
 DispatchMethod dispatchMethod = DispatchMethod.none;
 final navigatorKey = GlobalKey<NavigatorState>();
 final RouteObserver<PageRoute> routeObserver = new RouteObserver();
+final connectivity = new Connectivity();
 
 /******************************************************************/
 
 Future<Setting> initSettings() async {
-
   Setting _setting;
   final String url = '${GlobalConfiguration().getValue('api_base_url')}settings';
 
@@ -86,13 +88,7 @@ Future<dynamic> setCurrentLocation() async {
 }
 
 Future<Address> setLocationManually(LocationResult locationResult) async {
-
-  var address = Address.fromJSON({
-    'address': locationResult.address,
-    'latitude': locationResult.latLng.latitude,
-    'longitude': locationResult.latLng.longitude,
-    'place_id': locationResult.placeId
-  });
+  var address = Address.fromJSON({'address': locationResult.address, 'latitude': locationResult.latLng.latitude, 'longitude': locationResult.latLng.longitude, 'place_id': locationResult.placeId});
 
   await changeLocation(address);
 
@@ -100,21 +96,19 @@ Future<Address> setLocationManually(LocationResult locationResult) async {
 }
 
 Future<Address> pickAndSetLocationAutomatically() async {
-
   var location = new Location();
   var mapsUtility = new MapsUtil();
   var serviceEnabled = await location.requestService();
 
-  if(serviceEnabled) {
+  if (serviceEnabled) {
     try {
       var locationData = await location.getLocation();
       var addressComponents = await mapsUtility.getAddress(LatLng(locationData?.latitude, locationData?.longitude), setting.value.googleMapsKey);
       var formattedAddress = addressComponents[0].toString();
       var placeId = addressComponents[1].toString();
-      var address = Address.fromJSON({'address': formattedAddress, 'latitude': locationData?.latitude, 'longitude': locationData?.longitude, 'place_id' : placeId});
+      var address = Address.fromJSON({'address': formattedAddress, 'latitude': locationData?.latitude, 'longitude': locationData?.longitude, 'place_id': placeId});
       return await changeLocation(address); // putting in shared preference
-    }
-    catch(e){
+    } catch (e) {
       return null;
     }
   }
@@ -186,4 +180,10 @@ Future<void> saveMessageId(String messageId) async {
 Future<String> getMessageId() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   return await prefs.get('google.message_id');
+}
+
+Future<bool> isConnectedToInternet() async {
+  var connectivity = new Connectivity();
+  var result = await connectivity.checkConnectivity();
+  return result != ConnectivityResult.none;
 }
