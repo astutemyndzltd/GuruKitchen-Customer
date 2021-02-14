@@ -19,7 +19,7 @@ class _EmptyOrdersWidgetState extends State<EmptyOrdersWidget> {
 
   @override
   void initState() {
-    Timer(Duration(seconds: 5), () {
+    Timer(Duration(seconds: 0), () {
       if (mounted) {
         setState(() {
           loading = false;

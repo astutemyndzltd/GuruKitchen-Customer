@@ -127,30 +127,30 @@ class Helper {
         maxLines: 1,
         text: setting.value?.currencyRight != null && setting.value?.currencyRight == false
             ? TextSpan(
-          text: setting.value?.defaultCurrency,
-          style: style == null
-              ? Theme.of(context).textTheme.subtitle1.merge(
-            TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize - 3),
-          )
-              : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize - 6)),
-          children: <TextSpan>[
-            TextSpan(text: myPrice.toFixed2().toString() ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
-          ],
-        )
-            : TextSpan(
-          text: myPrice.toFixed2().toString() ?? '',
-          style: style ?? Theme.of(context).textTheme.subtitle1,
-          children: <TextSpan>[
-            TextSpan(
-              text: setting.value?.defaultCurrency,
-              style: style == null
-                  ? Theme.of(context).textTheme.subtitle1.merge(
-                TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize - 6),
+                text: setting.value?.defaultCurrency,
+                style: style == null
+                    ? Theme.of(context).textTheme.subtitle1.merge(
+                          TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize - 3),
+                        )
+                    : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize - 6)),
+                children: <TextSpan>[
+                  TextSpan(text: myPrice.toFixed2().toString() ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
+                ],
               )
-                  : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize - 6)),
-            ),
-          ],
-        ),
+            : TextSpan(
+                text: myPrice.toFixed2().toString() ?? '',
+                style: style ?? Theme.of(context).textTheme.subtitle1,
+                children: <TextSpan>[
+                  TextSpan(
+                    text: setting.value?.defaultCurrency,
+                    style: style == null
+                        ? Theme.of(context).textTheme.subtitle1.merge(
+                              TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize - 6),
+                            )
+                        : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize - 6)),
+                  ),
+                ],
+              ),
       );
     } catch (e) {
       return Text('');
@@ -223,9 +223,15 @@ class Helper {
   }
 
   static bool canDeliver(Restaurant restaurant, {List<CartItem> cartItems}) {
-    if (deliveryAddress.value == null || !deliveryAddress.value.isValid()) return false;
+
+    var address = deliveryAddress.value;
+
+    if (address == null || !address.isValid()) return false;
     if (!restaurant.availableForDelivery) return false;
-    if (restaurant.distance > restaurant.deliveryRange) return false;
+
+    var distanceInKm = findDistance(address.latitude, address.longitude, double.parse(restaurant.latitude), double.parse(restaurant.longitude)) / 1000;
+
+    if (distanceInKm > restaurant.deliveryRange) return false;
 
     for (var item in cartItems) {
       if (item.food.outOfStock) {
@@ -413,4 +419,21 @@ class Helper {
       duration: Duration(seconds: 3),
     ).show(context);*/
   }
+
+  static double findDistance(double lat1, double lng1, double lat2, double lng2) {
+    double d1, num1, d2, num2, d3;
+    d1 = lat1 * (pi / 180.0);
+    num1 = lng1 * (pi / 180.0);
+    d2 = lat2 * (pi / 180.0);
+    num2 = lng2 * (pi / 180.0) - num1;
+    d3 = pow(sin((d2 - d1) / 2.0), 2.0) + cos(d1) * cos(d2) * pow(sin(num2 / 2.0), 2.0);
+    return 6376500.0 * (2.0 * atan2(sqrt(d3), sqrt(1.0 - d3)));
+
+  }
+
+  static bool canRestaurantDeliver() {
+
+  }
+
+
 }

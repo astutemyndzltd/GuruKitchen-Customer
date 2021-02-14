@@ -19,7 +19,7 @@ class _EmptyCartWidgetState extends State<EmptyCartWidget> {
 
   @override
   void initState() {
-    Timer(Duration(seconds: 5), () {
+    Timer(Duration(seconds: 0), () {
       if (mounted) {
         setState(() {
           loading = false;

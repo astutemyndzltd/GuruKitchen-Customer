@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/elements/CircularLoadingWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
@@ -21,9 +22,7 @@ class CartWidget extends StatefulWidget {
 }
 
 class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
-
   CartController _con;
-
 
   _CartWidgetState() : super(CartController()) {
     _con = controller;
@@ -72,7 +71,9 @@ class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
         ),
         body: RefreshIndicator(
           onRefresh: _con.refreshCarts,
-          child: _con.carts.isEmpty
+          child: _con.loading
+              ? CircularLoadingWidget(height: 400)
+              : _con.carts.isEmpty
               ? EmptyCartWidget()
               : Stack(
                   alignment: AlignmentDirectional.bottomCenter,

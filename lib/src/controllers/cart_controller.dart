@@ -25,27 +25,33 @@ class CartController extends ControllerMVC {
   double total = 0.0;
   GlobalKey<ScaffoldState> scaffoldKey;
   Restaurant restaurant;
+  bool loading = true;
 
   CartController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
   }
 
   void listenForCarts({String message}) async {
+    setState(() { loading = true; });
     carts.clear();
     final Stream<CartItem> stream = await getCart();
     stream.listen((CartItem _cart) {
       if (!carts.contains(_cart)) {
         setState(() {
+          loading = false;
           coupon = _cart.food.applyCoupon(coupon);
           carts.add(_cart);
         });
       }
     }, onError: (a) {
+      setState(() { loading = false; });
       print(a);
       scaffoldKey?.currentState?.showSnackBar(SnackBar(
         content: Text(S.of(context).verify_your_internet_connection),
       ));
     }, onDone: () {
+
+      setState(() { loading = false; });
 
       if(carts.isEmpty) {
         orderType = null;

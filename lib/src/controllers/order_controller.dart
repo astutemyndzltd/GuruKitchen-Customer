@@ -12,6 +12,7 @@ class OrderController extends ControllerMVC {
   List<Order> orders = <Order>[];
   GlobalKey<ScaffoldState> scaffoldKey;
   StreamSubscription onMessageSubscription, onResumeSubscription, onLaunchSubscription;
+  bool loading = true;
 
   OrderController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -31,17 +32,18 @@ class OrderController extends ControllerMVC {
   }
 
   void listenForOrders({String message}) async {
+    setState(() { loading = true; });
     final Stream<Order> stream = await getOrders();
     stream.listen((Order _order) {
-      setState(() {
-        orders.add(_order);
-      });
+      setState(() { orders.add(_order); loading = false; });
     }, onError: (e) {
+      setState(() { loading = false; });
       print(e);
       scaffoldKey?.currentState?.showSnackBar(SnackBar(
         content: Text(S.of(context).verify_your_internet_connection),
       ));
     }, onDone: () {
+      setState(() { loading = false; });
       if (message != null) {
         scaffoldKey?.currentState?.showSnackBar(SnackBar(
           content: Text(message),

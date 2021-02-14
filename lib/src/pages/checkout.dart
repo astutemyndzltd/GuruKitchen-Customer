@@ -37,6 +37,7 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
   @override
   void dispose() {
     settingRepo.orderType = _con.orderType;
+    settingRepo.preorderInfo = _con.preorderInfo;
     super.dispose();
   }
 

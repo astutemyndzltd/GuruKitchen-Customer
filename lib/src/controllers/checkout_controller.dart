@@ -25,6 +25,7 @@ class CheckoutController extends CartController {
   Payment payment;
   guru.CreditCard creditCard;
   final orderType = settingRepo.orderType;
+  final preorderInfo = settingRepo.preorderInfo;
   bool processingOrder = false;
 
   CheckoutController() {
@@ -48,7 +49,7 @@ class CheckoutController extends CartController {
     var order = Order();
     order.orderType = this.orderType;
     order.note = settingRepo.orderNote ?? '';
-    order.preorderInfo = settingRepo.preorderInfo;
+    order.preorderInfo = this.preorderInfo;
     order.foodOrders = List<FoodOrder>();
     order.tax = carts[0].food.restaurant.defaultTax;
     order.deliveryFee = order.orderType == 'Pickup' ? 0 : carts[0].food.restaurant.deliveryFee;
@@ -81,10 +82,10 @@ class CheckoutController extends CartController {
 
     //////////////////////////////////////////////////////////////
 
-    bool isPreOrder = settingRepo.preorderInfo != '';
+    bool isPreOrder = this.preorderInfo != '';
 
     if (isPreOrder) {
-      var ifForTomorrow = settingRepo.preorderInfo.contains(',');
+      var ifForTomorrow = this.preorderInfo.contains(',');
 
       if (ifForTomorrow) {
         if (!restaurant.isAvailableForPreorderTomorrow()) {

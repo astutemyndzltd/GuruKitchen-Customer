@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:GuruKitchen/src/elements/CircularLoadingWidget.dart';
+
 import '../../src/repository/settings_repository.dart';
 import 'package:collapsible/collapsible.dart';
 import 'package:flutter/cupertino.dart';
@@ -88,7 +90,9 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
               ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
             ],
           ),
-          body: SingleChildScrollView(
+          body: _con.restaurant == null
+          ? CircularLoadingWidget(height: 400)
+          : SingleChildScrollView(
             controller: scrollController,
             padding: EdgeInsets.symmetric(vertical: 10),
             child: Column(
@@ -129,7 +133,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
                         _con.togglePickUp();
                       }),
                 // delivery method option
-                if (isAvailableForDelivery)
+                if (isAvailableForDelivery && Helper.canDeliver(_con.restaurant, cartItems: _con.carts))
                   Column(
                     children: <Widget>[
                       Padding(
