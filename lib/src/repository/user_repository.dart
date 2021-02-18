@@ -157,6 +157,7 @@ Future<Address> addAddress(Address address) async {
   final String _apiToken = 'api_token=${_user.apiToken}';
   address.userId = _user.id;
   final String url = '${GlobalConfiguration().getValue('api_base_url')}delivery_addresses?$_apiToken';
+  final String body = json.encode(address.toMap());
   final client = new http.Client();
   try {
     final response = await client.post(
