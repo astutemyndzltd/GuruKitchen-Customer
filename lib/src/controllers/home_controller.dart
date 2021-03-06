@@ -120,6 +120,7 @@ class HomeController extends ControllerMVC {
   Future<void> listenForNearbyRestaurants() async {
     listeningForNearbyRestaurants = true;
     nearbyRestaurants = await getNearbyRestaurants();
+    print(nearbyRestaurants);
     showableRestaurants = [];
 
     for (var restaurant in nearbyRestaurants) {

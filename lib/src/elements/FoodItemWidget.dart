@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 import '../helpers/helper.dart';
 import '../models/food.dart';
@@ -13,6 +14,9 @@ class FoodItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    var foodDescription = Helper.skipHtml(food.description);
+
     return InkWell(
       splashColor: Theme.of(context).accentColor,
       focusColor: Theme.of(context).accentColor,
@@ -31,20 +35,21 @@ class FoodItemWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            // food image
             Hero(
               tag: heroTag + food.id,
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(5)),
                 child: CachedNetworkImage(
-                  height: 60,
-                  width: 60,
+                  height: 70,
+                  width: 70,
                   fit: BoxFit.cover,
                   imageUrl: food.image.thumb,
                   placeholder: (context, url) => Image.asset(
                     'assets/img/loading.gif',
                     fit: BoxFit.cover,
-                    height: 60,
-                    width: 60,
+                    height: 70,
+                    width: 70,
                   ),
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
@@ -52,45 +57,64 @@ class FoodItemWidget extends StatelessWidget {
             ),
             SizedBox(width: 15),
             Flexible(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          food.name,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          style: Theme.of(context).textTheme.subtitle1,
-                        ),
-                        Row(
-                          children: Helper.getStarsList(food.getRate()),
-                        ),
-                        Text(
-                          food.extras.map((e) => e.name).toList().join(', '),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          style: Theme.of(context).textTheme.caption,
-                        ),
-                      ],
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // food name
+                  Container(
+                    width: double.infinity,
+                    child: Text(
+                      food.name,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      style: Theme.of(context).textTheme.subtitle1,
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      Helper.getPrice(
-                        food.price,
-                        context,
-                        style: Theme.of(context).textTheme.headline4,
+                  SizedBox(height: 3),
+                  // price & rating
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // price
+                      Row(
+                        children: [
+                          // price
+                          Helper.getPrice(
+                            food.price,
+                            context,
+                            style: Theme.of(context).textTheme.headline4.copyWith(fontSize: 15),
+                          ),
+                          if (food.discountPrice > 0)
+                            Row(
+                              children: [
+                                SizedBox(width: 10),
+                                Helper.getPrice(
+                                  food.discountPrice,
+                                  context,
+                                  style: Theme.of(context).textTheme.bodyText1.copyWith(fontSize: 13).merge(TextStyle(decoration: TextDecoration.lineThrough)),
+                                )
+                              ],
+                            ),
+                        ],
                       ),
-                      food.discountPrice > 0
-                          ? Helper.getPrice(food.discountPrice, context,
-                              style: Theme.of(context).textTheme.bodyText2.merge(TextStyle(decoration: TextDecoration.lineThrough)))
-                          : SizedBox(height: 0),
+                      // rating
+                      Row(
+                        children: Helper.getStarsList(food.getRate()),
+                      )
                     ],
+                  ),
+                  SizedBox(height: 5),
+                  // description
+                  if(foodDescription != null && foodDescription.isNotEmpty)
+                  Container(
+                    width: double.infinity,
+                    child: Text(
+                      foodDescription,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      style: Theme.of(context).textTheme.caption,
+                      textAlign: TextAlign.justify,
+                    ),
                   ),
                 ],
               ),

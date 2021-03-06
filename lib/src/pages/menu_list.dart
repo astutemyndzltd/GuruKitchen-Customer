@@ -158,6 +158,7 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
                                   this._con.selectedCategories.removeWhere((element) => element == '0');
                                 }
                                 if (value) {
+                                  this._con.selectedCategories.clear();
                                   this._con.selectedCategories.add(_category.id);
                                 } else {
                                   this._con.selectedCategories.removeWhere((element) => element == _category.id);
