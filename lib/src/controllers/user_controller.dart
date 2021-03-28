@@ -1,3 +1,5 @@
+import 'package:GuruKitchen/src/helpers/app_data.dart';
+
 import '../../src/models/address.dart';
 import '../../src/repository/settings_repository.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -51,7 +53,11 @@ class UserController extends ControllerMVC {
     if (loginFormKey.currentState.validate()) {
       loginFormKey.currentState.save();
       Overlay.of(context).insert(loader);
+
       repository.login(user).then((value) async {
+
+        appData.clear();
+
         if (value != null && value.apiToken != null) {
           if (deliveryAddress.value != null) {
             var address = await this.addAddress(deliveryAddress.value);

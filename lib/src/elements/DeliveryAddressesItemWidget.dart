@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/helpers/app_data.dart';
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
@@ -5,23 +6,48 @@ import '../models/address.dart' as model;
 import '../models/payment_method.dart';
 
 // ignore: must_be_immutable
-class DeliveryAddressesItemWidget extends StatelessWidget {
+class DeliveryAddressesItemWidget extends StatefulWidget {
+
   String heroTag;
   model.Address address;
   PaymentMethod paymentMethod;
   ValueChanged<model.Address> onPressed;
   ValueChanged<model.Address> onLongPress;
   ValueChanged<model.Address> onDismissed;
+  bool checkedFromStart;
 
-  DeliveryAddressesItemWidget({Key key, this.address, this.onPressed, this.onLongPress, this.onDismissed, this.paymentMethod}) : super(key: key);
+  DeliveryAddressesItemWidget({Key key, this.address, this.onPressed, this.onLongPress, this.onDismissed, this.paymentMethod, this.checkedFromStart}) : super(key: key) {
+
+  }
+
+  @override
+  _DeliveryAddressesItemWidgetState createState() => _DeliveryAddressesItemWidgetState();
+
+
+}
+
+class _DeliveryAddressesItemWidgetState extends State<DeliveryAddressesItemWidget>
+{
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((ts) {
+        if (widget.checkedFromStart && appData.orderType == null) {
+          widget.onPressed(widget.address);
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (onDismissed != null) {
+    if (widget.onDismissed != null) {
       return Dismissible(
-        key: Key(address.id),
+        key: Key(widget.address.id),
         onDismissed: (direction) {
-          this.onDismissed(address);
+          widget.onDismissed(widget.address);
         },
         child: buildItem(context),
       );
@@ -36,10 +62,12 @@ class DeliveryAddressesItemWidget extends StatelessWidget {
       focusColor: Theme.of(context).accentColor,
       highlightColor: Theme.of(context).primaryColor,
       onTap: () {
-        this.onPressed(address);
+        if (!widget.checkedFromStart) {
+          widget.onPressed(widget.address);
+        }
       },
       onLongPress: () {
-        this.onLongPress(address);
+        widget.onLongPress(widget.address);
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -58,12 +86,9 @@ class DeliveryAddressesItemWidget extends StatelessWidget {
                 Container(
                   height: 60,
                   width: 60,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                      color:
-                          (address?.isDefault ?? false) || (paymentMethod?.selected ?? false) ? Theme.of(context).accentColor : Theme.of(context).focusColor),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)), color: (widget.address?.isDefault ?? false) || (widget.paymentMethod?.selected ?? false) ? Theme.of(context).accentColor : Theme.of(context).focusColor),
                   child: Icon(
-                    (paymentMethod?.selected ?? false) ? Icons.check : Icons.place,
+                    (widget.paymentMethod?.selected ?? false) ? Icons.check : Icons.place,
                     color: Theme.of(context).primaryColor,
                     size: 38,
                   ),
@@ -79,19 +104,19 @@ class DeliveryAddressesItemWidget extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        address?.description != null
+                        widget.address?.description != null
                             ? Text(
-                                address.description,
-                                overflow: TextOverflow.fade,
-                                softWrap: false,
-                                style: Theme.of(context).textTheme.subtitle1,
-                              )
+                          widget.address.description,
+                          overflow: TextOverflow.fade,
+                          softWrap: false,
+                          style: Theme.of(context).textTheme.subtitle1,
+                        )
                             : SizedBox(height: 0),
                         Text(
-                          address?.address ?? S.of(context).unknown,
+                          widget.address?.address ?? S.of(context).unknown,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
-                          style: address?.description != null ? Theme.of(context).textTheme.caption : Theme.of(context).textTheme.subtitle1,
+                          style: widget.address?.description != null ? Theme.of(context).textTheme.caption : Theme.of(context).textTheme.subtitle1,
                         ),
                       ],
                     ),
@@ -104,4 +129,5 @@ class DeliveryAddressesItemWidget extends StatelessWidget {
       ),
     );
   }
+
 }

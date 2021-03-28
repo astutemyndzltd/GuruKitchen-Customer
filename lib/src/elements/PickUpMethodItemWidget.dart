@@ -1,3 +1,4 @@
+import 'package:GuruKitchen/src/helpers/app_data.dart';
 import 'package:flutter/material.dart';
 
 import '../models/payment_method.dart';
@@ -22,9 +23,10 @@ class _PickUpMethodItemState extends State<PickUpMethodItem> {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((ts) {
-      if(widget.checkedFromStart) this.widget.onPressed(widget.paymentMethod);
+      if (widget.checkedFromStart && appData.orderType == null) {
+        this.widget.onPressed(widget.paymentMethod);
+      }
     });
-
   }
 
   @override
@@ -34,17 +36,16 @@ class _PickUpMethodItemState extends State<PickUpMethodItem> {
       focusColor: Theme.of(context).accentColor,
       highlightColor: Theme.of(context).primaryColor,
       onTap: () {
-        if(!widget.checkedFromStart) this.widget.onPressed(widget.paymentMethod);
+        if (!widget.checkedFromStart) {
+          this.widget.onPressed(widget.paymentMethod);
+        }
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         decoration: BoxDecoration(
           color: Theme.of(context).primaryColor.withOpacity(0.9),
           boxShadow: [
-            BoxShadow(
-                color: Theme.of(context).focusColor.withOpacity(0.1),
-                blurRadius: 5,
-                offset: Offset(0, 2)),
+            BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2)),
           ],
         ),
         child: Row(
@@ -58,9 +59,7 @@ class _PickUpMethodItemState extends State<PickUpMethodItem> {
                   width: 60,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(8)),
-                    image: DecorationImage(
-                        image: AssetImage(widget.paymentMethod.logo),
-                        fit: BoxFit.fill),
+                    image: DecorationImage(image: AssetImage(widget.paymentMethod.logo), fit: BoxFit.fill),
                   ),
                 ),
                 Container(
@@ -68,15 +67,12 @@ class _PickUpMethodItemState extends State<PickUpMethodItem> {
                   width: widget.paymentMethod.selected ? 60 : 0,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Theme.of(context).accentColor.withOpacity(
-                        this.widget.paymentMethod.selected ? 0.74 : 0),
+                    color: Theme.of(context).accentColor.withOpacity(this.widget.paymentMethod.selected ? 0.74 : 0),
                   ),
                   child: Icon(
                     Icons.check,
                     size: this.widget.paymentMethod.selected ? 44 : 0,
-                    color: Theme.of(context)
-                        .primaryColor
-                        .withOpacity(widget.paymentMethod.selected ? 0.9 : 0),
+                    color: Theme.of(context).primaryColor.withOpacity(widget.paymentMethod.selected ? 0.9 : 0),
                   ),
                 ),
               ],

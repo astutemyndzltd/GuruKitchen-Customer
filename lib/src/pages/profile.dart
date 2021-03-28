@@ -1,4 +1,6 @@
-import 'package:GuruKitchen/src/helpers/helper.dart';
+import 'package:GuruKitchen/src/elements/CircularLoadingWidget.dart';
+
+import '../../src/helpers/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -16,6 +18,7 @@ class ProfileWidget extends StatefulWidget {
   final GlobalKey<ScaffoldState> parentScaffoldKey;
 
   ProfileWidget({Key key, this.parentScaffoldKey}) : super(key: key);
+
   @override
   _ProfileWidgetState createState() => _ProfileWidgetState();
 }
@@ -55,56 +58,58 @@ class _ProfileWidgetState extends StateMVC<ProfileWidget> {
             ? PermissionDeniedWidget()
             : SingleChildScrollView(
 //              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-                child: Column(
-                  children: <Widget>[
-                    ProfileAvatarWidget(user: currentUser.value),
-                    ListTile(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      leading: Icon(
-                        Icons.person,
-                        color: Theme.of(context).hintColor,
-                      ),
-                      title: Text(
-                        S.of(context).about,
-                        style: Theme.of(context).textTheme.headline4,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        currentUser.value?.bio ?? "",
-                        style: Theme.of(context).textTheme.bodyText2,
-                      ),
-                    ),
-                    ListTile(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      leading: Icon(
-                        Icons.shopping_basket,
-                        color: Theme.of(context).hintColor,
-                      ),
-                      title: Text(
-                        S.of(context).recent_orders,
-                        style: Theme.of(context).textTheme.headline4,
-                      ),
-                    ),
-                    _con.recentOrders.isEmpty
-                        ? EmptyOrdersWidget()
-                        : ListView.separated(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            primary: false,
-                            itemCount: _con.recentOrders.length,
-                            itemBuilder: (context, index) {
-                              var _order = _con.recentOrders.elementAt(index);
-                              return OrderItemWidget(expanded: index == 0 ? true : false, order: _order);
-                            },
-                            separatorBuilder: (context, index) {
-                              return SizedBox(height: 20);
-                            },
-                          ),
-                  ],
+          child: Column(
+            children: <Widget>[
+              ProfileAvatarWidget(user: currentUser.value),
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                leading: Icon(
+                  Icons.person,
+                  color: Theme.of(context).hintColor,
+                ),
+                title: Text(
+                  S.of(context).about,
+                  style: Theme.of(context).textTheme.headline4,
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  currentUser.value?.bio ?? "",
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                leading: Icon(
+                  Icons.shopping_basket,
+                  color: Theme.of(context).hintColor,
+                ),
+                title: Text(
+                  S.of(context).recent_orders,
+                  style: Theme.of(context).textTheme.headline4,
+                ),
+              ),
+              _con.loading
+                  ? CircularLoadingWidget(height: 400)
+                  : _con.recentOrders.isEmpty
+                  ? EmptyOrdersWidget()
+                  : ListView.separated(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                primary: false,
+                itemCount: _con.recentOrders.length,
+                itemBuilder: (context, index) {
+                  var _order = _con.recentOrders.elementAt(index);
+                  return OrderItemWidget(expanded: index == 0 ? true : false, order: _order);
+                },
+                separatorBuilder: (context, index) {
+                  return SizedBox(height: 20);
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

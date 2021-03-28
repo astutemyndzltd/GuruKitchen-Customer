@@ -63,36 +63,21 @@ class ReviewItemWidget extends StatelessWidget {
                               style: Theme.of(context).textTheme.headline6.merge(TextStyle(color: Theme.of(context).hintColor)),
                             ),
                           ),
-                          SizedBox(
-                            height: 32,
-                            child: Chip(
-                              padding: EdgeInsets.all(0),
-                              label: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text(review.rate, style: Theme.of(context).textTheme.bodyText1.merge(TextStyle(color: Theme.of(context).primaryColor))),
-                                  Icon(
-                                    Icons.star_border,
-                                    color: Theme.of(context).primaryColor,
-                                    size: 16,
-                                  ),
-                                ],
-                              ),
-                              backgroundColor: Theme.of(context).accentColor.withOpacity(0.9),
-                              shape: StadiumBorder(),
-                            ),
+                          Container(
+                            child: Row(children: Helper.getStarsList(double.parse(review.rate)))
                           ),
                         ],
                       ),
                     ),
                     Row(
                       children: [
-                        Container(
-                          padding: EdgeInsets.only(left: 0),
+                        Flexible(
+                          //padding: EdgeInsets.only(left: 0),
                           child: Text(
                             Helper.skipHtml(review.review),
                             style: Theme.of(context).textTheme.bodyText2,
                             overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.justify,
                             softWrap: false,
                             maxLines: 3,
                           ),

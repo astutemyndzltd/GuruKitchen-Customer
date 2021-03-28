@@ -7,6 +7,7 @@ import 'CardWidget.dart';
 
 // ignore: must_be_immutable
 class CardsCarouselWidget extends StatefulWidget {
+
   List<Restaurant> restaurantsList;
   String heroTag;
 
@@ -17,6 +18,7 @@ class CardsCarouselWidget extends StatefulWidget {
 }
 
 class _CardsCarouselWidgetState extends State<CardsCarouselWidget> {
+
   @override
   void initState() {
     super.initState();
@@ -34,12 +36,14 @@ class _CardsCarouselWidgetState extends State<CardsCarouselWidget> {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    Navigator.of(context).pushNamed('/Details',
-                        arguments: RouteArgument(
-                          id: '0',
-                          param: widget.restaurantsList.elementAt(index).id,
-                          heroTag: widget.heroTag,
-                        ));
+                    Navigator.of(context).pushNamed(
+                      '/Details',
+                      arguments: RouteArgument(
+                        id: '0',
+                        param: widget.restaurantsList.elementAt(index).id,
+                        heroTag: widget.heroTag,
+                      ),
+                    );
                   },
                   child: CardWidget(
                     restaurant: widget.restaurantsList.elementAt(index),

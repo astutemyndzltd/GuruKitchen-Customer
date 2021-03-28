@@ -1,4 +1,6 @@
-import 'package:GuruKitchen/src/elements/AvatarWidget.dart';
+import 'package:GuruKitchen/src/helpers/app_data.dart';
+
+import '../../src/elements/AvatarWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -26,41 +28,41 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
             },
             child: currentUser.value.apiToken != null
                 ? UserAccountsDrawerHeader(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).hintColor.withOpacity(0.1),
-                    ),
-                    accountName: Text(
-                      currentUser.value.name,
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    accountEmail: Text(
-                      currentUser.value.email,
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                    currentAccountPicture: AvatarWidget(dimension: 0, textFontSize: 30, onTap: () {
-                      currentUser.value.apiToken != null ? Navigator.of(context).pushNamed('/Profile') : Navigator.of(context).pushNamed('/Login');
-                    },),
-                  )
+              decoration: BoxDecoration(
+                color: Theme.of(context).hintColor.withOpacity(0.1),
+              ),
+              accountName: Text(
+                currentUser.value.name,
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              accountEmail: Text(
+                currentUser.value.email,
+                style: Theme.of(context).textTheme.caption,
+              ),
+              currentAccountPicture: AvatarWidget(dimension: 0, textFontSize: 30, onTap: () {
+                currentUser.value.apiToken != null ? Navigator.of(context).pushNamed('/Profile') : Navigator.of(context).pushNamed('/Login');
+              },),
+            )
                 : Container(
-                    padding: EdgeInsets.symmetric(vertical: 30, horizontal: 15),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).hintColor.withOpacity(0.1),
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Icon(
-                          Icons.person,
-                          size: 32,
-                          color: Theme.of(context).accentColor.withOpacity(1),
-                        ),
-                        SizedBox(width: 30),
-                        Text(
-                          S.of(context).guest,
-                          style: Theme.of(context).textTheme.headline6,
-                        ),
-                      ],
-                    ),
+              padding: EdgeInsets.symmetric(vertical: 30, horizontal: 15),
+              decoration: BoxDecoration(
+                color: Theme.of(context).hintColor.withOpacity(0.1),
+              ),
+              child: Row(
+                children: <Widget>[
+                  Icon(
+                    Icons.person,
+                    size: 32,
+                    color: Theme.of(context).accentColor.withOpacity(1),
                   ),
+                  SizedBox(width: 30),
+                  Text(
+                    S.of(context).guest,
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ],
+              ),
+            ),
           ),
           // home
           ListTile(
@@ -216,6 +218,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
             onTap: () {
               if (currentUser.value.apiToken != null) {
                 logout().then((value) {
+                  appData.clear();
                   Navigator.of(context).pushNamedAndRemoveUntil('/Pages', (Route<dynamic> route) => false, arguments: 2);
                 });
               } else {
@@ -233,31 +236,31 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
           ),
           currentUser.value.apiToken == null
               ? ListTile(
-                  onTap: () {
-                    Navigator.of(context).pushNamed('/SignUp');
-                  },
-                  leading: Icon(
-                    Icons.person_add,
-                    color: Theme.of(context).focusColor.withOpacity(1),
-                  ),
-                  title: Text(
-                    S.of(context).register,
-                    style: Theme.of(context).textTheme.subtitle1,
-                  ),
-                )
+            onTap: () {
+              Navigator.of(context).pushNamed('/SignUp');
+            },
+            leading: Icon(
+              Icons.person_add,
+              color: Theme.of(context).focusColor.withOpacity(1),
+            ),
+            title: Text(
+              S.of(context).register,
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+          )
               : SizedBox(height: 0),
           setting.value.enableVersion
               ? ListTile(
-                  dense: true,
-                  title: Text(
-                    S.of(context).version + " " + setting.value.appVersion,
-                    style: Theme.of(context).textTheme.bodyText2,
-                  ),
-                  trailing: Icon(
-                    Icons.remove,
-                    color: Theme.of(context).focusColor.withOpacity(0.3),
-                  ),
-                )
+            dense: true,
+            title: Text(
+              S.of(context).version + " " + setting.value.appVersion,
+              style: Theme.of(context).textTheme.bodyText2,
+            ),
+            trailing: Icon(
+              Icons.remove,
+              color: Theme.of(context).focusColor.withOpacity(0.3),
+            ),
+          )
               : SizedBox(),
         ],
       ),

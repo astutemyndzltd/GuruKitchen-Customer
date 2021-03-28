@@ -1,10 +1,8 @@
-import 'dart:convert';
+import 'package:GuruKitchen/src/helpers/app_data.dart';
 
 import '../../src/helpers/helper.dart';
 import '../../src/repository/cart_repository.dart';
-import '../../src/repository/restaurant_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stripe_payment/stripe_payment.dart' as stripe;
 import 'package:stripe_payment/stripe_payment.dart';
 import '../../generated/l10n.dart';
@@ -21,11 +19,8 @@ import '../repository/user_repository.dart' as userRepo;
 import 'cart_controller.dart';
 
 class CheckoutController extends CartController {
-
   Payment payment;
   guru.CreditCard creditCard;
-  final orderType = settingRepo.orderType;
-  final preorderInfo = settingRepo.preorderInfo;
   bool processingOrder = false;
 
   CheckoutController() {
@@ -39,17 +34,11 @@ class CheckoutController extends CartController {
     setState(() {});
   }
 
-  void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError, VoidCallback onRestaurantNotAvailable, VoidCallback onUnavailableForDelivery, VoidCallback onFoodOutOfStock) async {
-
-    //processingOrder = true;
-
-    var overlayLoader = Helper.overlayLoader(context);
-    Overlay.of(context).insert(overlayLoader);
+  void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError, VoidCallback onRestaurantNotAvailable, VoidCallback onUnavailableForDelivery, VoidCallback onUnavailableForPickup, VoidCallback onFoodOutOfStock, VoidCallback onValidationError) async {
 
     var order = Order();
-    order.orderType = this.orderType;
-    order.note = settingRepo.orderNote ?? '';
-    order.preorderInfo = this.preorderInfo;
+    order.orderType = appData.orderType;
+    order.note = appData.orderNote ?? '';
     order.foodOrders = List<FoodOrder>();
     order.tax = carts[0].food.restaurant.defaultTax;
     order.deliveryFee = order.orderType == 'Pickup' ? 0 : carts[0].food.restaurant.deliveryFee;
@@ -68,91 +57,82 @@ class CheckoutController extends CartController {
       order.foodOrders.add(foodOrder);
     }
 
+    /// validation ====================================================================================
 
-    List<CartItem> cartItems = await getCartItemsNew();
-    var restaurant = cartItems[0].food.restaurant;
-
-    for (var item in cartItems) {
+    for (var item in carts) {
       if (item.food.outOfStock) {
         onFoodOutOfStock?.call();
-        overlayLoader.remove();
         return;
       }
     }
 
     //////////////////////////////////////////////////////////////
 
-    bool isPreOrder = this.preorderInfo != '';
+    bool isPreOrder = appData.preorderData != null;
 
     if (isPreOrder) {
-      var ifForTomorrow = this.preorderInfo.contains(',');
-
-      if (ifForTomorrow) {
-        if (!restaurant.isAvailableForPreorderTomorrow()) {
-          onRestaurantNotAvailable?.call();
-          overlayLoader.remove();
-          return;
-        }
-      } else {
-        if (!restaurant.isAvailableForPreorderToday()) {
-          onRestaurantNotAvailable?.call();
-          overlayLoader.remove();
-          return;
-        }
+      var preorderData = appData.preorderData;
+      order.preorderInfo = preorderData.info;
+      if (!restaurant.isAvailableForOrderOn(preorderData.day, preorderData.time)) {
+        onRestaurantNotAvailable?.call();
+        return;
       }
-    } else {
+    }
+    else {
+      order.preorderInfo = '';
       if (!restaurant.isCurrentlyOpen()) {
         onRestaurantNotAvailable?.call();
-        overlayLoader.remove();
         return;
       }
     }
 
     ////////////////////////////////////////////////////////////
 
-    bool isDelivery = this.orderType == 'Delivery';
+    bool isDelivery = appData.orderType == 'Delivery';
 
     if (isDelivery) {
       if (!restaurant.availableForDelivery) {
         onUnavailableForDelivery?.call();
-        overlayLoader.remove();
         return;
       }
     }
 
-    try {
-      var response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
+    bool isPickup = appData.orderType == 'Pickup';
 
-      if (response['message'] == 'requires action') {
-        var clientSecret = response['data']['client_secret'].toString();
+    if (isPickup) {
+      if (!restaurant.availableForPickup) {
+        onUnavailableForPickup?.call();
+        return;
+      }
+    }
 
-        try {
-          var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
-          if (paymentIntent.status == 'succeeded') {
-            response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentIntentId: paymentIntent.paymentIntentId, cardBrand: paymentMethod.card.brand.capitalize());
-          }
-        } catch (e) {
-          onAuthenticationFailed?.call();
+    var response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
 
+    if (response['message'] == 'validation error') {
+      onValidationError?.call();
+    }
+
+    if (response['message'] == 'requires action') {
+      var clientSecret = response['data']['client_secret'].toString();
+
+      try {
+        var paymentIntent = await stripe.StripePayment.authenticatePaymentIntent(clientSecret: clientSecret);
+        if (paymentIntent.status == 'succeeded') {
+          response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentIntentId: paymentIntent.paymentIntentId, cardBrand: paymentMethod.card.brand.capitalize());
         }
-      }
-
-      if (response['message'] == 'succeeded') {
-        settingRepo.coupon = Coupon.fromJSON({});
-        onSuccess?.call();
-      }
-
-      if (response['message'] == 'invalid status') {
-        onError?.call();
+      } catch (e) {
+        onAuthenticationFailed?.call();
       }
     }
-    catch(e) {
-      throw new Exception();
-    }
-    finally {
-      overlayLoader.remove();
+
+    if (response['message'] == 'succeeded') {
+      settingRepo.coupon = Coupon.fromJSON({});
+      onSuccess?.call();
     }
 
+    if (response['message'] == 'invalid status') {
+      onError?.call();
+    }
   }
 
   void updateCreditCard(guru.CreditCard creditCard) {
@@ -163,4 +143,5 @@ class CheckoutController extends CartController {
       ));
     });
   }
+
 }

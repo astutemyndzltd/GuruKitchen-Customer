@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
-
 import '../../generated/l10n.dart';
 import '../models/category.dart';
 import '../models/food.dart';
@@ -27,6 +26,8 @@ class RestaurantController extends ControllerMVC {
   List<Review> reviews = <Review>[];
   List<String> selectedCategories = [];
   GlobalKey<ScaffoldState> scaffoldKey;
+
+  bool loadReview = true;
 
   RestaurantController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -63,10 +64,15 @@ class RestaurantController extends ControllerMVC {
   }
 
   void listenForRestaurantReviews({String id, String message}) async {
+    setState(() => loadReview = true);
     final Stream<Review> stream = await getRestaurantReviews(id);
     stream.listen((Review _review) {
-      setState(() => reviews.add(_review));
-    }, onError: (a) {}, onDone: () {});
+      setState(() { reviews.add(_review); loadReview = false; });
+    }, onError: (a) {
+      setState(() => loadReview = false);
+    }, onDone: () {
+      setState(() => loadReview = false);
+    });
   }
 
   void listenForFoods(String idRestaurant, {List<String> categoriesId}) async {
@@ -128,4 +134,6 @@ class RestaurantController extends ControllerMVC {
     listenForGalleries(_id);
     listenForFeaturedFoods(_id);
   }
+
+
 }

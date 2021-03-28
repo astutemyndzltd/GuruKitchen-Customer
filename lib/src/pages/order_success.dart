@@ -1,17 +1,16 @@
-import 'package:GuruKitchen/src/repository/settings_repository.dart';
+import 'package:GuruKitchen/src/helpers/app_data.dart';
 import 'package:flutter/material.dart';
 import '../../generated/l10n.dart';
 import '../helpers/helper.dart';
 
 
 class OrderSuccessWidget extends StatelessWidget {
+
   final Map<String, dynamic> orderDetails;
 
   OrderSuccessWidget({Key key, this.orderDetails}) : super(key: key);
 
   Widget build(BuildContext context) {
-
-    orderType = null;
 
     return WillPopScope(
       onWillPop: Helper.of(context).onWillPop,
@@ -20,7 +19,8 @@ class OrderSuccessWidget extends StatelessWidget {
             automaticallyImplyLeading: false,
             leading: IconButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/Pages', arguments: 2);
+                Navigator.pushNamedAndRemoveUntil(context, "/Pages", (r) => false, arguments: 2);
+                Future.delayed(Duration(milliseconds: 1000), () { appData.clear(); });
               },
               icon: Icon(Icons.arrow_back),
               color: Theme.of(context).hintColor,
@@ -167,7 +167,8 @@ class OrderSuccessWidget extends StatelessWidget {
                           width: MediaQuery.of(context).size.width - 40,
                           child: FlatButton(
                             onPressed: () {
-                              Navigator.of(context).pushNamed('/Pages', arguments: 3);
+                              Navigator.pushNamedAndRemoveUntil(context, "/Pages", (r) => false, arguments: 3);
+                              Future.delayed(Duration(milliseconds: 1000), () { appData.clear(); });
                             },
                             padding: EdgeInsets.symmetric(vertical: 14),
                             color: Theme.of(context).accentColor,
@@ -188,5 +189,7 @@ class OrderSuccessWidget extends StatelessWidget {
             ],
           )),
     );
+
   }
+
 }

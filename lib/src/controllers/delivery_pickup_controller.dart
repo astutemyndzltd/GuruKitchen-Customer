@@ -1,4 +1,8 @@
-import 'package:GuruKitchen/src/models/route_argument.dart';
+import 'dart:ui';
+
+import 'package:GuruKitchen/src/helpers/app_data.dart';
+
+import '../../src/models/route_argument.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,6 +14,7 @@ import '../repository/user_repository.dart' as userRepo;
 import 'cart_controller.dart';
 
 class DeliveryPickupController extends CartController {
+
   GlobalKey<ScaffoldState> scaffoldKey;
   model.Address deliveryAddress;
   PaymentMethodList list;
@@ -22,18 +27,11 @@ class DeliveryPickupController extends CartController {
     //print(settingRepo.deliveryAddress.value.toMap());
   }
 
+
   @override
   void onLoadingCartDone() {
-    if (settingRepo.orderType == 'Delivery') {
-      if (!getDeliveryMethod().selected) {
-        toggleDelivery();
-      }
-    }
-    if (settingRepo.orderType == 'Pickup') {
-      if (!getPickUpMethod().selected) {
-        if (restaurant.availableForDelivery) togglePickUp();
-      }
-    }
+    if (appData.orderType == 'Pickup') enableMethod(0);
+    if (appData.orderType == 'Delivery') enableMethod(1);
   }
 
   void listenForDeliveryAddress() async {
@@ -83,7 +81,7 @@ class DeliveryPickupController extends CartController {
     });
     setState(() {
       getDeliveryMethod().selected = !getDeliveryMethod().selected;
-      settingRepo.orderType = getDeliveryMethod().selected ? 'Delivery' : null;
+      appData.orderType = getDeliveryMethod().selected ? 'Delivery' : null;
       calculateSubtotal();
     });
   }
@@ -96,9 +94,14 @@ class DeliveryPickupController extends CartController {
     });
     setState(() {
       getPickUpMethod().selected = !getPickUpMethod().selected;
-      settingRepo.orderType = getPickUpMethod().selected ? 'Pickup' : null;
+      appData.orderType = getPickUpMethod().selected ? 'Pickup' : null;
       calculateSubtotal();
     });
+  }
+
+  void enableMethod(int index) {
+    list.pickupList.elementAt(index).selected = true;
+    setState(() {});
   }
 
   PaymentMethod getSelectedMethod() {
@@ -109,4 +112,10 @@ class DeliveryPickupController extends CartController {
   void goCheckout(BuildContext context) {
     Navigator.of(context).pushNamed(getSelectedMethod().route);
   }
+
+  disableAllMethod() {
+    list.pickupList.elementAt(0).selected = list.pickupList.elementAt(1).selected = false;
+    setState((){});
+  }
+
 }

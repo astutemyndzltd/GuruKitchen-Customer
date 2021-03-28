@@ -1,4 +1,5 @@
 import 'package:GuruKitchen/src/elements/EmptyNotificationsWidget.dart';
+import 'package:GuruKitchen/src/helpers/app_data.dart';
 import 'package:GuruKitchen/src/helpers/helper.dart';
 import 'package:GuruKitchen/src/models/dispatchmethod.dart';
 
@@ -28,6 +29,7 @@ class HomeWidget extends StatefulWidget {
 }
 
 class _HomeWidgetState extends StateMVC<HomeWidget> {
+
   HomeController _con;
   List<String> homeSections = [];
 
@@ -246,10 +248,10 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                     InkWell(
                                       onTap: () {
                                         setState(() {
-                                          if (settingsRepo.dispatchMethod == DispatchMethod.delivery)
-                                            settingsRepo.dispatchMethod = DispatchMethod.none;
+                                          if (appData.dispatchMethod == DispatchMethod.delivery)
+                                            appData.dispatchMethod = DispatchMethod.none;
                                           else
-                                            settingsRepo.dispatchMethod = DispatchMethod.delivery;
+                                            appData.dispatchMethod = DispatchMethod.delivery;
 
                                           _con.refreshHome();
                                         });
@@ -258,11 +260,11 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(Radius.circular(5)),
-                                          color: settingsRepo.dispatchMethod == DispatchMethod.delivery ? Colors.green : Theme.of(context).focusColor.withOpacity(0.1),
+                                          color: appData.dispatchMethod == DispatchMethod.delivery ? Colors.green : Theme.of(context).focusColor.withOpacity(0.1),
                                         ),
                                         child: Text(
                                           S.of(context).delivery,
-                                          style: TextStyle(color: settingsRepo.dispatchMethod == DispatchMethod.delivery ? Theme.of(context).primaryColor : Theme.of(context).hintColor),
+                                          style: TextStyle(color: appData.dispatchMethod == DispatchMethod.delivery ? Theme.of(context).primaryColor : Theme.of(context).hintColor),
                                         ),
                                       ),
                                     ),
@@ -271,10 +273,10 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                     InkWell(
                                       onTap: () {
                                         setState(() {
-                                          if (settingsRepo.dispatchMethod == DispatchMethod.pickup)
-                                            settingsRepo.dispatchMethod = DispatchMethod.none;
+                                          if (appData.dispatchMethod == DispatchMethod.pickup)
+                                            appData.dispatchMethod = DispatchMethod.none;
                                           else
-                                            settingsRepo.dispatchMethod = DispatchMethod.pickup;
+                                            appData.dispatchMethod = DispatchMethod.pickup;
                                           _con.refreshHome();
                                         });
                                       },
@@ -282,11 +284,11 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(Radius.circular(5)),
-                                          color: settingsRepo.dispatchMethod == DispatchMethod.pickup ? Colors.orange : Theme.of(context).focusColor.withOpacity(0.1),
+                                          color: appData.dispatchMethod == DispatchMethod.pickup ? Colors.orange : Theme.of(context).focusColor.withOpacity(0.1),
                                         ),
                                         child: Text(
                                           S.of(context).pickup,
-                                          style: TextStyle(color: settingsRepo.dispatchMethod == DispatchMethod.pickup ? Theme.of(context).primaryColor : Theme.of(context).hintColor),
+                                          style: TextStyle(color: appData.dispatchMethod == DispatchMethod.pickup ? Theme.of(context).primaryColor : Theme.of(context).hintColor),
                                         ),
                                       ),
                                     ),
@@ -295,10 +297,10 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                     InkWell(
                                       onTap: () {
                                         setState(() {
-                                          if (settingsRepo.dispatchMethod == DispatchMethod.preorder)
-                                            settingsRepo.dispatchMethod = DispatchMethod.none;
+                                          if (appData.dispatchMethod == DispatchMethod.preorder)
+                                            appData.dispatchMethod = DispatchMethod.none;
                                           else
-                                            settingsRepo.dispatchMethod = DispatchMethod.preorder;
+                                            appData.dispatchMethod = DispatchMethod.preorder;
 
                                           _con.refreshHome();
                                         });
@@ -307,12 +309,12 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(Radius.circular(5)),
-                                          color: settingsRepo.dispatchMethod == DispatchMethod.preorder ? Colors.blue : Theme.of(context).focusColor.withOpacity(0.1),
+                                          color: appData.dispatchMethod == DispatchMethod.preorder ? Colors.blue : Theme.of(context).focusColor.withOpacity(0.1),
                                         ),
                                         child: Text(
                                           'Pre-Order',
                                           //S.of(context).pickup,
-                                          style: TextStyle(color: settingsRepo.dispatchMethod == DispatchMethod.preorder ? Theme.of(context).primaryColor : Theme.of(context).hintColor),
+                                          style: TextStyle(color: appData.dispatchMethod == DispatchMethod.preorder ? Theme.of(context).primaryColor : Theme.of(context).hintColor),
                                         ),
                                       ),
                                     )
@@ -433,7 +435,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                 case 'recent_reviews':
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: ReviewsListWidget(reviewsList: _con.recentReviews),
+                    child: ReviewsListWidget(reviewsList: _con.recentReviews, loading: false),
                   );
 
                 default:

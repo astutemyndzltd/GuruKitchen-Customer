@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:GuruKitchen/src/helpers/app_data.dart';
 import 'package:GuruKitchen/src/models/dispatchmethod.dart';
 
 import '../models/cuisine.dart';
@@ -124,10 +125,10 @@ class HomeController extends ControllerMVC {
     showableRestaurants = [];
 
     for (var restaurant in nearbyRestaurants) {
-      if (settingsRepo.dispatchMethod == DispatchMethod.delivery && !restaurant.isAvailableForDelivery()) continue;
-      if (settingsRepo.dispatchMethod == DispatchMethod.pickup && !restaurant.isAvailableForPickup()) continue;
-      if (settingsRepo.dispatchMethod == DispatchMethod.preorder && !restaurant.isClosedAndAvailableForPreorder()) continue;
-      if (settingsRepo.dispatchMethod == DispatchMethod.none && !restaurant.isCurrentlyOpen() && !restaurant.openingLaterToday()) continue;
+      if (appData.dispatchMethod == DispatchMethod.delivery && !restaurant.isAvailableForDelivery()) continue;
+      if (appData.dispatchMethod == DispatchMethod.pickup && !restaurant.isAvailableForPickup()) continue;
+      if (appData.dispatchMethod == DispatchMethod.preorder && !restaurant.isClosedAndAvailableForPreorder()) continue;
+      if (appData.dispatchMethod == DispatchMethod.none && !restaurant.isCurrentlyOpen() && !restaurant.openingLaterToday() || !(restaurant.availableForDelivery || restaurant.availableForPickup)) continue;
       showableRestaurants.add(restaurant);
     }
 

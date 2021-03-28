@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -18,6 +17,7 @@ class FoodController extends ControllerMVC {
   List<CartItem> cartItems = [];
   Favorite favorite;
   bool loadCart = false;
+  bool loadFood = true;
   GlobalKey<ScaffoldState> scaffoldKey;
 
   FoodController() {
@@ -25,15 +25,23 @@ class FoodController extends ControllerMVC {
   }
 
   void listenForFood({String foodId, String message}) async {
+
+    setState(() => loadFood = true);
+
     final Stream<Food> stream = await getFood(foodId);
     stream.listen((Food _food) {
-      setState(() => food = _food);
+      setState(() {
+        loadFood = false;
+        food = _food;
+      });
     }, onError: (a) {
+      setState(() => loadFood = false);
       print(a);
       scaffoldKey.currentState?.showSnackBar(SnackBar(
         content: Text(S.of(context).verify_your_internet_connection),
       ));
     }, onDone: () {
+      setState(() => loadFood = false);
       calculateTotal();
       if (message != null) {
         scaffoldKey.currentState?.showSnackBar(SnackBar(
@@ -65,7 +73,7 @@ class FoodController extends ControllerMVC {
     return true;
   }
 
-  void addToCart(Food food, { bool reset = false }) async {
+  void addToCart(Food food, {bool reset = false}) async {
     setState(() {
       this.loadCart = true;
     });

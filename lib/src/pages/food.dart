@@ -1,4 +1,6 @@
-import 'package:GuruKitchen/src/repository/settings_repository.dart';
+import 'package:GuruKitchen/src/helpers/app_data.dart';
+
+import '../../src/repository/settings_repository.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +56,6 @@ class _FoodWidgetState extends StateMVC<FoodWidget> with RouteAware {
     _con.listenForCart();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -64,455 +65,466 @@ class _FoodWidgetState extends StateMVC<FoodWidget> with RouteAware {
         body: _con.food == null || _con.food?.image == null
             ? CircularLoadingWidget(height: 500)
             : RefreshIndicator(
-                onRefresh: _con.refreshFood,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.only(bottom: 125),
-                      padding: EdgeInsets.only(bottom: 15),
-                      child: CustomScrollView(
-                        primary: true,
-                        shrinkWrap: false,
-                        slivers: <Widget>[
-                          SliverAppBar(
-                            leading: IconButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: Icon(Icons.arrow_back),
-                              color: Theme.of(context).hintColor,
+          onRefresh: _con.refreshFood,
+          child: Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(bottom: 125),
+                padding: EdgeInsets.only(bottom: 15),
+                child: CustomScrollView(
+                  primary: true,
+                  shrinkWrap: false,
+                  slivers: <Widget>[
+                    SliverAppBar(
+                      leading: IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(Icons.arrow_back),
+                        color: Theme.of(context).hintColor,
+                      ),
+                      backgroundColor: Theme.of(context).accentColor.withOpacity(0.9),
+                      expandedHeight: 300,
+                      elevation: 0,
+                      iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
+                      flexibleSpace: FlexibleSpaceBar(
+                        collapseMode: CollapseMode.parallax,
+                        background: Hero(
+                          tag: widget.routeArgument.heroTag ?? '' + _con.food.id,
+                          child: CachedNetworkImage(
+                            fit: BoxFit.cover,
+                            imageUrl: _con.food.image.url,
+                            placeholder: (context, url) => Image.asset(
+                              'assets/img/loading.gif',
+                              fit: BoxFit.cover,
                             ),
-                            backgroundColor: Theme.of(context).accentColor.withOpacity(0.9),
-                            expandedHeight: 300,
-                            elevation: 0,
-                            iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
-                            flexibleSpace: FlexibleSpaceBar(
-                              collapseMode: CollapseMode.parallax,
-                              background: Hero(
-                                tag: widget.routeArgument.heroTag ?? '' + _con.food.id,
-                                child: CachedNetworkImage(
-                                  fit: BoxFit.cover,
-                                  imageUrl: _con.food.image.url,
-                                  placeholder: (context, url) => Image.asset(
-                                    'assets/img/loading.gif',
-                                    fit: BoxFit.cover,
-                                  ),
-                                  errorWidget: (context, url, error) => Icon(Icons.error),
-                                ),
-                              ),
-                            ),
-                            actions: [
-                              IconButton(
-                                icon: new Icon(Icons.close),
-                                onPressed: () => Navigator.of(context).pop(null),
-                              )
-                            ],
+                            errorWidget: (context, url, error) => Icon(Icons.error),
                           ),
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                              child: Wrap(
-                                runSpacing: 8,
-                                children: [
-                                  Row(
+                        ),
+                      ),
+                      actions: [
+                        /*IconButton(
+                          icon: new Icon(Icons.close),
+                          onPressed: () => Navigator.of(context).pop(null),
+                        )*/
+                      ],
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        child: Wrap(
+                          runSpacing: 8,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 3,
+                                  child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      Expanded(
-                                        flex: 3,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Text(
-                                              _con.food?.name ?? '',
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
-                                              style: Theme.of(context).textTheme.headline3,
-                                            ),
-                                            Text(
-                                              _con.food?.restaurant?.name ?? '',
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
-                                              style: Theme.of(context).textTheme.bodyText2,
-                                            ),
-                                          ],
-                                        ),
+                                      Text(
+                                        _con.food?.name ?? '',
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                        style: Theme.of(context).textTheme.headline3,
                                       ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.end,
-                                          children: <Widget>[
-                                            Helper.getPrice(
-                                              _con.food.price,
-                                              context,
-                                              style: Theme.of(context).textTheme.headline2,
-                                            ),
-                                            _con.food.discountPrice > 0 ? Helper.getPrice(_con.food.discountPrice, context, style: Theme.of(context).textTheme.bodyText2.merge(TextStyle(decoration: TextDecoration.lineThrough))) : SizedBox(height: 0),
-                                          ],
-                                        ),
+                                      Text(
+                                        _con.food?.restaurant?.name ?? '',
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                        style: Theme.of(context).textTheme.bodyText2,
                                       ),
                                     ],
                                   ),
-                                  Row(
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: <Widget>[
-                                      Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                                        decoration: BoxDecoration(color: _con.food.outOfStock ? Colors.red : Colors.green, borderRadius: BorderRadius.circular(3)),
-                                        child: _con.food.outOfStock
-                                            ? Text(
-                                                'Sold Out',
-                                                //S.of(context).deliverable
-                                                style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
-                                              )
-                                            : Text(
-                                                'Available',
-                                                //S.of(context).not_deliverable,
-                                                style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
-                                              ),
+                                      Helper.getPrice(
+                                        _con.food.price,
+                                        context,
+                                        style: Theme.of(context).textTheme.headline2,
                                       ),
-                                      Expanded(child: SizedBox(height: 0)),
-                                      (_con.food.weight != '' && _con.food.unit != '')
-                                          ? Container(
-                                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                                              decoration: BoxDecoration(color: Theme.of(context).focusColor, borderRadius: BorderRadius.circular(24)),
-                                              child: Text(
-                                                (_con.food.weight ?? '') + " " + _con.food.unit,
-                                                style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
-                                              ))
-                                          : SizedBox.shrink(),
-                                      SizedBox(width: 5),
-                                      _con.food.packageItemsCount != 'null'
-                                          ? Container(
-                                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                                              decoration: BoxDecoration(color: Theme.of(context).focusColor, borderRadius: BorderRadius.circular(24)),
-                                              child: Text(
-                                                (_con.food.packageItemsCount == 'null' ? '0' : _con.food.packageItemsCount) + " " + S.of(context).items,
-                                                style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
-                                              ))
-                                          : SizedBox.shrink(),
+                                      _con.food.discountPrice > 0 ? Helper.getPrice(_con.food.discountPrice, context, style: Theme.of(context).textTheme.bodyText2.merge(TextStyle(decoration: TextDecoration.lineThrough))) : SizedBox(height: 0),
                                     ],
                                   ),
-                                  Divider(height: 20),
-                                  Helper.applyHtml(context, _con.food.description, style: TextStyle(fontSize: 12)),
-                                  ListTile(
-                                    dense: true,
-                                    contentPadding: EdgeInsets.symmetric(vertical: 10),
-                                    leading: Icon(
-                                      Icons.add_circle,
-                                      color: Theme.of(context).hintColor,
-                                    ),
-                                    title: Text(
-                                      S.of(context).extras,
-                                      style: Theme.of(context).textTheme.subtitle1,
-                                    ),
-                                    subtitle: Text(
-                                      S.of(context).select_extras_to_add_them_on_the_food,
-                                      style: Theme.of(context).textTheme.caption,
-                                    ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: <Widget>[
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                                  decoration: BoxDecoration(color: _con.food.outOfStock ? Colors.red : Colors.green, borderRadius: BorderRadius.circular(3)),
+                                  child: _con.food.outOfStock
+                                      ? Text(
+                                    'Sold Out',
+                                    //S.of(context).deliverable
+                                    style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
+                                  )
+                                      : Text(
+                                    'Available',
+                                    //S.of(context).not_deliverable,
+                                    style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
                                   ),
-                                  _con.food.extraGroups == null
-                                      ? CircularLoadingWidget(height: 100)
-                                      : ListView.separated(
-                                          padding: EdgeInsets.all(0),
-                                          itemBuilder: (context, extraGroupIndex) {
-                                            var extraGroup = _con.food.extraGroups.elementAt(extraGroupIndex);
-                                            return Wrap(
-                                              children: <Widget>[
-                                                ListTile(
-                                                  dense: true,
-                                                  contentPadding: EdgeInsets.symmetric(vertical: 0),
-                                                  leading: Icon(
-                                                    Icons.add_circle_outline,
-                                                    color: Theme.of(context).hintColor,
-                                                  ),
-                                                  title: Text(
-                                                    extraGroup.name,
-                                                    style: Theme.of(context).textTheme.subtitle1,
-                                                  ),
-                                                ),
-                                                ListView.separated(
-                                                  padding: EdgeInsets.all(0),
-                                                  itemBuilder: (context, extraIndex) {
-                                                    return ExtraItemWidget(
-                                                      extra: _con.food.extras.where((extra) => extra.extraGroupId == extraGroup.id).elementAt(extraIndex),
-                                                      onChanged: (extra) {
-                                                        /*_con.food.extras.forEach((otherExtra) {
+                                ),
+                                Expanded(child: SizedBox(height: 0)),
+                                (_con.food.weight != '' && _con.food.unit != '')
+                                    ? Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                                    decoration: BoxDecoration(color: Theme.of(context).focusColor, borderRadius: BorderRadius.circular(24)),
+                                    child: Text(
+                                      (_con.food.weight ?? '') + " " + _con.food.unit,
+                                      style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
+                                    ))
+                                    : SizedBox.shrink(),
+                                SizedBox(width: 5),
+                                _con.food.packageItemsCount != 'null'
+                                    ? Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                                    decoration: BoxDecoration(color: Theme.of(context).focusColor, borderRadius: BorderRadius.circular(24)),
+                                    child: Text(
+                                      (_con.food.packageItemsCount == 'null' ? '0' : _con.food.packageItemsCount) + " " + S.of(context).items,
+                                      style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
+                                    ))
+                                    : SizedBox.shrink(),
+                              ],
+                            ),
+                            Divider(height: 20),
+                            Helper.applyHtml(context, _con.food.description, style: TextStyle(fontSize: 12)),
+                            ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.symmetric(vertical: 10),
+                              leading: Icon(
+                                Icons.add_circle,
+                                color: Theme.of(context).hintColor,
+                              ),
+                              title: Text(
+                                S.of(context).extras,
+                                style: Theme.of(context).textTheme.subtitle1,
+                              ),
+                              subtitle: Text(
+                                S.of(context).select_extras_to_add_them_on_the_food,
+                                style: Theme.of(context).textTheme.caption,
+                              ),
+                            ),
+                            _con.food.extraGroups == null
+                                ? CircularLoadingWidget(height: 100)
+                                : ListView.separated(
+                              padding: EdgeInsets.all(0),
+                              itemBuilder: (context, extraGroupIndex) {
+                                var extraGroup = _con.food.extraGroups.elementAt(extraGroupIndex);
+                                return Wrap(
+                                  children: <Widget>[
+                                    ListTile(
+                                      dense: true,
+                                      contentPadding: EdgeInsets.symmetric(vertical: 0),
+                                      leading: Icon(
+                                        Icons.add_circle_outline,
+                                        color: Theme.of(context).hintColor,
+                                      ),
+                                      title: Text(
+                                        extraGroup.name,
+                                        style: Theme.of(context).textTheme.subtitle1,
+                                      ),
+                                    ),
+                                    ListView.separated(
+                                      padding: EdgeInsets.all(0),
+                                      itemBuilder: (context, extraIndex) {
+                                        return ExtraItemWidget(
+                                          extra: _con.food.extras.where((extra) => extra.extraGroupId == extraGroup.id).elementAt(extraIndex),
+                                          onChanged: (extra) {
+                                            /*_con.food.extras.forEach((otherExtra) {
                                                           if(extra.checked && (extra.id != otherExtra.id) && (extra.extraGroupId == otherExtra.extraGroupId)){
                                                             otherExtra.checked = false;
                                                           }
                                                         });*/
-                                                        _con.calculateTotal();
-                                                      },
-                                                    );
-                                                  },
-                                                  separatorBuilder: (context, index) {
-                                                    return SizedBox(height: 20);
-                                                  },
-                                                  itemCount: _con.food.extras.where((extra) => extra.extraGroupId == extraGroup.id).length,
-                                                  primary: false,
-                                                  shrinkWrap: true,
-                                                ),
-                                              ],
-                                            );
+                                            _con.calculateTotal();
                                           },
-                                          separatorBuilder: (context, index) {
-                                            return SizedBox(height: 20);
-                                          },
-                                          itemCount: _con.food.extraGroups.length,
-                                          primary: false,
-                                          shrinkWrap: true,
-                                        ),
-                                  ListTile(
-                                    dense: true,
-                                    contentPadding: EdgeInsets.symmetric(vertical: 10),
-                                    leading: Icon(
-                                      Icons.donut_small,
-                                      color: Theme.of(context).hintColor,
+                                        );
+                                      },
+                                      separatorBuilder: (context, index) {
+                                        return SizedBox(height: 20);
+                                      },
+                                      itemCount: _con.food.extras.where((extra) => extra.extraGroupId == extraGroup.id).length,
+                                      primary: false,
+                                      shrinkWrap: true,
                                     ),
-                                    title: Text(
-                                      S.of(context).ingredients,
-                                      style: Theme.of(context).textTheme.subtitle1,
-                                    ),
-                                  ),
-                                  Helper.applyHtml(context, _con.food.ingredients, style: TextStyle(fontSize: 12)),
-                                  ListTile(
-                                    dense: true,
-                                    contentPadding: EdgeInsets.symmetric(vertical: 10),
-                                    leading: Icon(
-                                      Icons.local_activity,
-                                      color: Theme.of(context).hintColor,
-                                    ),
-                                    title: Text(
-                                      S.of(context).nutrition,
-                                      style: Theme.of(context).textTheme.subtitle1,
-                                    ),
-                                  ),
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children: List.generate(_con.food.nutritions.length, (index) {
-                                      return Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                        decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.all(Radius.circular(5)), boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.2), offset: Offset(0, 2), blurRadius: 6.0)]),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: <Widget>[
-                                            Text(_con.food.nutritions.elementAt(index).name, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.caption),
-                                            Text(_con.food.nutritions.elementAt(index).quantity.toString(), overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headline5),
-                                          ],
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                  ListTile(
-                                    dense: true,
-                                    contentPadding: EdgeInsets.symmetric(vertical: 10),
-                                    leading: Icon(
-                                      Icons.recent_actors,
-                                      color: Theme.of(context).hintColor,
-                                    ),
-                                    title: Text(
-                                      S.of(context).reviews,
-                                      style: Theme.of(context).textTheme.subtitle1,
-                                    ),
-                                  ),
-                                  ReviewsListWidget(
-                                    reviewsList: _con.food.foodReviews,
-                                  ),
-                                ],
+                                  ],
+                                );
+                              },
+                              separatorBuilder: (context, index) {
+                                return SizedBox(height: 20);
+                              },
+                              itemCount: _con.food.extraGroups.length,
+                              primary: false,
+                              shrinkWrap: true,
+                            ),
+                            ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.symmetric(vertical: 10),
+                              leading: Icon(
+                                Icons.donut_small,
+                                color: Theme.of(context).hintColor,
+                              ),
+                              title: Text(
+                                S.of(context).ingredients,
+                                style: Theme.of(context).textTheme.subtitle1,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      top: 32,
-                      right: 20,
-                      child: _con.loadCart
-                          ? SizedBox(
-                              width: 60,
-                              height: 60,
-                              child: RefreshProgressIndicator(),
-                            )
-                          : ShoppingCartFloatButtonWidget(
-                              iconColor: Theme.of(context).primaryColor,
-                              labelColor: Theme.of(context).hintColor,
-                              routeArgument: RouteArgument(param: '/Food', id: _con.food.id),
+                            Helper.applyHtml(context, _con.food.ingredients, style: TextStyle(fontSize: 12)),
+                            ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.symmetric(vertical: 10),
+                              leading: Icon(
+                                Icons.local_activity,
+                                color: Theme.of(context).hintColor,
+                              ),
+                              title: Text(
+                                S.of(context).nutrition,
+                                style: Theme.of(context).textTheme.subtitle1,
+                              ),
                             ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      child: Container(
-                        height: 150,
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)), boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)]),
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width - 40,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Text(
-                                      S.of(context).quantity,
-                                      style: Theme.of(context).textTheme.subtitle1,
-                                    ),
-                                  ),
-                                  Row(
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: List.generate(_con.food.nutritions.length, (index) {
+                                return Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                  decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.all(Radius.circular(5)), boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.2), offset: Offset(0, 2), blurRadius: 6.0)]),
+                                  child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
-                                      IconButton(
-                                        onPressed: () {
-                                          _con.decrementQuantity();
-                                        },
-                                        iconSize: 30,
-                                        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                                        icon: Icon(Icons.remove_circle_outline),
-                                        color: Theme.of(context).hintColor,
-                                      ),
-                                      Text(_con.quantity.toString(), style: Theme.of(context).textTheme.subtitle1),
-                                      IconButton(
-                                        onPressed: () {
-                                          _con.incrementQuantity();
-                                        },
-                                        iconSize: 30,
-                                        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                                        icon: Icon(Icons.add_circle_outline),
-                                        color: Theme.of(context).hintColor,
-                                      )
+                                      Text(_con.food.nutritions.elementAt(index).name, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.caption),
+                                      Text(_con.food.nutritions.elementAt(index).quantity.toString(), overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headline5),
                                     ],
                                   ),
-                                ],
+                                );
+                              }),
+                            ),
+                            _con.food.foodReviews.isNotEmpty
+                                ? ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.symmetric(vertical: 10),
+                              leading: Icon(
+                                Icons.recent_actors,
+                                color: Theme.of(context).hintColor,
                               ),
-                              SizedBox(height: 10),
-                              Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: _con.favorite?.id != null
-                                        ? OutlineButton(
-                                            onPressed: () {
-                                              _con.removeFromFavorite(_con.favorite);
-                                            },
-                                            padding: EdgeInsets.symmetric(vertical: 14),
-                                            color: Theme.of(context).primaryColor,
-                                            shape: StadiumBorder(),
-                                            borderSide: BorderSide(color: Theme.of(context).accentColor),
-                                            child: Icon(
-                                              Icons.favorite,
-                                              color: Theme.of(context).accentColor,
-                                            ))
-                                        : FlatButton(
-                                            onPressed: () {
-                                              if (currentUser.value.apiToken == null) {
-                                                Navigator.of(context).pushNamed("/Login");
-                                              } else {
-                                                _con.addToFavorite(_con.food);
-                                              }
-                                            },
-                                            padding: EdgeInsets.symmetric(vertical: 14),
-                                            color: Theme.of(context).accentColor,
-                                            shape: StadiumBorder(),
-                                            child: Icon(
-                                              Icons.favorite,
-                                              color: Theme.of(context).primaryColor,
-                                            )),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Stack(
-                                    fit: StackFit.loose,
-                                    alignment: AlignmentDirectional.centerEnd,
-                                    children: <Widget>[
-                                      SizedBox(
-                                        width: MediaQuery.of(context).size.width - 110,
-                                        // add to cart button
-                                        child: FlatButton(
-                                          onPressed: () {
-                                            if (currentUser.value.apiToken == null) {
-                                              Navigator.of(context).pushNamed("/Login");
-                                            } else {
-                                              if (_con.loadCart) return;
-
-                                              if (!_con.food.restaurant.isCurrentlyOpen() && !_con.food.restaurant.isAvailableForPreorder()) {
-                                                _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("The restaurant is neither open nor available for pre-order")));
-                                                return;
-                                              }
-
-                                              if (_con.food.outOfStock) {
-                                                _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("This food can't be added to the cart as it is sold out currently")));
-                                                return;
-                                              }
-
-                                              if (_con.food.extras.length > 0) {
-                                                int noOfSelectedExtras = 0;
-
-                                                for (int i = 0; i < _con.food.extras?.length; i++) {
-                                                  var extra = _con.food.extras[i];
-                                                  if (extra.checked) noOfSelectedExtras++;
-                                                }
-
-                                                if (noOfSelectedExtras == 0) {
-                                                  _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("You need to select at least one extra to add this food to cart")));
-                                                  return;
-                                                }
-                                              }
-
-                                              if (_con.isSameRestaurants(_con.food)) {
-                                                _con.addToCart(_con.food);
-                                              } else {
-                                                showDialog(
-                                                  context: context,
-                                                  builder: (BuildContext context) {
-                                                    // return object of type Dialog
-                                                    return AddToCartAlertDialogWidget(
-                                                        oldFood: _con.cartItems.elementAt(0)?.food,
-                                                        newFood: _con.food,
-                                                        onPressed: (food, {reset: true}) {
-                                                          return _con.addToCart(_con.food, reset: true);
-                                                        });
-                                                  },
-                                                );
-                                              }
-                                            }
-                                          },
-                                          padding: EdgeInsets.symmetric(vertical: 14),
-                                          color: Theme.of(context).accentColor,
-                                          shape: StadiumBorder(),
-                                          child: Container(
-                                            width: double.infinity,
-                                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                                            child: Text(
-                                              S.of(context).add_to_cart,
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(color: Theme.of(context).primaryColor),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                                        child: Helper.getPrice(
-                                          _con.total,
-                                          context,
-                                          style: Theme.of(context).textTheme.headline4.merge(TextStyle(color: Theme.of(context).primaryColor)),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ],
+                              title: Text(
+                                S.of(context).reviews,
+                                style: Theme.of(context).textTheme.subtitle1,
                               ),
-                              SizedBox(height: 10),
-                            ],
-                          ),
+                            )
+                                : SizedBox.shrink(),
+
+                            ReviewsListWidget(
+                              loading: _con.loadFood,
+                              reviewsList: _con.food.foodReviews,
+                            ),
+
+                          ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
+              Positioned(
+                top: 32,
+                right: 20,
+                child: _con.loadCart
+                    ? SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: RefreshProgressIndicator(),
+                )
+                    : ShoppingCartFloatButtonWidget(
+                  iconColor: Theme.of(context).primaryColor,
+                  labelColor: Theme.of(context).hintColor,
+                  routeArgument: RouteArgument(param: '/Food', id: _con.food.id),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  height: 150,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)), boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)]),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width - 40,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(
+                                S.of(context).quantity,
+                                style: Theme.of(context).textTheme.subtitle1,
+                              ),
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                IconButton(
+                                  onPressed: () {
+                                    _con.decrementQuantity();
+                                  },
+                                  iconSize: 30,
+                                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                                  icon: Icon(Icons.remove_circle_outline),
+                                  color: Theme.of(context).hintColor,
+                                ),
+                                Text(_con.quantity.toString(), style: Theme.of(context).textTheme.subtitle1),
+                                IconButton(
+                                  onPressed: () {
+                                    _con.incrementQuantity();
+                                  },
+                                  iconSize: 30,
+                                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                                  icon: Icon(Icons.add_circle_outline),
+                                  color: Theme.of(context).hintColor,
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: _con.favorite?.id != null
+                                  ? OutlineButton(
+                                  onPressed: () {
+                                    _con.removeFromFavorite(_con.favorite);
+                                  },
+                                  padding: EdgeInsets.symmetric(vertical: 14),
+                                  color: Theme.of(context).primaryColor,
+                                  shape: StadiumBorder(),
+                                  borderSide: BorderSide(color: Theme.of(context).accentColor),
+                                  child: Icon(
+                                    Icons.favorite,
+                                    color: Theme.of(context).accentColor,
+                                  ))
+                                  : FlatButton(
+                                  onPressed: () {
+                                    if (currentUser.value.apiToken == null) {
+                                      Navigator.of(context).pushNamed("/Login");
+                                    } else {
+                                      _con.addToFavorite(_con.food);
+                                    }
+                                  },
+                                  padding: EdgeInsets.symmetric(vertical: 14),
+                                  color: Theme.of(context).accentColor,
+                                  shape: StadiumBorder(),
+                                  child: Icon(
+                                    Icons.favorite,
+                                    color: Theme.of(context).primaryColor,
+                                  )),
+                            ),
+                            SizedBox(width: 10),
+                            Stack(
+                              fit: StackFit.loose,
+                              alignment: AlignmentDirectional.centerEnd,
+                              children: <Widget>[
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width - 110,
+                                  // add to cart button
+                                  child: FlatButton(
+                                    onPressed: () {
+                                      if (currentUser.value.apiToken == null) {
+                                        Navigator.of(context).pushNamed("/Login");
+                                      } else {
+                                        if (_con.loadCart) return;
+
+                                        if (!_con.food.restaurant.isCurrentlyOpen() && !_con.food.restaurant.isAvailableForPreorder()) {
+                                          _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("The restaurant is neither open nor available for pre-order")));
+                                          return;
+                                        }
+
+                                        if (!_con.food.restaurant.availableForDelivery && !_con.food.restaurant.availableForPickup) {
+                                          _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("The restaurant is neither available for delivery nor pickup")));
+                                          return;
+                                        }
+
+                                        if (_con.food.outOfStock) {
+                                          _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("This food can't be added to the cart as it is sold out currently")));
+                                          return;
+                                        }
+
+                                        if (_con.food.extras.length > 0) {
+                                          int noOfSelectedExtras = 0;
+
+                                          for (int i = 0; i < _con.food.extras?.length; i++) {
+                                            var extra = _con.food.extras[i];
+                                            if (extra.checked) noOfSelectedExtras++;
+                                          }
+
+                                          if (noOfSelectedExtras == 0) {
+                                            _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("You need to select at least one extra to add this food to cart")));
+                                            return;
+                                          }
+                                        }
+
+                                        if (_con.isSameRestaurants(_con.food)) {
+                                          _con.addToCart(_con.food);
+                                        } else {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              // return object of type Dialog
+                                              return AddToCartAlertDialogWidget(
+                                                  oldFood: _con.cartItems.elementAt(0)?.food,
+                                                  newFood: _con.food,
+                                                  onPressed: (food, {reset: true}) {
+                                                    appData.clear();
+                                                    return _con.addToCart(_con.food, reset: true);
+                                                  });
+                                            },
+                                          );
+                                        }
+                                      }
+                                    },
+                                    padding: EdgeInsets.symmetric(vertical: 14),
+                                    color: Theme.of(context).accentColor,
+                                    shape: StadiumBorder(),
+                                    child: Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                                      child: Text(
+                                        S.of(context).add_to_cart,
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(color: Theme.of(context).primaryColor),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  child: Helper.getPrice(
+                                    _con.total,
+                                    context,
+                                    style: Theme.of(context).textTheme.headline4.merge(TextStyle(color: Theme.of(context).primaryColor)),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

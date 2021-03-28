@@ -6,9 +6,7 @@ import '../../generated/l10n.dart';
 import '../helpers/app_config.dart' as config;
 
 class EmptyCartWidget extends StatefulWidget {
-  EmptyCartWidget({
-    Key key,
-  }) : super(key: key);
+  EmptyCartWidget({Key key}) : super(key: key);
 
   @override
   _EmptyCartWidgetState createState() => _EmptyCartWidgetState();

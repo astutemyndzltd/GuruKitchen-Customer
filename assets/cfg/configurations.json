@@ -2,8 +2,8 @@
 
   "base_url": "https://gurukitchen.foodonlinedelivery.co.uk/",
   "api_base_url": "https://gurukitchen.foodonlinedelivery.co.uk/api/",
-  "obase_url": "https://portal.gurukitchen.co.uk/",
-  "oapi_base_url": "https://portal.gurukitchen.co.uk/api/"
+  "tbase_url": "https://portal.gurukitchen.co.uk/",
+  "tapi_base_url": "https://portal.gurukitchen.co.uk/api/"
 }
 
 
